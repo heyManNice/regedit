@@ -1,0 +1,380 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-25 16:08+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/ui/main_window.c:19 src/ui/tree_pane.c:74
+msgid "Computer"
+msgstr ""
+
+#: src/ui/main_window.c:183 src/ui/main_window.c:522
+msgid "About Regedit"
+msgstr ""
+
+#: src/ui/main_window.c:183 src/ui/export.c:183 src/ui/favorites.c:139
+#: src/ui/favorites.c:206
+msgid "OK"
+msgstr ""
+
+#: src/ui/main_window.c:202 src/ui/main_window.c:203 src/ui/main_window.c:204
+#: src/ui/main_window.c:217
+msgid "Unknown"
+msgstr ""
+
+#: src/ui/main_window.c:269
+#, c-format
+msgid "Version %s (Linux %s, %s, %s)"
+msgstr ""
+
+#: src/ui/main_window.c:275
+msgid "© heyManNice All rights reversed."
+msgstr ""
+
+#: src/ui/main_window.c:282
+msgid ""
+"This GNU/Linux operatin system and tis components are built upon Free and "
+"Open-Source Software (FOSS) and are destributed by their respecticve "
+"copyright holders under the terms fope source licenses, including GPL, LGPL, "
+"MIT, and Apache licenses. The kernel, tools, and user interface contained in "
+"the system are protected unter the applicable open source licenses and "
+"copyright laws."
+msgstr ""
+
+#: src/ui/main_window.c:294
+msgid ""
+"In accordance with Open Source Lincence, the following users are allowed to "
+"use it"
+msgstr ""
+
+#: src/ui/main_window.c:377 src/ui/tree_pane.c:376
+msgid "Folder"
+msgstr ""
+
+#: src/ui/main_window.c:379
+msgid "New Forlder"
+msgstr ""
+
+#: src/ui/main_window.c:418
+msgid "Files"
+msgstr ""
+
+#: src/ui/main_window.c:421
+msgid "Import..."
+msgstr ""
+
+#: src/ui/main_window.c:425
+msgid "Export..."
+msgstr ""
+
+#: src/ui/main_window.c:429
+msgid "Print"
+msgstr ""
+
+#: src/ui/main_window.c:436
+msgid "Quit"
+msgstr ""
+
+#: src/ui/main_window.c:444
+msgid "Edit"
+msgstr ""
+
+#: src/ui/main_window.c:447 src/ui/value_pane.c:1044 src/ui/tree_pane.c:427
+msgid "New"
+msgstr ""
+
+#: src/ui/main_window.c:455 src/ui/tree_pane.c:456 src/ui/tree_pane.c:458
+msgid "Permission"
+msgstr ""
+
+#: src/ui/main_window.c:459 src/ui/tree_pane.c:441 src/ui/tree_pane.c:443
+msgid "Delete"
+msgstr ""
+
+#: src/ui/main_window.c:463 src/ui/tree_pane.c:446 src/ui/tree_pane.c:448
+msgid "Rename"
+msgstr ""
+
+#: src/ui/main_window.c:467 src/ui/tree_pane.c:464
+msgid "Copy Name"
+msgstr ""
+
+#: src/ui/main_window.c:474
+msgid "Find..."
+msgstr ""
+
+#: src/ui/main_window.c:478
+msgid "Find Next"
+msgstr ""
+
+#: src/ui/main_window.c:486
+msgid "Veiw"
+msgstr ""
+
+#: src/ui/main_window.c:489
+msgid "Address"
+msgstr ""
+
+#: src/ui/main_window.c:494
+msgid "Split"
+msgstr ""
+
+#: src/ui/main_window.c:501
+msgid "Refresh"
+msgstr ""
+
+#: src/ui/main_window.c:505
+msgid "Fonts"
+msgstr ""
+
+#: src/ui/main_window.c:513
+msgid "Favourites"
+msgstr ""
+
+#: src/ui/main_window.c:520
+msgid "Help"
+msgstr ""
+
+#: src/ui/main_window.c:594
+msgid "Type a Path and Press Enter"
+msgstr ""
+
+#: src/ui/main_window.c:705
+msgid "Regedit"
+msgstr ""
+
+#: src/ui/value_pane.c:132
+msgid "man query failed."
+msgstr ""
+
+#: src/ui/value_pane.c:157 src/ui/value_pane.c:226
+#, c-format
+msgid "No manual entry found for %s!"
+msgstr ""
+
+#: src/ui/value_pane.c:173 src/ui/value_pane.c:233
+msgid "No manual entry for that name."
+msgstr ""
+
+#: src/ui/value_pane.c:194
+#, c-format
+msgid "Explian: %s (man 5 %s)"
+msgstr ""
+
+#: src/ui/value_pane.c:207
+msgid "Could not resoleve the configration filename."
+msgstr ""
+
+#: src/ui/value_pane.c:238
+msgid "Fetching man page..."
+msgstr ""
+
+#: src/ui/value_pane.c:258
+msgid "Unable to start manual page query."
+msgstr ""
+
+#: src/ui/value_pane.c:344
+msgid "Unable to read file."
+msgstr ""
+
+#: src/ui/value_pane.c:507
+#, c-format
+msgid "Unable to read file: %s"
+msgstr ""
+
+#: src/ui/value_pane.c:509
+msgid "Unknown Error"
+msgstr ""
+
+#: src/ui/value_pane.c:902
+msgid "Enable"
+msgstr ""
+
+#: src/ui/value_pane.c:961 src/ui/value_pane.c:1153
+msgid "Type"
+msgstr ""
+
+#: src/ui/value_pane.c:984 src/ui/value_pane.c:1154
+msgid "Data"
+msgstr ""
+
+#: src/ui/value_pane.c:1109 src/ui/value_pane.c:1152
+msgid "Name"
+msgstr ""
+
+#: src/ui/value_pane.c:1112 src/ui/value_pane.c:1172
+msgid "Note"
+msgstr ""
+
+#: src/core/format.c:286
+msgid "APT Configuration"
+msgstr ""
+
+#: src/core/format.c:288
+msgid "Key-value"
+msgstr ""
+
+#: src/core/format.c:289
+msgid "Keyword-Argument"
+msgstr ""
+
+#: src/core/format.c:341
+msgid "INI File"
+msgstr ""
+
+#: src/core/format.c:342
+msgid "Key-Value Pair File"
+msgstr ""
+
+#: src/core/format.c:343
+msgid "JSON File"
+msgstr ""
+
+#: src/core/format.c:344
+msgid "XML File"
+msgstr ""
+
+#: src/core/format.c:345
+msgid "systemd Unit File"
+msgstr ""
+
+#: src/core/format.c:346
+msgid "APT Configuraion"
+msgstr ""
+
+#: src/core/format.c:347
+msgid "Keyword-Argument File"
+msgstr ""
+
+#: src/ui/tree_pane.c:378
+msgid "New Folder"
+msgstr ""
+
+#: src/ui/tree_pane.c:419
+msgid "Collapse"
+msgstr ""
+
+#: src/ui/tree_pane.c:419
+msgid "Expand"
+msgstr ""
+
+#: src/ui/tree_pane.c:436 src/ui/tree_pane.c:438
+msgid "Find"
+msgstr ""
+
+#: src/ui/tree_pane.c:451 src/ui/tree_pane.c:453 src/ui/export.c:182
+msgid "Export"
+msgstr ""
+
+#: src/ui/export.c:22
+#, c-format
+msgid "Files: %s\n"
+msgstr ""
+
+#: src/ui/export.c:39
+#, c-format
+msgid "Folders: %s\n"
+msgstr ""
+
+#: src/ui/export.c:60
+#, c-format
+msgid ""
+"Generated At: %s\n"
+"\n"
+msgstr ""
+
+#: src/ui/export.c:77
+msgid "No path selected."
+msgstr ""
+
+#: src/ui/export.c:106
+msgid "Export to..."
+msgstr ""
+
+#: src/ui/export.c:106 src/ui/export.c:182 src/ui/favorites.c:138
+#: src/ui/favorites.c:205
+msgid "Cancel"
+msgstr ""
+
+#: src/ui/export.c:107
+msgid "Save"
+msgstr ""
+
+#: src/ui/export.c:145
+msgid "Please enter the save location."
+msgstr ""
+
+#: src/ui/export.c:153
+#, c-format
+msgid "Export Finished:%s"
+msgstr ""
+
+#: src/ui/export.c:161
+#, c-format
+msgid "Export Faild: %s"
+msgstr ""
+
+#: src/ui/export.c:162
+msgid "Unkown Error"
+msgstr ""
+
+#: src/ui/export.c:189
+msgid "Export Range: "
+msgstr ""
+
+#: src/ui/export.c:192
+msgid "All (/etc, ~/config, /boot)"
+msgstr ""
+
+#: src/ui/export.c:194
+msgid "Selected"
+msgstr ""
+
+#: src/ui/export.c:200
+msgid "Browse..."
+msgstr ""
+
+#: src/ui/export.c:212
+msgid "Save to: "
+msgstr ""
+
+#: src/ui/favorites.c:138
+msgid "Add to Favourites"
+msgstr ""
+
+#: src/ui/favorites.c:145
+msgid "Group Name (_F): "
+msgstr ""
+
+#: src/ui/favorites.c:198
+msgid "There is no group yet."
+msgstr ""
+
+#: src/ui/favorites.c:205
+msgid "Remove Group"
+msgstr ""
+
+#: src/ui/favorites.c:211
+msgid "Select Grroup: "
+msgstr ""
+
+#: src/ui/favorites.c:244
+msgid "Add to Group"
+msgstr ""
+
+#: src/ui/favorites.c:248
+msgid "Delete Group"
+msgstr ""

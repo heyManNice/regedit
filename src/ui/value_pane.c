@@ -2,6 +2,7 @@
 #include "core/format.h"
 
 #include <string.h>
+#include <glib/gi18n.h>
 #include <json-glib/json-glib.h>
 
 /* 底部 man 说明面板的固定高度（像素） */
@@ -128,7 +129,7 @@ on_man_done(GObject *source, GAsyncResult *res, gpointer user_data)
             g_hash_table_insert(self->man_pages, g_strdup(req->basename), mp);
         }
         if (is_current)
-            gtk_text_buffer_set_text(buf, "man 查询失败。", -1);
+            gtk_text_buffer_set_text(buf, _("man query failed."), -1);
     }
     else if (out != NULL && g_bytes_get_size(out) > 0)
     {
@@ -153,7 +154,7 @@ on_man_done(GObject *source, GAsyncResult *res, gpointer user_data)
             }
             else
             {
-                gchar *msg = g_strdup_printf("未找到「%s」的说明。", req->name);
+                gchar *msg = g_strdup_printf(_("No manual entry found for %s!"), req->name);
                 gtk_text_buffer_set_text(buf, msg, -1);
                 g_free(msg);
             }
@@ -169,7 +170,7 @@ on_man_done(GObject *source, GAsyncResult *res, gpointer user_data)
             g_hash_table_insert(self->man_pages, g_strdup(req->basename), mp);
         }
         if (is_current)
-            gtk_text_buffer_set_text(buf, "未找到该名称的 man 手册页。", -1);
+            gtk_text_buffer_set_text(buf, _("No manual entry for that name."), -1);
     }
 
     g_free(req->basename);
@@ -190,7 +191,7 @@ lr_value_pane_show_man(LrValuePane *self, const char *name)
     ManRequest *req;
     ManPage *mp;
     GtkTextBuffer *buf = gtk_text_view_get_buffer(self->info_text);
-    gchar *title = g_strdup_printf("说明：%s（man 5 %s）", name,
+    gchar *title = g_strdup_printf(_("Explian: %s (man 5 %s)"), name,
                                    self->current_basename != NULL
                                        ? self->current_basename
                                        : "");
@@ -203,7 +204,7 @@ lr_value_pane_show_man(LrValuePane *self, const char *name)
 
     if (self->current_basename == NULL)
     {
-        gtk_text_buffer_set_text(buf, "无法确定配置文件名。", -1);
+        gtk_text_buffer_set_text(buf, _("Could not resoleve the configration filename."), -1);
         return;
     }
 
@@ -221,19 +222,20 @@ lr_value_pane_show_man(LrValuePane *self, const char *name)
             }
             else
             {
-                gchar *msg = g_strdup_printf("未找到「%s」的说明。", name);
-                gtk_text_buffer_set_text(buf, msg, -1);
-                g_free(msg);
+              gchar *msg =
+                  g_strdup_printf(_("No manual entry found for %s!"), name);
+              gtk_text_buffer_set_text(buf, msg, -1);
+              g_free(msg);
             }
         }
         else
         {
-            gtk_text_buffer_set_text(buf, "未找到该名称的 man 手册页。", -1);
+          gtk_text_buffer_set_text(buf, _("No manual entry for that name."), -1);
         }
         return;
     }
 
-    gtk_text_buffer_set_text(buf, "正在查询 man ...", -1);
+    gtk_text_buffer_set_text(buf, _("Fetching man page..."), -1);
 
     /* 排版交给 GTK（GtkTextView 自动折行）：
      *  - MANWIDTH 设很大 → groff 不按终端宽度折行，只保留内容本身的换行
@@ -253,7 +255,7 @@ lr_value_pane_show_man(LrValuePane *self, const char *name)
 
     if (proc == NULL)
     {
-        gtk_text_buffer_set_text(buf, "无法启动 man 查询。", -1);
+        gtk_text_buffer_set_text(buf, _("Unable to start manual page query."), -1);
         g_clear_error(&error);
         return;
     }
@@ -339,7 +341,7 @@ show_text_content(LrValuePane *self, const char *content, gsize length)
 
     gtk_text_buffer_set_text(buf, "", -1);
     if (content == NULL)
-        gtk_text_buffer_set_text(buf, "无法读取文件。", -1);
+        gtk_text_buffer_set_text(buf, _("Unable to read file."), -1);
     else
         gtk_text_buffer_set_text(buf, content, (gint)MIN(length, G_MAXINT));
 
@@ -502,9 +504,9 @@ void lr_value_pane_load_file(LrValuePane *self, const char *path)
     /* 一次性读取内容，检测与解析复用，避免重复读文件 */
     if (!g_file_get_contents(path, &content, &len, &error))
     {
-        gchar *msg = g_strdup_printf("无法读取文件：%s",
+        gchar *msg = g_strdup_printf(_("Unable to read file: %s"),
                                      error != NULL ? error->message
-                                                   : "未知错误");
+                                                   : _("Unknown Error"));
         show_text_content(self, msg, strlen(msg));
         g_free(msg);
         g_clear_error(&error);
@@ -897,7 +899,7 @@ build_enabled_column(LrValuePane *self)
     g_signal_connect(renderer, "edited", G_CALLBACK(on_enabled_edited), self);
 
     col = gtk_tree_view_column_new();
-    gtk_tree_view_column_set_title(col, "启用");
+    gtk_tree_view_column_set_title(col, _("Enable"));
     gtk_tree_view_column_set_resizable(col, TRUE);
     gtk_tree_view_column_set_sizing(col, GTK_TREE_VIEW_COLUMN_FIXED);
     gtk_tree_view_column_set_fixed_width(col, 75);
@@ -956,7 +958,7 @@ build_type_column(LrValuePane *self)
     g_signal_connect(renderer, "edited", G_CALLBACK(on_type_edited), self);
 
     col = gtk_tree_view_column_new();
-    gtk_tree_view_column_set_title(col, "类型");
+    gtk_tree_view_column_set_title(col, _("Type"));
     gtk_tree_view_column_set_resizable(col, TRUE);
     gtk_tree_view_column_set_sizing(col, GTK_TREE_VIEW_COLUMN_FIXED);
     gtk_tree_view_column_set_fixed_width(col, 93);
@@ -979,7 +981,7 @@ build_data_column(LrValuePane *self)
                      G_CALLBACK(on_data_editing_started), self);
 
     col = gtk_tree_view_column_new();
-    gtk_tree_view_column_set_title(col, "数据");
+    gtk_tree_view_column_set_title(col, _("Data"));
     gtk_tree_view_column_set_resizable(col, TRUE);
     gtk_tree_view_column_set_sizing(col, GTK_TREE_VIEW_COLUMN_FIXED);
     /* 初始宽度较小，实际宽度由 expand 分配：数据列占满剩余空间 */
@@ -1039,7 +1041,7 @@ static void
 show_value_popup_menu(LrValuePane *self, GdkEventButton *event)
 {
     GtkWidget *menu = gtk_menu_new();
-    GtkWidget *new_item = gtk_menu_item_new_with_label("新建");
+    GtkWidget *new_item = gtk_menu_item_new_with_label(_("New"));
     GtkWidget *new_sub = gtk_menu_new();
 
     build_new_submenu(self, new_sub);
@@ -1104,10 +1106,10 @@ lr_value_pane_new(void)
                      G_CALLBACK(on_value_button_press), self);
 
     build_enabled_column(self);
-    build_editable_text_column(self, "名称", COL_NAME, FALSE, 213);
+    build_editable_text_column(self, _("Name"), COL_NAME, FALSE, 213);
     build_type_column(self);
     build_data_column(self);
-    build_editable_text_column(self, "备注", COL_COMMENT, TRUE, 360);
+    build_editable_text_column(self, _("Note"), COL_COMMENT, TRUE, 360);
 
     scrolled = gtk_scrolled_window_new(NULL, NULL);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled),
@@ -1147,9 +1149,9 @@ lr_value_pane_new(void)
         GTK_TREE_MODEL(self->json_store)));
     g_object_unref(self->json_store);
 
-    append_text_column(self->json_view, "名称", COL_J_NAME, TRUE, FALSE, 0);
-    append_text_column(self->json_view, "类型", COL_J_TYPE, FALSE, FALSE, 0);
-    append_text_column(self->json_view, "数据", COL_J_DATA, TRUE, FALSE, 0);
+    append_text_column(self->json_view, _("Name"), COL_J_NAME, TRUE, FALSE, 0);
+    append_text_column(self->json_view, _("Type"), COL_J_TYPE, FALSE, FALSE, 0);
+    append_text_column(self->json_view, _("Data"), COL_J_DATA, TRUE, FALSE, 0);
 
     scrolled = gtk_scrolled_window_new(NULL, NULL);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled),
@@ -1167,7 +1169,7 @@ lr_value_pane_new(void)
 
         self->info_page = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 
-        self->info_title = GTK_LABEL(gtk_label_new("说明"));
+        self->info_title = GTK_LABEL(gtk_label_new(_("Note")));
         gtk_widget_set_halign(GTK_WIDGET(self->info_title), GTK_ALIGN_START);
         gtk_widget_set_margin_start(GTK_WIDGET(self->info_title), 6);
         gtk_widget_set_margin_top(GTK_WIDGET(self->info_title), 4);

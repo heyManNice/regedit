@@ -4,6 +4,10 @@ project('linux-regedit', 'c',
   meson_version: '>=0.60',
   default_options: ['c_std=c11', 'warning_level=3', 'buildtype=debugoptimized'])
 
+i18n = import('i18n')
+
+add_project_arguments('-DGETTEXT_PACKAGE="' + meson.project_name() + '"',language: 'c')
+
 glibdep = dependency('glib-2.0')
 giodep = dependency('gio-2.0')
 gtkdep = dependency('gtk+-3.0')
@@ -75,3 +79,5 @@ if get_option('tests')
   test('core-tests', test_runner,
        workdir: meson.project_source_root())
 endif
+
+subdir('po')

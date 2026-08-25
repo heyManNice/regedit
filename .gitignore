@@ -15,5 +15,11 @@ meson-private/
 *~
 .DS_Store
 
+# clangd Configration
+compile_commands.json
+.cache/
+
 # 日志与临时文件
 *.log
+
+.fake

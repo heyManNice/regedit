@@ -6,6 +6,7 @@
 #include "core/format.h"
 
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 #include <string.h>
 #include <sys/utsname.h>
 
@@ -15,7 +16,7 @@ open_path(LrMainWindow *mw, const char *path, gboolean is_dir)
     /* 计算机虚拟根（空路径） */
     if (path == NULL || *path == '\0')
     {
-        gtk_entry_set_text(GTK_ENTRY(mw->location_entry), "计算机");
+        gtk_entry_set_text(GTK_ENTRY(mw->location_entry), _("Computer"));
         lr_value_pane_clear(mw->value);
         g_free(mw->current_path);
         mw->current_path = NULL;
@@ -179,7 +180,7 @@ on_about(GtkWidget *widget, gpointer user_data)
 
     (void)widget;
 
-    dialog = gtk_dialog_new_with_buttons("关于“注册表编辑器”", NULL, 0, "确定",
+    dialog = gtk_dialog_new_with_buttons(_("About Regedit"), NULL, 0, _("OK"),
                                          GTK_RESPONSE_CLOSE, NULL);
     /* 关于窗口宽度设窄一些 */
     gtk_window_set_default_size(GTK_WINDOW(dialog), 760, -1);
@@ -198,9 +199,9 @@ on_about(GtkWidget *widget, gpointer user_data)
                                  have_uts ? uts.release : "");
     version = os_release_value("VERSION");
     if (version == NULL)
-        version = g_strdup("未知");
-    kernel = g_strdup(have_uts ? uts.release : "未知");
-    init_prog = g_strdup("未知");
+        version = g_strdup(_("Unknown"));
+    kernel = g_strdup(have_uts ? uts.release : _("Unknown"));
+    init_prog = g_strdup(_("Unknown"));
     if (g_file_get_contents("/proc/1/comm", &tmp, NULL, NULL))
     {
         gchar *s = g_strstrip(tmp);
@@ -213,7 +214,7 @@ on_about(GtkWidget *widget, gpointer user_data)
     if (session == NULL || *session == '\0')
         session = g_strdup(g_getenv("WAYLAND_DISPLAY") != NULL ? "wayland"
                            : g_getenv("DISPLAY") != NULL       ? "x11"
-                                                               : "未知");
+                                                               : _("Unknown"));
     user = g_strdup(g_get_user_name());
 
     /* 顶部：放大 3 倍的系统图标 + 系统名（无“注册表编辑器”字样） */
@@ -265,22 +266,20 @@ on_about(GtkWidget *widget, gpointer user_data)
         if (paren != NULL)
             *paren = '\0';
     }
-    tmp = g_strdup_printf("版本 %s（Linux %s，%s，%s）",
+    tmp = g_strdup_printf(_("Version %s (Linux %s, %s, %s)"),
                           version, kernel, init_prog, session);
     about_add_line(right, tmp);
     g_free(tmp);
 
     /* 行3：版权符号 + 文案 */
-    about_add_line(right, "© heyManNice 保留不了所有权利");
+    about_add_line(right, _("© heyManNice All rights reversed."));
 
     /* 空一行 */
     gtk_box_pack_start(GTK_BOX(right), gtk_label_new(""), FALSE, FALSE, 0);
 
     /* 开源声明（多行） */
     label = gtk_label_new(
-        "本 GNU/Linux 操作系统及其组件基于自由及开源软件构建，由各自的"
-        "版权所有人根据 GPL、LGPL、MIT、Apache 等开源许可证授权分发。"
-        "系统中的内核、工具及用户界面受相关开源许可证与版权法保护。");
+        _("This GNU/Linux operatin system and tis components are built upon Free and Open-Source Software (FOSS) and are destributed by their respecticve copyright holders under the terms fope source licenses, including GPL, LGPL, MIT, and Apache licenses. The kernel, tools, and user interface contained in the system are protected unter the applicable open source licenses and copyright laws."));
     gtk_label_set_xalign(GTK_LABEL(label), 0.0f);
     gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
     gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_LEFT);
@@ -292,13 +291,13 @@ on_about(GtkWidget *widget, gpointer user_data)
                            0);
 
     /* 许可行 */
-    about_add_line(right, "根据开源许可条款，许可如下用户使用本产品：");
+    about_add_line(right, _("In accordance with Open Source Lincence, the following users are allowed to use it"));
 
     /* 空一行 */
     gtk_box_pack_start(GTK_BOX(right), gtk_label_new(""), FALSE, FALSE, 0);
 
     /* 缩进 2 字符 + 当前用户名 */
-    tmp = g_strdup_printf("　　%s", user);
+    tmp = g_strdup_printf("\u3000\u3000%s", user);
     about_add_line(right, tmp);
     g_free(tmp);
 
@@ -375,9 +374,9 @@ build_new_submenu(LrMainWindow *mw, GtkWidget *menu)
     GtkWidget *item;
     gint i;
 
-    item = gtk_menu_item_new_with_label("文件夹");
+    item = gtk_menu_item_new_with_label(_("Folder"));
     g_signal_connect(item, "activate", G_CALLBACK(on_new_not_impl),
-                     (gpointer) "新建文件夹");
+                     (gpointer) _("New Forlder"));
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
     item = gtk_separator_menu_item_new();
@@ -386,7 +385,7 @@ build_new_submenu(LrMainWindow *mw, GtkWidget *menu)
     names = lr_format_new_file_names();
     for (i = 0; names[i] != NULL; i++)
     {
-        item = gtk_menu_item_new_with_label(names[i]);
+        item = gtk_menu_item_new_with_label(_(names[i]));
         g_signal_connect(item, "activate", G_CALLBACK(on_new_not_impl),
                          (gpointer)names[i]);
         gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
@@ -416,25 +415,25 @@ build_menubar(LrMainWindow *mw)
     GtkWidget *menu, *menu_item, *item;
 
     /* 文件：导入 / 导出 / 打印 / 退出 */
-    menu_item = gtk_menu_item_new_with_label("文件");
+    menu_item = gtk_menu_item_new_with_label(_("Files"));
     menu = gtk_menu_new();
 
-    item = gtk_menu_item_new_with_label("导入…");
+    item = gtk_menu_item_new_with_label(_("Import..."));
     gtk_widget_set_sensitive(item, FALSE); /* 占位 */
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
-    item = gtk_menu_item_new_with_label("导出…");
+    item = gtk_menu_item_new_with_label(_("Export..."));
     g_signal_connect(item, "activate", G_CALLBACK(lr_export_show_dialog), mw);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
-    item = gtk_menu_item_new_with_label("打印…");
+    item = gtk_menu_item_new_with_label(_("Print"));
     gtk_widget_set_sensitive(item, FALSE);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
     item = gtk_separator_menu_item_new();
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
-    item = gtk_menu_item_new_with_label("退出");
+    item = gtk_menu_item_new_with_label(_("Quit"));
     g_signal_connect(item, "activate", G_CALLBACK(on_quit), mw->window);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
@@ -442,10 +441,10 @@ build_menubar(LrMainWindow *mw)
     gtk_menu_shell_append(GTK_MENU_SHELL(menubar), menu_item);
 
     /* 编辑：新建 / 权限 / 删除 / 重命名 / 复制项名称 / 查找 / 查找下一个 */
-    menu_item = gtk_menu_item_new_with_label("编辑");
+    menu_item = gtk_menu_item_new_with_label(_("Edit"));
     menu = gtk_menu_new();
 
-    item = gtk_menu_item_new_with_label("新建");
+    item = gtk_menu_item_new_with_label(_("New"));
     {
         GtkWidget *new_sub = gtk_menu_new();
         build_new_submenu(mw, new_sub);
@@ -453,30 +452,30 @@ build_menubar(LrMainWindow *mw)
     }
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
-    item = gtk_menu_item_new_with_label("权限…");
+    item = gtk_menu_item_new_with_label(_("Permission"));
     gtk_widget_set_sensitive(item, FALSE);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
-    item = gtk_menu_item_new_with_label("删除");
+    item = gtk_menu_item_new_with_label(_("Delete"));
     gtk_widget_set_sensitive(item, FALSE);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
-    item = gtk_menu_item_new_with_label("重命名");
+    item = gtk_menu_item_new_with_label(_("Rename"));
     gtk_widget_set_sensitive(item, FALSE);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
-    item = gtk_menu_item_new_with_label("复制项名称");
+    item = gtk_menu_item_new_with_label(_("Copy Name"));
     g_signal_connect(item, "activate", G_CALLBACK(on_copy_item_name), mw);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
     item = gtk_separator_menu_item_new();
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
-    item = gtk_menu_item_new_with_label("查找…");
+    item = gtk_menu_item_new_with_label(_("Find..."));
     gtk_widget_set_sensitive(item, FALSE);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
-    item = gtk_menu_item_new_with_label("查找下一个");
+    item = gtk_menu_item_new_with_label(_("Find Next"));
     gtk_widget_set_sensitive(item, FALSE);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
@@ -484,26 +483,26 @@ build_menubar(LrMainWindow *mw)
     gtk_menu_shell_append(GTK_MENU_SHELL(menubar), menu_item);
 
     /* 查看：地址栏 / 拆分 / 刷新 / 字体 */
-    menu_item = gtk_menu_item_new_with_label("查看");
+    menu_item = gtk_menu_item_new_with_label(_("Veiw"));
     menu = gtk_menu_new();
 
-    item = gtk_check_menu_item_new_with_label("地址栏");
+    item = gtk_check_menu_item_new_with_label(_("Address"));
     gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(item), TRUE);
     g_signal_connect(item, "toggled", G_CALLBACK(on_toggle_location_bar), mw);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
-    item = gtk_menu_item_new_with_label("拆分");
+    item = gtk_menu_item_new_with_label(_("Split"));
     gtk_widget_set_sensitive(item, FALSE);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
     item = gtk_separator_menu_item_new();
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
-    item = gtk_menu_item_new_with_label("刷新");
+    item = gtk_menu_item_new_with_label(_("Refresh"));
     g_signal_connect(item, "activate", G_CALLBACK(on_refresh), mw);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
-    item = gtk_menu_item_new_with_label("字体…");
+    item = gtk_menu_item_new_with_label(_("Fonts"));
     gtk_widget_set_sensitive(item, FALSE);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
@@ -511,16 +510,16 @@ build_menubar(LrMainWindow *mw)
     gtk_menu_shell_append(GTK_MENU_SHELL(menubar), menu_item);
 
     /* 收藏夹：添加/删除 + 分割线 + 收藏项（菜单显示时动态刷新） */
-    menu_item = gtk_menu_item_new_with_label("收藏夹");
+    menu_item = gtk_menu_item_new_with_label(_("Favourites"));
     menu = gtk_menu_new();
     g_signal_connect(menu, "show", G_CALLBACK(lr_favorites_fill_menu), mw);
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(menu_item), menu);
     gtk_menu_shell_append(GTK_MENU_SHELL(menubar), menu_item);
 
     /* 帮助 */
-    menu_item = gtk_menu_item_new_with_label("帮助");
+    menu_item = gtk_menu_item_new_with_label(_("Help"));
     menu = gtk_menu_new();
-    item = gtk_menu_item_new_with_label("关于注册表编辑器");
+    item = gtk_menu_item_new_with_label(_("About Regedit"));
     g_signal_connect(item, "activate", G_CALLBACK(on_about), mw->window);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(menu_item), menu);
@@ -592,7 +591,7 @@ build_location_bar(LrMainWindow *mw)
     mw->location_bar = bar;
     mw->location_entry = gtk_entry_new();
     gtk_entry_set_placeholder_text(GTK_ENTRY(mw->location_entry),
-                                   "输入路径后回车跳转");
+                                   _("Type a Path and Press Enter"));
     add_location_css(mw->location_entry);
     gtk_box_pack_start(GTK_BOX(bar), mw->location_entry, TRUE, TRUE, 0);
 
@@ -703,7 +702,7 @@ lr_main_window_new(void)
     lr_window_state_set_size(mw->win_state, 920, 600);
 
     mw->window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    gtk_window_set_title(GTK_WINDOW(mw->window), "注册表编辑器");
+    gtk_window_set_title(GTK_WINDOW(mw->window), _("Regedit"));
     gtk_window_set_default_size(GTK_WINDOW(mw->window), 920, 600);
     gtk_window_set_position(GTK_WINDOW(mw->window), GTK_WIN_POS_CENTER);
     g_signal_connect(mw->window, "destroy",
