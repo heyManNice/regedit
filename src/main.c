@@ -4,10 +4,18 @@
  * Linux 版 regedit：以注册表编辑器的交互浏览 /etc 与 ~/.config 的配置文件。
  */
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
+#include <libintl.h>
+#include <locale.h>
 #include "app.h"
 
 int main(int argc, char **argv)
 {
+    /* 本地化：界面语言跟随系统（gettext） */
+    setlocale(LC_ALL, "");
+    bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR);
+    textdomain(GETTEXT_PACKAGE);
+
     GtkApplication *app;
     gint status;
 

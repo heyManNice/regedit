@@ -3,6 +3,8 @@
 #include "ui/dialog_utils.h"
 #include "ui/test_roots.h"
 
+#include <glib/gi18n.h>
+
 enum
 {
     COL_ICON = 0,
@@ -71,7 +73,7 @@ add_computer_root(LrTreePane *self)
     gtk_tree_store_append(self->store, &computer_iter, NULL);
     gtk_tree_store_set(self->store, &computer_iter,
                        COL_ICON, self->icon_computer,
-                       COL_NAME, "计算机",
+                       COL_NAME, _("Computer"),
                        COL_PATH, "",
                        COL_KIND, LR_SCAN_DIR,
                        COL_FORMAT, LR_FORMAT_UNKNOWN,
@@ -371,9 +373,9 @@ build_new_submenu(LrTreePane *self, GtkWidget *menu)
     gint i;
 
     (void)self;
-    item = gtk_menu_item_new_with_label("文件夹");
+    item = gtk_menu_item_new_with_label(_("Folder"));
     g_signal_connect(item, "activate", G_CALLBACK(on_popup_not_impl),
-                     (gpointer) "新建文件夹");
+                     (gpointer) _("New Folder"));
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
     item = gtk_separator_menu_item_new();
@@ -382,7 +384,7 @@ build_new_submenu(LrTreePane *self, GtkWidget *menu)
     names = lr_format_new_file_names();
     for (i = 0; names[i] != NULL; i++)
     {
-        item = gtk_menu_item_new_with_label(names[i]);
+        item = gtk_menu_item_new_with_label(_(names[i]));
         g_signal_connect(item, "activate", G_CALLBACK(on_popup_not_impl),
                          (gpointer)names[i]);
         gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
@@ -414,7 +416,7 @@ show_popup_menu(LrTreePane *self, GtkTreePath *path, GdkEventButton *event)
     if (kind == LR_SCAN_DIR)
     {
         expanded = gtk_tree_view_row_expanded(self->view, path);
-        item = gtk_menu_item_new_with_label(expanded ? "折叠" : "展开");
+        item = gtk_menu_item_new_with_label(expanded ? _("Collapse") : _("Expand"));
         g_signal_connect(item, "activate",
                          G_CALLBACK(on_popup_expand_collapse), self);
         gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
@@ -422,7 +424,7 @@ show_popup_menu(LrTreePane *self, GtkTreePath *path, GdkEventButton *event)
         item = gtk_separator_menu_item_new();
         gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
-        item = gtk_menu_item_new_with_label("新建");
+        item = gtk_menu_item_new_with_label(_("New"));
         {
             GtkWidget *new_sub = gtk_menu_new();
             build_new_submenu(self, new_sub);
@@ -431,35 +433,35 @@ show_popup_menu(LrTreePane *self, GtkTreePath *path, GdkEventButton *event)
         gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
     }
 
-    item = gtk_menu_item_new_with_label("查找");
+    item = gtk_menu_item_new_with_label(_("Find"));
     g_signal_connect(item, "activate", G_CALLBACK(on_popup_not_impl),
-                     (gpointer) "查找");
+                     (gpointer) _("Find"));
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
-    item = gtk_menu_item_new_with_label("删除");
+    item = gtk_menu_item_new_with_label(_("Delete"));
     g_signal_connect(item, "activate", G_CALLBACK(on_popup_not_impl),
-                     (gpointer) "删除");
+                     (gpointer) _("Delete"));
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
-    item = gtk_menu_item_new_with_label("重命名");
+    item = gtk_menu_item_new_with_label(_("Rename"));
     g_signal_connect(item, "activate", G_CALLBACK(on_popup_not_impl),
-                     (gpointer) "重命名");
+                     (gpointer) _("Rename"));
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
-    item = gtk_menu_item_new_with_label("导出");
+    item = gtk_menu_item_new_with_label(_("Export"));
     g_signal_connect(item, "activate", G_CALLBACK(on_popup_not_impl),
-                     (gpointer) "导出");
+                     (gpointer) _("Export"));
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
-    item = gtk_menu_item_new_with_label("权限");
+    item = gtk_menu_item_new_with_label(_("Permission"));
     g_signal_connect(item, "activate", G_CALLBACK(on_popup_not_impl),
-                     (gpointer) "权限");
+                     (gpointer) _("Permission"));
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
     item = gtk_separator_menu_item_new();
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
-    item = gtk_menu_item_new_with_label("复制项名称");
+    item = gtk_menu_item_new_with_label(_("Copy Name"));
     g_signal_connect(item, "activate", G_CALLBACK(on_popup_copy_name), self);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 

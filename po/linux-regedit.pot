@@ -1,0 +1,379 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the linux-regedit package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: linux-regedit\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-05 11:10+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/ui/main_window.c:19 src/ui/tree_pane.c:76
+msgid "Computer"
+msgstr ""
+
+#: src/ui/main_window.c:183 src/ui/main_window.c:522
+msgid "About Regedit"
+msgstr ""
+
+#: src/ui/main_window.c:183 src/ui/export.c:182 src/ui/favorites.c:139
+#: src/ui/favorites.c:206
+msgid "OK"
+msgstr ""
+
+#: src/ui/main_window.c:202 src/ui/main_window.c:203 src/ui/main_window.c:204
+#: src/ui/main_window.c:217
+msgid "Unknown"
+msgstr ""
+
+#: src/ui/main_window.c:269
+#, c-format
+msgid "Version %s (Linux %s, %s, %s)"
+msgstr ""
+
+#. 行3：版权符号 + 文案
+#: src/ui/main_window.c:275
+msgid "© heyManNice All rights reversed."
+msgstr ""
+
+#: src/ui/main_window.c:282
+msgid ""
+"This GNU/Linux operating system and its components are built upon Free and "
+"Open-Source Software (FOSS) and are distributed by their respective "
+"copyright holders under the terms of open source licenses, including GPL, "
+"LGPL, MIT, and Apache licenses. The kernel, tools, and user interface "
+"contained in the system are protected under the applicable open source "
+"licenses and copyright laws."
+msgstr ""
+
+#. 许可行
+#: src/ui/main_window.c:294
+msgid ""
+"In accordance with open source licenses, the following users are allowed to "
+"use it"
+msgstr ""
+
+#: src/ui/main_window.c:377 src/ui/tree_pane.c:376
+msgid "Folder"
+msgstr ""
+
+#: src/ui/main_window.c:379 src/ui/tree_pane.c:378
+msgid "New Folder"
+msgstr ""
+
+#. 文件：导入 / 导出 / 打印 / 退出
+#: src/ui/main_window.c:418
+msgid "Files"
+msgstr ""
+
+#: src/ui/main_window.c:421
+msgid "Import..."
+msgstr ""
+
+#: src/ui/main_window.c:425
+msgid "Export..."
+msgstr ""
+
+#: src/ui/main_window.c:429
+msgid "Print"
+msgstr ""
+
+#: src/ui/main_window.c:436
+msgid "Quit"
+msgstr ""
+
+#. 编辑：新建 / 权限 / 删除 / 重命名 / 复制项名称 / 查找 / 查找下一个
+#: src/ui/main_window.c:444
+msgid "Edit"
+msgstr ""
+
+#: src/ui/main_window.c:447 src/ui/value_pane.c:1044 src/ui/tree_pane.c:427
+msgid "New"
+msgstr ""
+
+#: src/ui/main_window.c:455 src/ui/tree_pane.c:456 src/ui/tree_pane.c:458
+msgid "Permission"
+msgstr ""
+
+#: src/ui/main_window.c:459 src/ui/tree_pane.c:441 src/ui/tree_pane.c:443
+msgid "Delete"
+msgstr ""
+
+#: src/ui/main_window.c:463 src/ui/tree_pane.c:446 src/ui/tree_pane.c:448
+msgid "Rename"
+msgstr ""
+
+#: src/ui/main_window.c:467 src/ui/tree_pane.c:464
+msgid "Copy Name"
+msgstr ""
+
+#: src/ui/main_window.c:474
+msgid "Find..."
+msgstr ""
+
+#: src/ui/main_window.c:478
+msgid "Find Next"
+msgstr ""
+
+#. 查看：地址栏 / 拆分 / 刷新 / 字体
+#: src/ui/main_window.c:486
+msgid "View"
+msgstr ""
+
+#: src/ui/main_window.c:489
+msgid "Address"
+msgstr ""
+
+#: src/ui/main_window.c:494
+msgid "Split"
+msgstr ""
+
+#: src/ui/main_window.c:501
+msgid "Refresh"
+msgstr ""
+
+#: src/ui/main_window.c:505
+msgid "Fonts"
+msgstr ""
+
+#. 收藏夹：添加/删除 + 分割线 + 收藏项（菜单显示时动态刷新）
+#: src/ui/main_window.c:513
+msgid "Favorites"
+msgstr ""
+
+#. 帮助
+#: src/ui/main_window.c:520
+msgid "Help"
+msgstr ""
+
+#: src/ui/main_window.c:594
+msgid "Type a Path and Press Enter"
+msgstr ""
+
+#: src/ui/main_window.c:596
+msgid "Address bar input"
+msgstr ""
+
+#: src/ui/main_window.c:707
+msgid "Regedit"
+msgstr ""
+
+#: src/ui/value_pane.c:132
+msgid "man query failed."
+msgstr ""
+
+#: src/ui/value_pane.c:157 src/ui/value_pane.c:226
+#, c-format
+msgid "No manual entry found for %s!"
+msgstr ""
+
+#: src/ui/value_pane.c:173 src/ui/value_pane.c:233
+msgid "No manual entry for that name."
+msgstr ""
+
+#: src/ui/value_pane.c:194
+#, c-format
+msgid "Explain: %s (man 5 %s)"
+msgstr ""
+
+#: src/ui/value_pane.c:207
+msgid "Could not resolve the configuration filename."
+msgstr ""
+
+#: src/ui/value_pane.c:238
+msgid "Fetching man page..."
+msgstr ""
+
+#: src/ui/value_pane.c:258
+msgid "Unable to start manual page query."
+msgstr ""
+
+#: src/ui/value_pane.c:344
+msgid "Unable to read file."
+msgstr ""
+
+#: src/ui/value_pane.c:507
+#, c-format
+msgid "Unable to read file: %s"
+msgstr ""
+
+#: src/ui/value_pane.c:509 src/ui/export.c:161
+msgid "Unknown Error"
+msgstr ""
+
+#: src/ui/value_pane.c:902
+msgid "Enable"
+msgstr ""
+
+#: src/ui/value_pane.c:961 src/ui/value_pane.c:1158
+msgid "Type"
+msgstr ""
+
+#: src/ui/value_pane.c:984 src/ui/value_pane.c:1159
+msgid "Data"
+msgstr ""
+
+#: src/ui/value_pane.c:1112 src/ui/value_pane.c:1157
+msgid "Name"
+msgstr ""
+
+#: src/ui/value_pane.c:1115 src/ui/value_pane.c:1177
+msgid "Note"
+msgstr ""
+
+#: src/core/format.c:286 src/core/format.c:346
+msgid "APT Configuration"
+msgstr ""
+
+#: src/core/format.c:288
+msgid "Key-value"
+msgstr ""
+
+#: src/core/format.c:289
+msgid "Keyword-Argument"
+msgstr ""
+
+#: src/core/format.c:341
+msgid "INI File"
+msgstr ""
+
+#: src/core/format.c:342
+msgid "Key-Value Pair File"
+msgstr ""
+
+#: src/core/format.c:343
+msgid "JSON File"
+msgstr ""
+
+#: src/core/format.c:344
+msgid "XML File"
+msgstr ""
+
+#: src/core/format.c:345
+msgid "systemd Unit File"
+msgstr ""
+
+#: src/core/format.c:347
+msgid "Keyword-Argument File"
+msgstr ""
+
+#: src/ui/tree_pane.c:419
+msgid "Collapse"
+msgstr ""
+
+#: src/ui/tree_pane.c:419
+msgid "Expand"
+msgstr ""
+
+#: src/ui/tree_pane.c:436 src/ui/tree_pane.c:438
+msgid "Find"
+msgstr ""
+
+#: src/ui/tree_pane.c:451 src/ui/tree_pane.c:453 src/ui/export.c:181
+msgid "Export"
+msgstr ""
+
+#: src/ui/export.c:23
+#, c-format
+msgid "Files: %s\n"
+msgstr ""
+
+#: src/ui/export.c:40
+#, c-format
+msgid "Folders: %s\n"
+msgstr ""
+
+#: src/ui/export.c:61
+#, c-format
+msgid ""
+"Generated At: %s\n"
+"\n"
+msgstr ""
+
+#: src/ui/export.c:76
+msgid "No path selected."
+msgstr ""
+
+#: src/ui/export.c:105
+msgid "Export to..."
+msgstr ""
+
+#: src/ui/export.c:105 src/ui/export.c:181 src/ui/favorites.c:138
+#: src/ui/favorites.c:205
+msgid "Cancel"
+msgstr ""
+
+#: src/ui/export.c:106
+msgid "Save"
+msgstr ""
+
+#: src/ui/export.c:144
+msgid "Please enter the save location."
+msgstr ""
+
+#: src/ui/export.c:152
+#, c-format
+msgid "Export finished: %s"
+msgstr ""
+
+#: src/ui/export.c:160
+#, c-format
+msgid "Export failed: %s"
+msgstr ""
+
+#: src/ui/export.c:188
+msgid "Export Range: "
+msgstr ""
+
+#: src/ui/export.c:191
+msgid "All (/etc, ~/.config, /boot)"
+msgstr ""
+
+#: src/ui/export.c:193
+msgid "Selected"
+msgstr ""
+
+#: src/ui/export.c:199
+msgid "Browse..."
+msgstr ""
+
+#: src/ui/export.c:211
+msgid "Save to: "
+msgstr ""
+
+#: src/ui/favorites.c:138
+msgid "Add to Favorites"
+msgstr ""
+
+#: src/ui/favorites.c:145
+msgid "Favorite Name (_F): "
+msgstr ""
+
+#: src/ui/favorites.c:198
+msgid "No favorites yet."
+msgstr ""
+
+#: src/ui/favorites.c:205
+msgid "Delete Favorite"
+msgstr ""
+
+#: src/ui/favorites.c:211
+msgid "Select favorite: "
+msgstr ""
+
+#: src/ui/favorites.c:244
+msgid "Add to Favorites…"
+msgstr ""
+
+#: src/ui/favorites.c:248
+msgid "Delete Favorite…"
+msgstr ""
