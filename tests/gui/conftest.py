@@ -92,6 +92,8 @@ def fake_roots(tmp_path_factory, session_env) -> dict:
             "XDG_CONFIG_HOME": str(xdg),
             "XDG_DATA_HOME": str(data),
             "HOME": os.environ.get("HOME", "/root"),
+            # 每个测试会话独立 GApplication 实例，避免单实例串台
+            "LR_TEST_APP_ID": f"org.linux-regedit.test-{os.getpid()}",
             # 回归测试固定走英文界面（源语言回退，无需安装 locale/翻译）
             "LANG": "C.UTF-8",
             "LC_ALL": "C.UTF-8",

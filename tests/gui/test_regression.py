@@ -191,7 +191,7 @@ def test_refresh_picks_up_external_change(regedit, fake_roots):
 
 
 def test_toggle_address_bar(regedit):
-    """View → Address 勾选切换应隐藏/恢复地址栏。
+    """Ctrl+Shift+A 勾选切换应隐藏/恢复地址栏（键盘=用户真实路径）。
 
     注意：隐藏后 AT-SPI 节点仍然存在，必须用 SHOWING 状态判断可见性。
     """
@@ -199,12 +199,12 @@ def test_toggle_address_bar(regedit):
     assert wait_node(app, name="Address bar input", role="text",
                      state="SHOWING")
 
-    menu_item_activate(app, "View", "Address")
+    press("ctrl+shift+a")
     wait_until(lambda: tree.find(app, name="Address bar input", role="text",
                                  state="SHOWING") is None,
                timeout=5, message="address bar still SHOWING after toggle")
 
-    menu_item_activate(app, "View", "Address")
+    press("ctrl+shift+a")
     wait_node(app, name="Address bar input", role="text", state="SHOWING",
               timeout=5)
 

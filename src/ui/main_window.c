@@ -700,6 +700,14 @@ build_menubar(LrMainWindow *mw)
     item = gtk_check_menu_item_new_with_label(_("Address"));
     gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(item), TRUE);
     g_signal_connect(item, "toggled", G_CALLBACK(on_toggle_location_bar), mw);
+    {
+        /* Ctrl+Shift+A：键盘可触达的地址栏开关（测试与用户同路径） */
+        GtkAccelGroup *accel = gtk_accel_group_new();
+        gtk_window_add_accel_group(GTK_WINDOW(mw->window), accel);
+        gtk_widget_add_accelerator(
+            item, "activate", accel, GDK_KEY_a,
+            GDK_CONTROL_MASK | GDK_SHIFT_MASK, GTK_ACCEL_VISIBLE);
+    }
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
     item = gtk_menu_item_new_with_label(_("Split"));
