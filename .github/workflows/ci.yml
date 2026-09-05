@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            meson ninja-build pkg-config gettext \
+            libgtk-3-dev libglib2.0-dev libjson-glib-dev
+
+      - name: Configure
+        run: meson setup build -Dtests=true
+
+      - name: Compile
+        run: meson compile -C build
+
+      - name: Run unit tests
+        run: meson test -C build --print-errorlogs
