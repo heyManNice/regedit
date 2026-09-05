@@ -52,6 +52,8 @@ struct _LrValuePane
     guint search_index;     /* 上次命中的行下标 */
     guint search_total;     /* 最近一次 first 扫描的总命中数 */
     gboolean search_valid;  /* 是否存在可继续的查找 */
+
+    GtkTreePath *popup_path; /* 右键菜单作用行 */
 };
 
 /* 一个配置文件的 man 页缓存（整页文本 + 是否存在该页） */
@@ -658,6 +660,7 @@ void lr_value_pane_load_file(LrValuePane *self, const char *path)
     LrConfigFormat fmt;
 
     search_reset(self);
+    g_clear_pointer(&self->popup_path, gtk_tree_path_free);
     g_free(self->current_basename);
     self->current_basename = g_path_get_basename(path);
 
@@ -900,12 +903,12 @@ on_data_editing_started(GtkCellRenderer *renderer, GtkCellEditable *editable,
     if (type == NULL)
         return;
 
-    if (g_strcmp0(type, "Number") == 0)
+    if (lr_value_type_from_name(type) == LR_VALUE_NUMBER)
     {
         g_signal_connect(editable, "insert-text",
                          G_CALLBACK(on_number_insert_text), NULL);
     }
-    else if (g_strcmp0(type, "Boolean") == 0)
+    else if (lr_value_type_from_name(type) == LR_VALUE_BOOL)
     {
         static const gchar *vals[] = {"true", "false", "yes", "no", "0",
                                       "1"};
@@ -946,12 +949,13 @@ on_data_edited(GtkCellRendererText *renderer, const gchar *path,
     gtk_tree_model_get(GTK_TREE_MODEL(self->store), &iter, COL_TYPE, &type, -1);
     if (type != NULL)
     {
-        if (g_strcmp0(type, "Number") == 0 && !is_number_text(new_text))
+        LrValueType tt = lr_value_type_from_name(type);
+        if (tt == LR_VALUE_NUMBER && !is_number_text(new_text))
         {
             g_free(type);
             return; /* 非法数字：拒绝修改 */
         }
-        if (g_strcmp0(type, "Boolean") == 0 && !is_valid_bool_text(new_text))
+        if (tt == LR_VALUE_BOOL && !is_valid_bool_text(new_text))
         {
             g_free(type);
             return;
@@ -987,17 +991,17 @@ void lr_value_pane_add_value(LrValuePane *self, const char *type)
     const gchar *def_name, *def_data;
     GtkTreeIter iter;
 
-    if (g_strcmp0(type, "Section") == 0)
+    if (lr_value_type_from_name(type) == LR_VALUE_SECTION)
     {
         def_name = "NewSection";
         def_data = "";
     }
-    else if (g_strcmp0(type, "Boolean") == 0)
+    else if (lr_value_type_from_name(type) == LR_VALUE_BOOL)
     {
         def_name = "NewBoolean";
         def_data = "false";
     }
-    else if (g_strcmp0(type, "Number") == 0)
+    else if (lr_value_type_from_name(type) == LR_VALUE_NUMBER)
     {
         def_name = "NewNumber";
         def_data = "0";
@@ -1027,13 +1031,7 @@ on_new_value(GtkMenuItem *item, gpointer user_data)
 static void
 build_new_submenu(LrValuePane *self, GtkWidget *menu)
 {
-    static const gchar *types[] = {
-        "Section",
-        "String",
-        "Boolean",
-        "Number",
-        NULL,
-    };
+    const char *const *types = lr_value_type_names();
     gint i;
 
     for (i = 0; types[i] != NULL; i++)
@@ -1089,9 +1087,9 @@ on_type_edited(GtkCellRendererText *renderer, const gchar *path,
     gtk_tree_path_free(tp);
 
     /* 类型切换时给数据一个该类型下的合理默认值 */
-    if (g_strcmp0(new_text, "Boolean") == 0)
+    if (lr_value_type_from_name(new_text) == LR_VALUE_BOOL)
         def_data = "false";
-    else if (g_strcmp0(new_text, "Number") == 0)
+    else if (lr_value_type_from_name(new_text) == LR_VALUE_NUMBER)
         def_data = "0";
 
     if (def_data != NULL)
@@ -1108,10 +1106,10 @@ build_type_column(LrValuePane *self)
     GtkCellRenderer *renderer = gtk_cell_renderer_combo_new();
     GtkListStore *store = gtk_list_store_new(1, G_TYPE_STRING);
     GtkTreeViewColumn *col;
-    static const gchar *types[] = {"Section", "String", "Boolean", "Number"};
+    const char *const *types = lr_value_type_names();
     gint i;
 
-    for (i = 0; i < 4; i++)
+    for (i = 0; types[i] != NULL; i++)
         gtk_list_store_insert_with_values(store, NULL, i, 0, types[i], -1);
     g_object_set(renderer, "model", store, "text-column", 0, "editable", TRUE,
                  "has-entry", FALSE, NULL);
@@ -1197,17 +1195,101 @@ build_editable_text_column(LrValuePane *self, const char *title, gint col,
     g_object_set_data(G_OBJECT(renderer), "lr-col", GINT_TO_POINTER(col));
 }
 
-/* 右键弹出值面板菜单：新建 → 类型子菜单 */
+/* 右键菜单动作：把作用行强制显示为指定类型（不改动数据） */
+static void
+on_popup_force_type(GtkMenuItem *item, gpointer user_data)
+{
+    LrValuePane *self = user_data;
+    GtkTreeIter iter;
+    const gchar *new_type;
+
+    if (self->popup_path == NULL)
+        return;
+    if (!gtk_tree_model_get_iter(GTK_TREE_MODEL(self->store),
+                                 &iter, self->popup_path))
+        return;
+
+    new_type = gtk_menu_item_get_label(item);
+    if (lr_value_type_from_name(new_type) == LR_VALUE_SECTION)
+        return;
+    gtk_tree_store_set(self->store, &iter, COL_TYPE, new_type, -1);
+}
+
+/* 右键菜单动作：根据数据自动重新识别类型 */
+static void
+on_popup_detect_type(GtkMenuItem *item, gpointer user_data)
+{
+    LrValuePane *self = user_data;
+    GtkTreeIter iter;
+    gchar *data = NULL;
+
+    (void)item;
+    if (self->popup_path == NULL)
+        return;
+    if (!gtk_tree_model_get_iter(GTK_TREE_MODEL(self->store),
+                                 &iter, self->popup_path))
+        return;
+
+    gtk_tree_model_get(GTK_TREE_MODEL(self->store), &iter,
+                       COL_DATA, &data, -1);
+    if (data != NULL)
+    {
+        gtk_tree_store_set(self->store, &iter, COL_TYPE,
+                           lr_value_type_name(lr_value_detect_type(data)),
+                           -1);
+        g_free(data);
+    }
+}
+
+/* 类型子菜单：String / Boolean / Number + 自动识别 */
+static void
+build_type_submenu(LrValuePane *self, GtkWidget *menu)
+{
+    const char *const *names = lr_value_type_names();
+    GtkWidget *item;
+    gint i;
+
+    (void)self;
+    for (i = 0; names[i] != NULL; i++)
+    {
+        if (strcmp(names[i], "Section") == 0)
+            continue;
+        item = gtk_menu_item_new_with_label(names[i]);
+        g_signal_connect(item, "activate", G_CALLBACK(on_popup_force_type),
+                         self);
+        gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
+    }
+
+    item = gtk_separator_menu_item_new();
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
+
+    item = gtk_menu_item_new_with_label(_("Detect automatically"));
+    g_signal_connect(item, "activate", G_CALLBACK(on_popup_detect_type),
+                     self);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
+}
+
+/* 右键弹出值面板菜单：新建 / 类型（强制显示） */
 static void
 show_value_popup_menu(LrValuePane *self, GdkEventButton *event)
 {
     GtkWidget *menu = gtk_menu_new();
     GtkWidget *new_item = gtk_menu_item_new_with_label(_("New"));
     GtkWidget *new_sub = gtk_menu_new();
+    GtkWidget *sep;
+    GtkWidget *type_item = gtk_menu_item_new_with_label(_("Type"));
+    GtkWidget *type_sub = gtk_menu_new();
 
     build_new_submenu(self, new_sub);
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(new_item), new_sub);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), new_item);
+
+    sep = gtk_separator_menu_item_new();
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), sep);
+
+    build_type_submenu(self, type_sub);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(type_item), type_sub);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), type_item);
 
     gtk_widget_show_all(menu);
     gtk_menu_popup_at_pointer(GTK_MENU(menu), (GdkEvent *)event);
@@ -1223,6 +1305,23 @@ on_value_button_press(GtkWidget *widget, GdkEventButton *event,
 
     if (event->type == GDK_BUTTON_PRESS && event->button == 3)
     {
+        GtkTreePath *path = NULL;
+
+        if (gtk_tree_view_get_path_at_pos(self->view, (gint)event->x,
+                                          (gint)event->y, &path,
+                                          NULL, NULL, NULL))
+        {
+            GtkTreeIter iter;
+            if (gtk_tree_model_get_iter(GTK_TREE_MODEL(self->store),
+                                        &iter, path))
+            {
+                gtk_tree_selection_select_iter(
+                    gtk_tree_view_get_selection(self->view), &iter);
+            }
+            g_clear_pointer(&self->popup_path, gtk_tree_path_free);
+            self->popup_path = gtk_tree_path_copy(path);
+            gtk_tree_path_free(path);
+        }
         show_value_popup_menu(self, event);
         return TRUE;
     }

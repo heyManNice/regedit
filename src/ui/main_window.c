@@ -392,8 +392,7 @@ build_new_submenu(LrMainWindow *mw, GtkWidget *menu)
 
     /* 配置项：追加到当前表格（仅内存） */
     {
-        static const gchar *const types[] = {"Section", "String", "Boolean",
-                                             "Number", NULL};
+        const char *const *types = lr_value_type_names();
         for (i = 0; types[i] != NULL; i++)
         {
             item = gtk_menu_item_new_with_label(types[i]);

@@ -18,6 +18,7 @@ typedef enum
     LR_VALUE_NUMBER = 0, /* 数字，类比 REG_DWORD / REG_QWORD */
     LR_VALUE_STRING,     /* 字符串，类比 REG_SZ */
     LR_VALUE_BOOL,       /* 布尔，类比 REG_DWORD (0/1) */
+    LR_VALUE_SECTION,    /* 节/容器行（UI 模型用，非解析产物） */
 } LrValueType;
 
 typedef struct
@@ -42,8 +43,14 @@ typedef struct
 /* 类型识别：根据值文本启发式判断其类型 */
 LrValueType lr_value_detect_type(const char *value);
 
-/* 类型的中文显示名 */
+/* 类型的规范英文标识（Number/String/Boolean/Section），用于模型与表格 */
 const char *lr_value_type_name(LrValueType type);
+
+/* 由规范标识反查类型；未知名称一律回退为 LR_VALUE_STRING */
+LrValueType lr_value_type_from_name(const char *name);
+
+/* 表格“类型”列的全部取值（Section/String/Boolean/Number，NULL 结尾） */
+const char *const *lr_value_type_names(void);
 
 /* 构造 / 释放一个配置项 */
 LrConfigItem *lr_config_item_new(const char *key, const char *data,
