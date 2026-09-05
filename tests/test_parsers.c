@@ -54,6 +54,59 @@ void test_parsers(void)
         g_free(p);
     }
 
+    /* ---------- TOML ---------- */
+    {
+        gchar *p = write_tmp("lr-test-toml.toml",
+                             "title = \"linux-regedit demo\"\n"
+                             "[server]\n"
+                             "host = \"127.0.0.1\"\n"
+                             "port = 8080\n"
+                             "debug = false\n"
+                             "[logging]\n"
+                             "level = \"info\"   # 日志级别\n"
+                             "# 轮转说明\n"
+                             "rotate = true\n");
+        LrConfigFile *f = lr_parse_config(p);
+
+        TEST_ASSERT(lr_format_detect(p) == LR_FORMAT_TOML);
+        TEST_ASSERT(f->parsed);
+        TEST_ASSERT(f->items->len == 6);
+
+        LrConfigItem *it = g_ptr_array_index(f->items, 0);
+        TEST_ASSERT_STR_EQ(it->key, "title");
+        TEST_ASSERT(it->type == LR_VALUE_STRING);
+        TEST_ASSERT_STR_EQ(it->data, "linux-regedit demo");
+        TEST_ASSERT(it->comment == NULL);
+
+        it = g_ptr_array_index(f->items, 1);
+        TEST_ASSERT_STR_EQ(it->key, "host");
+        TEST_ASSERT_STR_EQ(it->section, "server");
+        TEST_ASSERT_STR_EQ(it->data, "127.0.0.1");
+
+        it = g_ptr_array_index(f->items, 2);
+        TEST_ASSERT_STR_EQ(it->key, "port");
+        TEST_ASSERT(it->type == LR_VALUE_NUMBER);
+        TEST_ASSERT_STR_EQ(it->data, "8080");
+
+        it = g_ptr_array_index(f->items, 3);
+        TEST_ASSERT_STR_EQ(it->key, "debug");
+        TEST_ASSERT(it->type == LR_VALUE_BOOL);
+
+        it = g_ptr_array_index(f->items, 4);
+        TEST_ASSERT_STR_EQ(it->key, "level");
+        TEST_ASSERT_STR_EQ(it->section, "logging");
+        TEST_ASSERT_STR_EQ(it->comment, "日志级别");
+
+        it = g_ptr_array_index(f->items, 5);
+        TEST_ASSERT_STR_EQ(it->key, "rotate");
+        TEST_ASSERT(it->type == LR_VALUE_BOOL);
+        TEST_ASSERT_STR_EQ(it->comment, "轮转说明");
+
+        lr_config_file_free(f);
+        g_unlink(p);
+        g_free(p);
+    }
+
     /* ---------- 扁平 KeyValue ---------- */
     {
         gchar *p = write_tmp("lr-test-2.conf",

@@ -11,6 +11,7 @@
 #include "core/parsers/systemd.h"
 #include "core/parsers/apt.h"
 #include "core/parsers/xml.h"
+#include "core/parsers/toml.h"
 
 static gboolean
 has_systemd_extension(const char *path)
@@ -194,6 +195,13 @@ sniff_systemd(LrSniffCtx *ctx)
     return has_systemd_extension(ctx->path);
 }
 
+/* TOML：以 .toml 后缀为主；其余交给 INI 的“节 + 键值对”兜底识别 */
+static gboolean
+sniff_toml(LrSniffCtx *ctx)
+{
+    return g_str_has_suffix(ctx->path, ".toml");
+}
+
 static gboolean
 sniff_json(LrSniffCtx *ctx)
 {
@@ -280,11 +288,12 @@ typedef struct
 } LrFormatDriver;
 
 static const LrFormatDriver k_drivers[] = {
-    {"systemd Unit", LR_FORMAT_SYSTEMD, sniff_systemd, lr_parse_systemd},
-    {"JSON", LR_FORMAT_JSON, sniff_json, lr_parse_json},
-    {"XML", LR_FORMAT_XML, sniff_xml, lr_parse_xml},
+    {N_("systemd Unit"), LR_FORMAT_SYSTEMD, sniff_systemd, lr_parse_systemd},
+    {N_("JSON"), LR_FORMAT_JSON, sniff_json, lr_parse_json},
+    {N_("XML"), LR_FORMAT_XML, sniff_xml, lr_parse_xml},
     {N_("APT Configuration"), LR_FORMAT_APT, sniff_apt, lr_parse_apt},
-    {"INI", LR_FORMAT_INI, sniff_ini, lr_parse_ini},
+    {N_("TOML"), LR_FORMAT_TOML, sniff_toml, lr_parse_toml},
+    {N_("INI"), LR_FORMAT_INI, sniff_ini, lr_parse_ini},
     {N_("Key-value"), LR_FORMAT_KV, sniff_kv, lr_parse_kv},
     {N_("Keyword-Argument"), LR_FORMAT_KEYWORD, sniff_keyword, lr_parse_keyword},
 };
@@ -332,8 +341,8 @@ lr_format_name(LrConfigFormat fmt)
 
     for (i = 0; i < G_N_ELEMENTS(k_drivers); i++)
         if (k_drivers[i].id == fmt)
-            return k_drivers[i].name;
-    return "未知格式";
+            return _(k_drivers[i].name);
+    return _("Unknown");
 }
 
 /* 新建文件时可选的格式显示名（静态数组，NULL 结尾） */
@@ -345,6 +354,7 @@ static const char *const k_new_file_names[] = {
     N_("systemd Unit File"),
     N_("APT Configuration"),
     N_("Keyword-Argument File"),
+    N_("TOML File"),
     NULL,
 };
 

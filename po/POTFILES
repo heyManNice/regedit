@@ -4,3 +4,4 @@ src/core/format.c
 src/ui/tree_pane.c
 src/ui/export.c
 src/ui/favorites.c
+src/ui/dialog_utils.c

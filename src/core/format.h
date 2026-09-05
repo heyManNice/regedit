@@ -15,6 +15,7 @@ typedef enum
     LR_FORMAT_JSON,        /* JSON（嵌套结构，树形展示） */
     LR_FORMAT_APT,         /* apt 配置（嵌套块 + :: 键，树形展示） */
     LR_FORMAT_XML,         /* XML（嵌套元素树，树形展示） */
+    LR_FORMAT_TOML,        /* TOML（节 + 键值对） */
 } LrConfigFormat;
 
 /* 根据文件名与文件内容启发式判断格式 */

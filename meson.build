@@ -41,6 +41,7 @@ lr_core_sources = files(
   'src/core/parsers/json.c',
   'src/core/parsers/apt.c',
   'src/core/parsers/xml.c',
+  'src/core/parsers/toml.c',
 )
 
 lr_core_inc = include_directories('src')

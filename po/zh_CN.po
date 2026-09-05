@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linux-regedit 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-05 11:16+0000\n"
+"POT-Creation-Date: 2026-09-05 11:22+0000\n"
 "PO-Revision-Date: 2026-08-24 17:05+0800\n"
 "Last-Translator: SMILE CAI <smile.cai@yandex.com>\n"
 "Language-Team: Chinese (simplified) <i18n-zh@googlegroups.com>\n"
@@ -20,7 +20,7 @@ msgstr ""
 msgid "Computer"
 msgstr "计算机"
 
-#: src/ui/main_window.c:183 src/ui/main_window.c:522
+#: src/ui/main_window.c:183 src/ui/main_window.c:517
 msgid "About Regedit"
 msgstr "关于注册表编辑器"
 
@@ -30,7 +30,7 @@ msgid "OK"
 msgstr "确定"
 
 #: src/ui/main_window.c:202 src/ui/main_window.c:203 src/ui/main_window.c:204
-#: src/ui/main_window.c:217
+#: src/ui/main_window.c:217 src/core/format.c:345
 msgid "Unknown"
 msgstr "未知"
 
@@ -64,108 +64,108 @@ msgid ""
 "use it"
 msgstr "根据开源许可条款，许可如下用户使用本产品："
 
-#: src/ui/main_window.c:377 src/ui/tree_pane.c:376
+#: src/ui/main_window.c:372 src/ui/tree_pane.c:367
 msgid "Folder"
 msgstr "文件夹"
 
-#: src/ui/main_window.c:379 src/ui/tree_pane.c:378
+#: src/ui/main_window.c:374 src/ui/tree_pane.c:369
 msgid "New Folder"
 msgstr "新建文件夹"
 
 #. 文件：导入 / 导出 / 打印 / 退出
-#: src/ui/main_window.c:418
+#: src/ui/main_window.c:413
 msgid "File"
 msgstr "文件"
 
-#: src/ui/main_window.c:421
+#: src/ui/main_window.c:416
 msgid "Import..."
 msgstr "导入"
 
-#: src/ui/main_window.c:425
+#: src/ui/main_window.c:420
 msgid "Export..."
 msgstr "导出"
 
-#: src/ui/main_window.c:429
+#: src/ui/main_window.c:424
 msgid "Print"
 msgstr "打印"
 
-#: src/ui/main_window.c:436
+#: src/ui/main_window.c:431
 msgid "Quit"
 msgstr "退出"
 
 #. 编辑：新建 / 权限 / 删除 / 重命名 / 复制项名称 / 查找 / 查找下一个
-#: src/ui/main_window.c:444
+#: src/ui/main_window.c:439
 msgid "Edit"
 msgstr "编辑"
 
-#: src/ui/main_window.c:447 src/ui/value_pane.c:1044 src/ui/tree_pane.c:427
+#: src/ui/main_window.c:442 src/ui/value_pane.c:1044 src/ui/tree_pane.c:418
 msgid "New"
 msgstr "新建"
 
-#: src/ui/main_window.c:455 src/ui/tree_pane.c:456 src/ui/tree_pane.c:458
+#: src/ui/main_window.c:450 src/ui/tree_pane.c:447 src/ui/tree_pane.c:449
 msgid "Permission"
 msgstr "权限"
 
-#: src/ui/main_window.c:459 src/ui/tree_pane.c:441 src/ui/tree_pane.c:443
+#: src/ui/main_window.c:454 src/ui/tree_pane.c:432 src/ui/tree_pane.c:434
 msgid "Delete"
 msgstr "删除"
 
-#: src/ui/main_window.c:463 src/ui/tree_pane.c:446 src/ui/tree_pane.c:448
+#: src/ui/main_window.c:458 src/ui/tree_pane.c:437 src/ui/tree_pane.c:439
 msgid "Rename"
 msgstr "重命名"
 
-#: src/ui/main_window.c:467 src/ui/tree_pane.c:464
+#: src/ui/main_window.c:462 src/ui/tree_pane.c:455
 msgid "Copy Name"
 msgstr "复制项名称"
 
-#: src/ui/main_window.c:474
+#: src/ui/main_window.c:469
 msgid "Find..."
 msgstr "查找"
 
-#: src/ui/main_window.c:478
+#: src/ui/main_window.c:473
 msgid "Find Next"
 msgstr "查找下一个"
 
 #. 查看：地址栏 / 拆分 / 刷新 / 字体
-#: src/ui/main_window.c:486
+#: src/ui/main_window.c:481
 msgid "View"
 msgstr "视图"
 
-#: src/ui/main_window.c:489
+#: src/ui/main_window.c:484
 msgid "Address"
 msgstr "地址栏"
 
-#: src/ui/main_window.c:494
+#: src/ui/main_window.c:489
 msgid "Split"
 msgstr "拆分"
 
-#: src/ui/main_window.c:501
+#: src/ui/main_window.c:496
 msgid "Refresh"
 msgstr "刷新"
 
-#: src/ui/main_window.c:505
+#: src/ui/main_window.c:500
 msgid "Fonts"
 msgstr "字体"
 
 #. 收藏夹：添加/删除 + 分割线 + 收藏项（菜单显示时动态刷新）
-#: src/ui/main_window.c:513
+#: src/ui/main_window.c:508
 msgid "Favorites"
 msgstr "收藏夹"
 
 #. 帮助
-#: src/ui/main_window.c:520
+#: src/ui/main_window.c:515
 msgid "Help"
 msgstr "帮助"
 
-#: src/ui/main_window.c:594
+#: src/ui/main_window.c:589
 msgid "Type a Path and Press Enter"
 msgstr "输入路径后回车跳转"
 
-#: src/ui/main_window.c:596
+#: src/ui/main_window.c:591
 msgid "Address bar input"
 msgstr "地址栏输入框"
 
-#: src/ui/main_window.c:707
+#: src/ui/main_window.c:702
 msgid "Regedit"
 msgstr "注册表编辑器"
 
@@ -244,59 +244,83 @@ msgstr "备注"
 msgid "JSON tree"
 msgstr "JSON 树"
 
-#: src/core/format.c:286 src/core/format.c:346
+#: src/core/format.c:291
+msgid "systemd Unit"
+msgstr "systemd 单元"
+
+#: src/core/format.c:292
+msgid "JSON"
+msgstr "JSON"
+
+#: src/core/format.c:293
+msgid "XML"
+msgstr "XML"
+
+#: src/core/format.c:294 src/core/format.c:355
 msgid "APT Configuration"
 msgstr "配置文件"
 
-#: src/core/format.c:288
+#: src/core/format.c:295
+msgid "TOML"
+msgstr "TOML"
+
+#: src/core/format.c:296
+msgid "INI"
+msgstr "INI"
+
+#: src/core/format.c:297
 msgid "Key-value"
 msgstr "键值对"
 
-#: src/core/format.c:289
+#: src/core/format.c:298
 msgid "Keyword-Argument"
 msgstr "关键字-参数"
 
-#: src/core/format.c:341
+#: src/core/format.c:350
 msgid "INI File"
 msgstr "INI 文件"
 
-#: src/core/format.c:342
+#: src/core/format.c:351
 msgid "Key-Value Pair File"
 msgstr "键值对文件"
 
-#: src/core/format.c:343
+#: src/core/format.c:352
 msgid "JSON File"
 msgstr "JSON 文件"
 
-#: src/core/format.c:344
+#: src/core/format.c:353
 msgid "XML File"
 msgstr "XML 文件"
 
-#: src/core/format.c:345
+#: src/core/format.c:354
 msgid "systemd Unit File"
 msgstr "systemd 单元文件"
 
-#: src/core/format.c:347
+#: src/core/format.c:356
 msgid "Keyword-Argument File"
 msgstr "键值对文件"
 
-#: src/ui/tree_pane.c:419
+#: src/core/format.c:357
+msgid "TOML File"
+msgstr "TOML 文件"
+
+#: src/ui/tree_pane.c:410
 msgid "Collapse"
 msgstr "折叠"
 
-#: src/ui/tree_pane.c:419
+#: src/ui/tree_pane.c:410
 msgid "Expand"
 msgstr "展开"
 
-#: src/ui/tree_pane.c:436 src/ui/tree_pane.c:438
+#: src/ui/tree_pane.c:427 src/ui/tree_pane.c:429
 msgid "Find"
 msgstr "查找"
 
-#: src/ui/tree_pane.c:451 src/ui/tree_pane.c:453 src/ui/export.c:181
+#: src/ui/tree_pane.c:442 src/ui/tree_pane.c:444 src/ui/export.c:181
 msgid "Export"
 msgstr "导出"
 
-#: src/ui/tree_pane.c:544
+#: src/ui/tree_pane.c:535
 msgid "Directory tree"
 msgstr "目录树"
 
@@ -397,6 +421,11 @@ msgstr "添加到收藏夹…"
 #: src/ui/favorites.c:248
 msgid "Delete Favorite…"
 msgstr "删除收藏夹…"
+
+#: src/ui/dialog_utils.c:34
+#, c-format
+msgid "%s is not implemented yet."
+msgstr "“%s”尚未实现，规划于后续版本。"
 
 #~ msgid "Group Name (_F): "
 #~ msgstr "收藏夹名称（_F）"

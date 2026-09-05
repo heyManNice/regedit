@@ -306,11 +306,15 @@ on_about(GtkWidget *widget, gpointer user_data)
     /* 确定按钮与窗口边界留边距，按钮内部左右加内边距 */
     {
         static GtkCssProvider *ok_css = NULL;
-        GtkWidget *action = gtk_dialog_get_action_area(GTK_DIALOG(dialog));
         GtkWidget *ok = gtk_dialog_get_widget_for_response(
             GTK_DIALOG(dialog), GTK_RESPONSE_CLOSE);
 
-        gtk_container_set_border_width(GTK_CONTAINER(action), 12);
+        if (ok != NULL)
+        {
+            gtk_widget_set_margin_start(ok, 12);
+            gtk_widget_set_margin_end(ok, 12);
+            gtk_widget_set_margin_bottom(ok, 12);
+        }
 
         if (ok_css == NULL)
         {
@@ -341,21 +345,12 @@ on_about(GtkWidget *widget, gpointer user_data)
     lr_dialog_center_on(dialog, GTK_WINDOW(window));
 }
 
-/* 未实现功能：弹出提示（独立子窗口） */
+/* 未实现功能：复用通用提示框 */
 static void
 on_new_not_impl(GtkMenuItem *item, gpointer user_data)
 {
-    const gchar *label = user_data;
-    GtkWidget *toplevel = gtk_widget_get_toplevel(GTK_WIDGET(item));
-    GtkWidget *dialog;
-
     (void)item;
-    dialog = gtk_message_dialog_new(NULL, 0, GTK_MESSAGE_INFO, GTK_BUTTONS_OK,
-                                    "「%s」功能尚未实现，规划于后续版本。",
-                                    label);
-    g_signal_connect(dialog, "response",
-                     G_CALLBACK(lr_dialog_destroy_on_response), NULL);
-    lr_dialog_center_on(dialog, GTK_WINDOW(toplevel));
+    lr_dialog_not_impl(gtk_widget_get_toplevel(GTK_WIDGET(item)), user_data);
 }
 
 /* 编辑菜单「新建配置项」：在当前表格追加一行（仅内存） */

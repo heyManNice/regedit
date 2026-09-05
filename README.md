@@ -75,6 +75,7 @@
 | 格式 | 语法要点 | 示例位置 |
 | --- | --- | --- |
 | **INI**（分节键值） | `[节]` + `key = value`；注释 `;` / `#` | `~/.config` 下大量应用配置 |
+| **TOML** | `[表]` + `key = value`；`#` 注释；值自动去引号（复合值暂以文本展示） | `~/.config/**/*.toml` |
 | **扁平 KeyValue** | `key=value` / `key value`，无分节 | `/etc/environment` 等 |
 | **systemd unit** | `[Unit]/[Service]` 等节 + `Key=Value` | `/etc/systemd/system/` |
 | **关键字-参数** | `关键字 参数`（空白/Tab 分隔），如 sshd_config | `/etc/ssh/sshd_config` |
@@ -190,7 +191,7 @@ linux-regedit/
 - [x] v0.3：`JSON` 结构化格式支持（树形可展开列表）
 - [ ] v0.3：搜索 / 过滤、类型强制显示
 - [ ] v0.4：编辑配置并**写回文件**（含权限处理与安全校验），支持 `sudo` 提权流程
-- [ ] v0.5：`TOML` 结构化格式支持
+- [x] v0.5：`TOML` 结构化格式支持（表 + 键值对行模型，复合值暂以文本展示）
 - [ ] v0.6：对比 / 导出 / 备份等增强工具
 
 ---

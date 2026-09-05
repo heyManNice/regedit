@@ -347,21 +347,12 @@ on_popup_copy_name(GtkMenuItem *item, gpointer user_data)
     }
 }
 
-/* 尚未实现的功能：弹出提示 */
+/* 尚未实现的功能：复用通用提示框 */
 static void
 on_popup_not_impl(GtkMenuItem *item, gpointer user_data)
 {
-    const gchar *label = user_data;
-    GtkWidget *toplevel = gtk_widget_get_toplevel(GTK_WIDGET(item));
-    GtkWidget *dialog;
-
     (void)item;
-    dialog = gtk_message_dialog_new(NULL, 0, GTK_MESSAGE_INFO, GTK_BUTTONS_OK,
-                                    "「%s」功能尚未实现，规划于后续版本。",
-                                    label);
-    g_signal_connect(dialog, "response",
-                     G_CALLBACK(lr_dialog_destroy_on_response), NULL);
-    lr_dialog_center_on(dialog, GTK_WINDOW(toplevel));
+    lr_dialog_not_impl(gtk_widget_get_toplevel(GTK_WIDGET(item)), user_data);
 }
 
 /* 新建 → 子菜单：文件夹 + 分割线 + 支持的文件格式（未实现，点击提示） */

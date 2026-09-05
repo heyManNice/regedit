@@ -1,0 +1,12 @@
+# 示例 TOML：模拟桌面应用配置，覆盖节 / 字符串 / 数字 / 布尔 / 行内注释
+title = "linux-regedit demo"
+
+[server]
+host = "127.0.0.1"
+port = 8080
+debug = false
+
+[logging]
+level = "info"   # 日志级别
+# 轮转说明
+rotate = true
