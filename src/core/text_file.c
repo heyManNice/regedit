@@ -45,6 +45,16 @@ lr_text_file_read(const char *path, gchar **content, gsize *len,
         return LR_TEXT_BINARY;
     }
 
+    /* 非 UTF-8 文本（如 latin1）转成合法 UTF-8（无效字节替换为 U+FFFD），
+     * 避免解析器与 GtkTextView 拿到非法序列 */
+    if (!g_utf8_validate(data, size, NULL))
+    {
+        gchar *valid = g_utf8_make_valid(data, size);
+        g_free(data);
+        data = valid;
+        size = strlen(valid);
+    }
+
     *content = data;
     *len = size;
     return LR_TEXT_OK;

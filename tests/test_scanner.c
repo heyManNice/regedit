@@ -10,7 +10,8 @@
 void test_scanner(void)
 {
     gchar *base = g_dir_make_tmp("lr-test-XXXXXX", NULL);
-    gchar *small, *big, *exact, *under, *bin, *empty, *fulldir, *inner;
+    gchar *small, *big, *exact, *under, *bin, *latin, *empty, *fulldir,
+        *inner;
     GPtrArray *arr;
     guint i;
     gboolean saw_small = FALSE, saw_fulldir = FALSE, saw_big = FALSE;
@@ -37,6 +38,10 @@ void test_scanner(void)
     /* 3. 含 NUL 的二进制文件 → 隐藏 */
     bin = g_build_filename(base, "data.bin", NULL);
     g_file_set_contents(bin, "abc\0def", 7, NULL);
+
+    /* 3a. 非法 UTF-8（latin1）文本：可读但转成合法 UTF-8 */
+    latin = g_build_filename(base, "latin.conf", NULL);
+    g_file_set_contents(latin, "caf\xe9 = 1\n", 9, NULL);
 
     /* 3b. 恰好 128KB → 显示（阈值是“大于”才隐藏）；差 1 字节 → 显示 */
     exact = g_build_filename(base, "exact.conf", NULL);
@@ -121,6 +126,10 @@ void test_scanner(void)
                                       &err) == LR_TEXT_TOO_LARGE);
         TEST_ASSERT(lr_text_file_read(bin, &content, &content_len,
                                       &err) == LR_TEXT_BINARY);
+        TEST_ASSERT(lr_text_file_read(latin, &content, &content_len,
+                                      &err) == LR_TEXT_OK);
+        TEST_ASSERT(g_utf8_validate(content, content_len, NULL));
+        g_clear_pointer(&content, g_free);
         TEST_ASSERT(lr_text_file_read(missing, &content, &content_len,
                                       &err) == LR_TEXT_ERROR);
         g_clear_error(&err);
@@ -131,6 +140,7 @@ void test_scanner(void)
     g_unlink(small);
     g_unlink(big);
     g_unlink(bin);
+    g_unlink(latin);
     g_unlink(exact);
     g_unlink(under);
     g_unlink(inner);
@@ -140,6 +150,7 @@ void test_scanner(void)
     g_free(small);
     g_free(big);
     g_free(bin);
+    g_free(latin);
     g_free(exact);
     g_free(under);
     g_free(inner);

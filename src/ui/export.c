@@ -29,19 +29,37 @@ export_file_into(GString *out, const char *path)
 }
 
 static void
-export_path_into(GString *out, const char *path)
+export_path_into(GString *out, const char *path, GHashTable *visited)
 {
     if (g_file_test(path, G_FILE_TEST_IS_DIR))
     {
         GDir *gd = g_dir_open(path, 0, NULL);
         const char *name;
+
+        /* 目录去重：防止符号链接环（同一 dev:inode 只导出一次） */
+        {
+            GStatBuf st;
+            gchar *key;
+
+            if (g_stat(path, &st) != 0)
+                return;
+            key = g_strdup_printf("%ld:%ld", (long)st.st_dev,
+                                  (long)st.st_ino);
+            if (g_hash_table_contains(visited, key))
+            {
+                g_free(key);
+                return;
+            }
+            g_hash_table_add(visited, key);
+        }
+
         if (gd == NULL)
             return;
         g_string_append_printf(out, _("Folders: %s\n"), path);
         while ((name = g_dir_read_name(gd)) != NULL)
         {
             gchar *full = g_build_filename(path, name, NULL);
-            export_path_into(out, full);
+            export_path_into(out, full, visited);
             g_free(full);
         }
         g_dir_close(gd);
@@ -56,6 +74,8 @@ static gboolean
 do_export(LrMainWindow *mw, gboolean all, const char *dest, GError **err)
 {
     GString *out = g_string_new("Linux Registry Export Version 1.0\n");
+    GHashTable *visited = g_hash_table_new_full(g_str_hash, g_str_equal,
+                                                g_free, NULL);
     GDateTime *now = g_date_time_new_now_local();
     gchar *ts = g_date_time_format(now, "%Y-%m-%d %H:%M:%S");
     g_string_append_printf(out, _("Generated At: %s\n\n"), ts);
@@ -64,9 +84,9 @@ do_export(LrMainWindow *mw, gboolean all, const char *dest, GError **err)
 
     if (all)
     {
-        export_path_into(out, lr_etc_root());
-        export_path_into(out, lr_config_root());
-        export_path_into(out, lr_boot_root());
+        export_path_into(out, lr_etc_root(), visited);
+        export_path_into(out, lr_config_root(), visited);
+        export_path_into(out, lr_boot_root(), visited);
     }
     else
     {
@@ -75,13 +95,15 @@ do_export(LrMainWindow *mw, gboolean all, const char *dest, GError **err)
             g_set_error_literal(err, G_FILE_ERROR, G_FILE_ERROR_FAILED,
                                 _("No path selected."));
             g_string_free(out, TRUE);
+            g_hash_table_unref(visited);
             return FALSE;
         }
-        export_path_into(out, mw->current_path);
+        export_path_into(out, mw->current_path, visited);
     }
 
     gboolean ok = g_file_set_contents(dest, out->str, (gssize)out->len, err);
     g_string_free(out, TRUE);
+    g_hash_table_unref(visited);
     return ok;
 }
 
