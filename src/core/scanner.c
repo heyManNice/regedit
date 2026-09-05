@@ -1,5 +1,6 @@
 #include "core/scanner.h"
 #include "core/limits.h"
+#include "core/text_file.h"
 
 #include <gio/gio.h>
 #include <glib/gstdio.h>
@@ -48,8 +49,6 @@ read_file_head(const char *path, guchar *buf, gsize bufsize, gsize *n)
     gssize r;
     gboolean text = TRUE;
     GError *error = NULL;
-    gsize i;
-
     *n = 0;
     file = g_file_new_for_path(path);
     stream = g_file_read(file, NULL, &error);
@@ -64,14 +63,8 @@ read_file_head(const char *path, guchar *buf, gsize bufsize, gsize *n)
     if (r >= 0)
     {
         *n = (gsize)r;
-        for (i = 0; i < *n; i++)
-        {
-            if (buf[i] == '\0')
-            {
-                text = FALSE;
-                break;
-            }
-        }
+        if (lr_text_is_binary(buf, *n))
+            text = FALSE;
     }
 
     g_input_stream_close(G_INPUT_STREAM(stream), NULL, NULL);

@@ -9,9 +9,11 @@
 from __future__ import annotations
 
 import pytest
+from pathlib import Path
 
 from spire import tree
 from spire.input import double_click, click, press, type_text
+from spire.session import AppSession
 from spire.wait import wait_until, wait_node
 
 
@@ -215,3 +217,22 @@ def test_snapshot_order_is_stable(regedit):
     snap2 = tree.snapshot(regedit.app, max_depth=30, max_nodes=300)
     shape = lambda s: [(i["role"], i["name"]) for i in s]
     assert shape(snap1) == shape(snap2)
+
+
+def test_cli_open_file_outside_roots(display, fake_roots, tmp_path):
+    """命令行直接打开根目录外的文件也应显示内容（不被首帧选中事件清空）。"""
+    outside = tmp_path / "cli-demo.toml"
+    outside.write_text("[server]\nport = 8080\n", encoding="utf-8")
+    binary = (Path(__file__).resolve().parents[2] / "builddir" /
+              "linux-regedit")
+
+    wait_until(lambda: tree.app_by_name("linux-regedit") is None, timeout=8)
+    with AppSession([str(binary), str(outside)],
+                    env=fake_roots["env"], app_name="linux-regedit",
+                    display=display) as app:
+        app.app = wait_until(
+            lambda: tree.app_by_name("linux-regedit", live=True), timeout=10)
+        wait_node(app.app, role="frame", timeout=8)
+        wait_until(lambda: tree.find(app.app, text="port",
+                                     max_depth=80) is not None,
+                   timeout=6, message="outside-root file did not display")

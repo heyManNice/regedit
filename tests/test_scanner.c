@@ -1,5 +1,6 @@
 #include "test_runner.h"
 #include "core/scanner.h"
+#include "core/text_file.h"
 #include "core/limits.h"
 
 #include <glib/gstdio.h>
@@ -102,6 +103,29 @@ void test_scanner(void)
     TEST_ASSERT(!saw_empty);
     TEST_ASSERT(saw_exact);
     TEST_ASSERT(saw_under);
+
+    /* 统一读取守卫：小文本可读；恰好 128K 可读；超大/二进制拒绝 */
+    {
+        gchar *content = NULL;
+        gsize content_len = 0;
+        GError *err = NULL;
+        gchar *missing = g_build_filename(base, "no-such-file", NULL);
+
+        TEST_ASSERT(lr_text_file_read(small, &content, &content_len,
+                                      &err) == LR_TEXT_OK);
+        g_clear_pointer(&content, g_free);
+        TEST_ASSERT(lr_text_file_read(exact, &content, &content_len,
+                                      &err) == LR_TEXT_OK);
+        g_clear_pointer(&content, g_free);
+        TEST_ASSERT(lr_text_file_read(big, &content, &content_len,
+                                      &err) == LR_TEXT_TOO_LARGE);
+        TEST_ASSERT(lr_text_file_read(bin, &content, &content_len,
+                                      &err) == LR_TEXT_BINARY);
+        TEST_ASSERT(lr_text_file_read(missing, &content, &content_len,
+                                      &err) == LR_TEXT_ERROR);
+        g_clear_error(&err);
+        g_free(missing);
+    }
 
     /* 清理 */
     g_unlink(small);

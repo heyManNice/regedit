@@ -1,5 +1,7 @@
 #include "ui/value_pane.h"
 #include "core/format.h"
+#include "core/text_file.h"
+#include "core/limits.h"
 
 #include <string.h>
 #include <glib/gi18n.h>
@@ -664,16 +666,36 @@ void lr_value_pane_load_file(LrValuePane *self, const char *path)
     g_free(self->current_basename);
     self->current_basename = g_path_get_basename(path);
 
-    /* 一次性读取内容，检测与解析复用，避免重复读文件 */
-    if (!g_file_get_contents(path, &content, &len, &error))
+    /* 统一读取守卫：大小上限 + 非文本(NUL)过滤，树与直接打开同一套规则 */
     {
-        gchar *msg = g_strdup_printf(_("Unable to read file: %s"),
-                                     error != NULL ? error->message
-                                                   : _("Unknown Error"));
-        show_text_content(self, msg, strlen(msg));
-        g_free(msg);
-        g_clear_error(&error);
-        return;
+        LrTextReadStatus rst = lr_text_file_read(path, &content, &len,
+                                                 &error);
+        gchar *msg = NULL;
+
+        if (rst == LR_TEXT_ERROR)
+        {
+            msg = g_strdup_printf(_("Unable to read file: %s"),
+                                  error != NULL ? error->message
+                                                : _("Unknown Error"));
+        }
+        else if (rst == LR_TEXT_TOO_LARGE)
+        {
+            msg = g_strdup_printf(
+                _("File is too large (limit %u KiB)."),
+                LR_MAX_FILE_SIZE / 1024);
+        }
+        else if (rst == LR_TEXT_BINARY)
+        {
+            msg = g_strdup(_("File appears to be binary."));
+        }
+
+        if (msg != NULL)
+        {
+            show_text_content(self, msg, strlen(msg));
+            g_free(msg);
+            g_clear_error(&error);
+            return;
+        }
     }
 
     fmt = lr_format_detect_content(path, content, len);

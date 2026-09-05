@@ -31,6 +31,7 @@ endif
 # 核心库：纯 GLib，不含 UI，便于单元测试
 lr_core_sources = files(
   'src/core/value.c',
+  'src/core/text_file.c',
   'src/core/format.c',
   'src/core/scanner.c',
   'src/core/parsers/common.c',

@@ -4,6 +4,7 @@
 #include "ui/export.h"
 #include "ui/file_tools.h"
 #include "ui/dialog_utils.h"
+#include "ui/test_roots.h"
 #include "core/format.h"
 
 #include <gtk/gtk.h>
@@ -45,12 +46,56 @@ on_tree_select(const char *path, gboolean is_dir, gpointer user_data)
     open_path(mw, path, is_dir);
 }
 
+/* 路径是否位于某根目录（含边界：/etc 不匹配 /etc2） */
+static gboolean
+path_inside_root(const char *path, const char *root)
+{
+    gsize rl;
+
+    if (path == NULL || root == NULL || *root == '\0')
+        return FALSE;
+    rl = strlen(root);
+    if (strncmp(path, root, rl) != 0)
+        return FALSE;
+    if (path[rl] == '\0')
+        return TRUE;
+    return path[rl] == G_DIR_SEPARATOR;
+}
+
+static gboolean on_reopen_idle(gpointer user_data);
+
 /* 命令行 / 外部调用：直接打开指定文件（目录则仅定位到树中） */
 void lr_main_window_open_file(LrMainWindow *mw, const char *path)
 {
     gboolean is_dir = g_file_test(path, G_FILE_TEST_IS_DIR);
+
+    /* 命令行/外部打开优先于“恢复上次路径”：取消待执行 idle，
+     * 避免它随后选中旧路径、把刚打开的内容清空 */
+    if (mw->reveal_idle != 0)
+    {
+        g_source_remove(mw->reveal_idle);
+        mw->reveal_idle = 0;
+    }
+    g_clear_pointer(&mw->pending_path, g_free);
+    if (mw->reopen_idle != 0)
+    {
+        g_source_remove(mw->reopen_idle);
+        mw->reopen_idle = 0;
+    }
+    g_clear_pointer(&mw->reopen_path, g_free);
+
     open_path(mw, path, is_dir);
-    lr_tree_pane_reveal_path(mw->tree, path);
+    if (path_inside_root(path, lr_etc_root()) ||
+        path_inside_root(path, lr_config_root()) ||
+        path_inside_root(path, lr_boot_root()))
+    {
+        lr_tree_pane_reveal_path(mw->tree, path);
+    }
+    else
+    {
+        mw->reopen_path = g_strdup(path);
+        mw->reopen_idle = g_idle_add(on_reopen_idle, mw);
+    }
 }
 
 static void
@@ -863,9 +908,27 @@ on_reveal_path_idle(gpointer user_data)
 {
     LrMainWindow *self = user_data;
 
+    self->reveal_idle = 0;
     if (self->pending_path != NULL)
         lr_tree_pane_reveal_path(self->tree, self->pending_path);
     g_clear_pointer(&self->pending_path, g_free);
+    return G_SOURCE_REMOVE;
+}
+
+/* 命令行文件在根目录外时：窗口首帧树默认选中 Computer 的事件会在
+ * open_file 返回后才处理并清空面板；等事件风暴过后重新打开一次 */
+static gboolean
+on_reopen_idle(gpointer user_data)
+{
+    LrMainWindow *self = user_data;
+
+    self->reopen_idle = 0;
+    if (self->reopen_path != NULL)
+    {
+        gchar *path = g_steal_pointer(&self->reopen_path);
+        open_path(self, path, FALSE);
+        g_free(path);
+    }
     return G_SOURCE_REMOVE;
 }
 
@@ -908,7 +971,7 @@ void lr_main_window_restore_state(LrMainWindow *self)
     {
         g_free(self->pending_path);
         self->pending_path = last_path;
-        g_idle_add(on_reveal_path_idle, self);
+        self->reveal_idle = g_idle_add(on_reveal_path_idle, self);
     }
 }
 
@@ -973,6 +1036,11 @@ void lr_main_window_free(LrMainWindow *self)
 {
     if (self == NULL)
         return;
+    if (self->reveal_idle != 0)
+        g_source_remove(self->reveal_idle);
+    if (self->reopen_idle != 0)
+        g_source_remove(self->reopen_idle);
+    g_clear_pointer(&self->reopen_path, g_free);
     g_free(self->current_path);
     g_clear_pointer(&self->pending_path, g_free);
     lr_window_state_free(self->win_state);
