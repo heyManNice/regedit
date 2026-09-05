@@ -164,6 +164,7 @@ lr_parse_section_kv(const char *content, gsize length, LrConfigFile *file)
     gchar **linep;
     char *section = NULL;
     char *pending_comment = NULL;
+    guint line_idx = 0;
 
     (void)length;
     if (content == NULL)
@@ -174,8 +175,9 @@ lr_parse_section_kv(const char *content, gsize length, LrConfigFile *file)
 
     lines = g_strsplit(content, "\n", -1);
 
-    for (linep = lines; linep != NULL && *linep != NULL; linep++)
+    for (line_idx = 0; lines[line_idx] != NULL; line_idx++)
     {
+        linep = &lines[line_idx];
         char *line = g_strstrip(*linep);
 
         if (*line == '\0')
@@ -209,6 +211,7 @@ lr_parse_section_kv(const char *content, gsize length, LrConfigFile *file)
             LrConfigItem *item = lr_config_item_new(
                 key, value, lr_value_detect_type(value), section,
                 pending_comment != NULL ? pending_comment : inline_comment);
+            item->source_line = line_idx;
             if (pending_comment != NULL && inline_comment != NULL)
             {
                 char *merged = g_strconcat(pending_comment, "\n",

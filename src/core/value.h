@@ -29,6 +29,7 @@ typedef struct
     char *section;    /* 所属节，无节为 NULL */
     char *comment;    /* 备注（注释内容），可为 NULL */
     gboolean enabled; /* 是否启用（被注释的配置为 FALSE） */
+    guint source_line; /* 0 起原文行号；未知/非行格式为 G_MAXUINT */
 } LrConfigItem;
 
 /* 一个已解析的配置文件（类比一个注册表键下的值集合） */

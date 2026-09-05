@@ -122,6 +122,7 @@ lr_config_item_new(const char *key, const char *data,
     item->section = g_strdup(section);
     item->comment = g_strdup(comment);
     item->enabled = TRUE;
+    item->source_line = G_MAXUINT;
     return item;
 }
 

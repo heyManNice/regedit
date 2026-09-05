@@ -33,6 +33,7 @@ void test_parsers(void)
         TEST_ASSERT(it->type == LR_VALUE_NUMBER);
         TEST_ASSERT_STR_EQ(it->data, "22");
         TEST_ASSERT_STR_EQ(it->section, "server");
+        TEST_ASSERT(it->source_line == 2);
         /* 上方注释 + 行内注释合并显示 */
         TEST_ASSERT_STR_EQ(it->comment, "顶部注释\n端口");
 
@@ -48,6 +49,7 @@ void test_parsers(void)
         TEST_ASSERT(it->type == LR_VALUE_STRING);
         TEST_ASSERT_STR_EQ(it->data, "my host");
         TEST_ASSERT_STR_EQ(it->comment, "第二注释");
+        TEST_ASSERT(it->source_line == 5);
 
         lr_config_file_free(f);
         g_unlink(p);
@@ -124,6 +126,7 @@ void test_parsers(void)
         TEST_ASSERT_STR_EQ(it->key, "PATH");
         TEST_ASSERT(it->type == LR_VALUE_STRING);
         TEST_ASSERT_STR_EQ(it->comment, "环境变量");
+        TEST_ASSERT(it->source_line == 1);
 
         /* 同一条注释说明其下方多个配置项 */
         it = g_ptr_array_index(f->items, 1);

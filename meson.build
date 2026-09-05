@@ -33,6 +33,7 @@ endif
 lr_core_sources = files(
   'src/core/value.c',
   'src/core/text_file.c',
+  'src/core/edits.c',
   'src/core/format.c',
   'src/core/scanner.c',
   'src/core/parsers/common.c',
@@ -78,6 +79,7 @@ if get_option('tests')
     'tests/test_value.c',
     'tests/test_parsers.c',
     'tests/test_scanner.c',
+    'tests/test_writeback.c',
     'tests/test_runner.c',
     link_with: lr_core,
     dependencies: [glibdep, giodep, jsondep],
