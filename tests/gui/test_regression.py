@@ -11,6 +11,9 @@ from __future__ import annotations
 import pytest
 from pathlib import Path
 import time
+import os
+import subprocess
+import re
 
 from spire import tree
 from spire.input import double_click, click, press, type_text
@@ -289,3 +292,104 @@ def test_unsaved_edit_banner(regedit, fake_roots):
     wait_until(lambda: tree.find(app, name="Edit status",
                                  showing=True) is None,
                timeout=6, message="banner did not clear after file switch")
+
+
+def test_save_changes_writes_file(regedit, fake_roots, display):
+    """编辑值后 Ctrl+S：文件被安全写回，进程存活，未保存提示消失。"""
+    app = regedit.app
+    path = fake_roots["samples"]["sample.ini"]
+    open_sample(app, fake_roots, "sample.ini")
+
+    cell = wait_node(app, text="22", role="table cell", timeout=8)
+    double_click(cell)
+    time.sleep(0.4)
+    subprocess.run(["xdotool", "type", "--delay", "25", "8080"],
+                   env=dict(os.environ, DISPLAY=display), check=True)
+    subprocess.run(["xdotool", "key", "Return"],
+                   env=dict(os.environ, DISPLAY=display), check=True)
+    wait_until(lambda: tree.find(app, name="Edit status",
+                                 showing=True) is not None,
+               timeout=5, message="edit did not mark dirty")
+
+    press("ctrl+s")
+    wait_until(lambda: "Port = 8080" in path.read_text(encoding="utf-8"),
+               timeout=8, message="file was not written back")
+    wait_until(lambda: tree.find(app, name="Edit status",
+                                 showing=True) is None,
+               timeout=6, message="dirty banner did not clear after save")
+
+
+def _first_window_id(display: str):
+    out = subprocess.run(["xdotool", "search", "--class", "linux-regedit"],
+                         capture_output=True, text=True,
+                         env=dict(os.environ, DISPLAY=display)).stdout.split()
+    for wid in out:
+        x, y, w, h = _window_geometry(display, wid)
+        if w is not None and w >= 500 and h is not None and h >= 300:
+            return wid
+    return None
+
+
+def _window_geometry(display: str, wid: str):
+    out = subprocess.run(["xdotool", "getwindowgeometry", wid],
+        capture_output=True, text=True,
+        env=dict(os.environ, DISPLAY=display)).stdout
+    pos_x = pos_y = width = height = None
+    for line in out.splitlines():
+        line = line.strip()
+        m = re.search(r"Position: (\d+),(\d+)", line)
+        if m:
+            pos_x, pos_y = int(m.group(1)), int(m.group(2))
+        m = re.search(r"Geometry: (\d+)x(\d+)", line)
+        if m:
+            width, height = int(m.group(1)), int(m.group(2))
+    return pos_x, pos_y, width, height
+
+
+def test_window_state_restores_geometry(display, fake_roots, tmp_path):
+    """重启后应记住上次的窗口位置与尺寸（XDG_RUNTIME_DIR state.ini）。"""
+    binary = (Path(__file__).resolve().parents[2] / "builddir" /
+              "linux-regedit")
+    env = dict(fake_roots["env"])
+
+    def _launch(tag: str):
+        e = dict(env, LR_TEST_APP_ID=f"org.linux-regedit.state-{tag}")
+        return AppSession([str(binary)], env=e, app_name="linux-regedit",
+                          display=display)
+
+    wait_until(lambda: tree.app_by_name("linux-regedit") is None, timeout=8)
+    with _launch("a") as app:
+        app.app = wait_until(
+            lambda: tree.app_by_name("linux-regedit", live=True), timeout=10)
+        wait_node(app.app, role="frame", timeout=8)
+        wid = wait_until(
+            lambda: _first_window_id(display),
+            timeout=8, message="window id not found")
+        subprocess.run(
+            ["xdotool", "windowsize",
+             wid, "900", "620"],
+            env=dict(os.environ, DISPLAY=display), check=True)
+        subprocess.run(
+            ["xdotool", "windowmove",
+             wid, "90", "110"],
+            env=dict(os.environ, DISPLAY=display), check=True)
+        time.sleep(1.5)  # 等 window_state 的延迟保存生效
+        quit_item = wait_node(app.app, name="Quit", role="menu item")
+        quit_item.queryAction().doAction(0)
+    wait_until(lambda: tree.app_by_name("linux-regedit") is None, timeout=8)
+
+    state = (fake_roots["runtime_home"] / "linux-regedit" / "state.ini")
+    assert state.exists(), "window state file was not written"
+
+    with _launch("b") as app:
+        app.app = wait_until(
+            lambda: tree.app_by_name("linux-regedit", live=True), timeout=10)
+        wait_node(app.app, role="frame", timeout=8)
+        time.sleep(1)
+        wid2 = wait_until(lambda: _first_window_id(display), timeout=8,
+                          message="restored window id not found")
+        x, y, w, h = _window_geometry(display, wid2)
+        assert w is not None and abs(w - 900) <= 40, f"width {w}"
+        assert h is not None and abs(h - 620) <= 40, f"height {h}"
+        assert x is not None and abs(x - 90) <= 120, f"x {x}"
+        assert y is not None and abs(y - 110) <= 120, f"y {y}"

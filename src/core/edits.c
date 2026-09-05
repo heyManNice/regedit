@@ -387,13 +387,13 @@ lr_build_edits_from_rows(const char *path, const char *source_content,
         /* 顺序保证：先启用再改值；先改值再禁用 */
         if (!enabled_orig && enabled_now)
             append_edit(edits, &count, cap, LR_EDIT_ENABLE, r->line,
-                        it->key, NULL);
+                        r->key, NULL);
         if (g_strcmp0(it->data, r->data) != 0)
             append_edit(edits, &count, cap, LR_EDIT_SET_VALUE, r->line,
-                        it->key, r->data);
+                        r->key, r->data);
         if (enabled_orig && !enabled_now)
             append_edit(edits, &count, cap, LR_EDIT_DISABLE, r->line,
-                        it->key, NULL);
+                        r->key, NULL);
     }
 
     lr_config_file_free(orig);

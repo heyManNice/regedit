@@ -907,14 +907,52 @@ lr_value_pane_save_changes(LrValuePane *self, GError **error)
             g_free(data);
             g_free(enabled);
             g_free(comment);
+            g_free(type);
         }
-        g_free(type);
     }
     g_ptr_array_unref(iters);
 
     ok = lr_build_edits_from_rows(self->current_path, self->source_content,
                                   rows, real, &edits, &n_edits, error);
 
+    if (!ok)
+    {
+        for (i = 0; i < real; i++)
+        {
+            g_free((gchar *)rows[i].key);
+            g_free((gchar *)rows[i].data);
+            g_free((gchar *)rows[i].enabled);
+            g_free((gchar *)rows[i].comment);
+            g_free((gchar *)rows[i].type);
+        }
+        g_free(rows);
+        return FALSE;
+    }
+
+    if (n_edits == 0)
+    {
+        for (i = 0; i < real; i++)
+        {
+            g_free((gchar *)rows[i].key);
+            g_free((gchar *)rows[i].data);
+            g_free((gchar *)rows[i].enabled);
+            g_free((gchar *)rows[i].comment);
+            g_free((gchar *)rows[i].type);
+        }
+        g_free(rows);
+        g_free(edits);
+        return TRUE;
+    }
+    ok = lr_save_config_file(self->current_path, self->source_content,
+                             edits, n_edits, error);
+    g_free(edits);
+    if (ok)
+    {
+        /* load_file 会先清空 self->current_path，必须先复制再传参 */
+        gchar *reload_path = g_strdup(self->current_path);
+        lr_value_pane_load_file(self, reload_path);
+        g_free(reload_path);
+    }
     for (i = 0; i < real; i++)
     {
         g_free((gchar *)rows[i].key);
@@ -924,19 +962,6 @@ lr_value_pane_save_changes(LrValuePane *self, GError **error)
         g_free((gchar *)rows[i].type);
     }
     g_free(rows);
-    if (!ok)
-        return FALSE;
-
-    if (n_edits == 0)
-    {
-        g_free(edits);
-        return TRUE;
-    }
-    ok = lr_save_config_file(self->current_path, self->source_content,
-                             edits, n_edits, error);
-    g_free(edits);
-    if (ok)
-        lr_value_pane_load_file(self, self->current_path); /* 重置 dirty */
     return ok;
 }
 

@@ -65,7 +65,8 @@ def fake_roots(tmp_path_factory, session_env) -> dict:
     boot = base / "boot"
     xdg = base / "xdg"
     data = base / "data"
-    for d in (etc, config, boot, xdg, data):
+    runtime = base / "runtime"
+    for d in (etc, config, boot, xdg, data, runtime):
         d.mkdir(parents=True)
     copy_map = {
         "sample.ini": etc,
@@ -91,6 +92,7 @@ def fake_roots(tmp_path_factory, session_env) -> dict:
             "LR_TEST_BOOT": str(boot),
             "XDG_CONFIG_HOME": str(xdg),
             "XDG_DATA_HOME": str(data),
+            "XDG_RUNTIME_DIR": str(runtime),
             "HOME": os.environ.get("HOME", "/root"),
             # 每个测试会话独立 GApplication 实例，避免单实例串台
             "LR_TEST_APP_ID": f"org.linux-regedit.test-{os.getpid()}",
@@ -105,6 +107,7 @@ def fake_roots(tmp_path_factory, session_env) -> dict:
         "sample_ini": etc / "sample.ini",
         "samples": samples,
         "data_home": data,
+        "runtime_home": runtime,
     }
 
 

@@ -1,6 +1,7 @@
 # Meson / Ninja 构建产物
 builddir/
 build/
+build-asan/
 meson-private/
 
 # C 编译产物
