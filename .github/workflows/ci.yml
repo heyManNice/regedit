@@ -34,3 +34,26 @@ jobs:
         run: |
           msgfmt --check -o /dev/null po/zh_CN.po
           msgcmp po/zh_CN.po po/linux-regedit.pot
+
+  sanitizers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            meson ninja-build pkg-config gettext \
+            libgtk-3-dev libglib2.0-dev libjson-glib-dev
+
+      - name: Configure (ASAN)
+        run: meson setup build-asan -Db_sanitize=address
+
+      - name: Compile (ASAN)
+        run: meson compile -C build-asan
+
+      - name: Run unit tests (ASAN)
+        env:
+          ASAN_OPTIONS: abort_on_error=1:detect_leaks=0
+        run: meson test -C build-asan --print-errorlogs

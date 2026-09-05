@@ -114,6 +114,18 @@
 - 禁止直接以 root 长期运行 GUI；
 - helper 只接受“目标绝对路径 + 已签名/已验证的新文件”，不接受任意 shell 命令。
 
+### M2c 落地条件与 helper 契约（待 polkit 环境验证）
+
+当前开发容器没有 polkit/pkexec，以下契约先写死、待有环境后做端到端验证：
+- 安装 `linux-regedit-save-helper`（root 可执行）与 polkit action
+  `org.linux-regedit.app.save`（`auth_admin_keep`）；
+- UI 检测目标不可写 → 生成候选文本与原文 SHA-256 → 经 `pkexec` 调 helper；
+- helper 输入协议：stdin 第一行 `LR-SAVE-V1 <sha256hex>`，随后为候选全文；
+- helper 校验：绝对路径、非符号链接、realpath 一致、磁盘原文哈希与期望一致、
+  候选大小/二进制限制，然后备份到 `/var/backups/linux-regedit` 并原子替换
+  （保留属主/权限）；
+- 语义门（round-trip）只由 GUI 侧执行；helper 不做“解释格式”的事，职责最小化。
+
 ## 6. 写回流程（伪代码）
 
 ```
