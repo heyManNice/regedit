@@ -149,6 +149,19 @@ meson test -C builddir
 
 > 单元测试除临时构造的输入外，还会读取 `testdata/` 下每种格式的**真实示例文件**并逐项断言解析结果（格式识别、类型、注释、启用状态等），作为回归保护；这些示例也可直接用 `linux-regedit testdata/<文件>` 在界面中人工预览。
 
+### GUI / 无障碍回归（随本仓库维护）
+
+`tests/gui/` 下是用 **AT-SPI（无障碍树）** 驱动真实界面的回归用例，不依赖截图：
+
+```bash
+meson setup builddir && meson compile -C builddir
+python3 -m pytest tests/gui -v
+```
+
+运行前提：可用的 X/AT-SPI 会话（本地 `:2`，或 `xvfb-run`）；测试驱动库
+[spire](https://github.com/heyManNice/spire)（通过 `SPIRE_PATH` 指定，或放在
+仓库旁的 `../spire`）。用例固定走英文界面，保证在任何机器上可复现。
+
 > ⚠️ 提示：`/etc` 下部分文件需要 root 权限才能读取，此时可用 `sudo` 运行以获得完整目录树。
 
 ---
