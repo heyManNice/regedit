@@ -2,6 +2,8 @@
 #include "core/format.h"
 #include "core/text_file.h"
 #include "core/limits.h"
+#include "core/edits.h"
+#include "core/write.h"
 
 #include <string.h>
 #include <glib/gi18n.h>
@@ -17,6 +19,7 @@ enum
     COL_TYPE,
     COL_DATA,
     COL_COMMENT,
+    COL_SOURCE, /* 0 起原文行号（G_TYPE_UINT）；新增行为 G_MAXUINT */
     N_COLS
 };
 
@@ -60,6 +63,10 @@ struct _LrValuePane
     gboolean dirty;         /* 表格存在仅内存的编辑 */
     LrValuePaneDirtyCb dirty_cb;
     gpointer dirty_data;
+
+    gchar *current_path;    /* 当前加载文件路径 */
+    gchar *source_content;  /* 打开时的原文快照（写回冲突检测用） */
+    gboolean saveable;      /* 当前格式支持行级写回 */
 };
 
 /* 一个配置文件的 man 页缓存（整页文本 + 是否存在该页） */
@@ -683,6 +690,9 @@ void lr_value_pane_load_file(LrValuePane *self, const char *path)
     GError *error = NULL;
     LrConfigFormat fmt;
 
+    g_clear_pointer(&self->current_path, g_free);
+    g_clear_pointer(&self->source_content, g_free);
+    self->saveable = FALSE;
     value_pane_set_dirty(self, FALSE);
     search_reset(self);
     g_clear_pointer(&self->popup_path, gtk_tree_path_free);
@@ -722,6 +732,12 @@ void lr_value_pane_load_file(LrValuePane *self, const char *path)
     }
 
     fmt = lr_format_detect_content(path, content, len);
+    g_clear_pointer(&self->current_path, g_free);
+    g_clear_pointer(&self->source_content, g_free);
+    self->current_path = g_strdup(path);
+    self->source_content = g_strdup(content);
+    self->saveable = (fmt == LR_FORMAT_INI || fmt == LR_FORMAT_KV ||
+                      fmt == LR_FORMAT_SYSTEMD || fmt == LR_FORMAT_TOML);
     if (!lr_format_supported(fmt))
     {
         show_text_content(self, content, len);
@@ -797,6 +813,7 @@ void lr_value_pane_load_file(LrValuePane *self, const char *path)
                                                COL_TYPE, "Section",
                                                COL_DATA, "",
                                                COL_COMMENT, "",
+                                               COL_SOURCE, G_MAXUINT,
                                                -1);
                             node = g_memdup2(&sit, sizeof(GtkTreeIter));
                             g_hash_table_insert(nodes, g_strdup(cur->str),
@@ -817,6 +834,7 @@ void lr_value_pane_load_file(LrValuePane *self, const char *path)
                                    COL_TYPE, lr_value_type_name(item->type),
                                    COL_DATA, item->data,
                                    COL_COMMENT, item->comment != NULL ? item->comment : "",
+                                   COL_SOURCE, item->source_line,
                                    -1);
             }
 
@@ -831,8 +849,101 @@ void lr_value_pane_load_file(LrValuePane *self, const char *path)
     }
 }
 
+gboolean
+lr_value_pane_save_changes(LrValuePane *self, GError **error)
+{
+    GPtrArray *iters;
+    LrRowState *rows;
+    LrEdit *edits = NULL;
+    gsize n_edits = 0, real = 0, i;
+    gboolean ok = FALSE;
+
+    if (self == NULL)
+        return FALSE;
+    if (!self->dirty)
+        return TRUE;
+    if (!self->saveable)
+    {
+        g_set_error_literal(error, G_IO_ERROR, G_IO_ERROR_FAILED,
+                            "write-back is not supported for this format yet");
+        return FALSE;
+    }
+    if (self->current_path == NULL || self->source_content == NULL)
+    {
+        g_set_error_literal(error, G_IO_ERROR, G_IO_ERROR_FAILED,
+                            "no file loaded to save");
+        return FALSE;
+    }
+
+    iters = g_ptr_array_new_with_free_func((GDestroyNotify)g_free);
+    collect_rows_recursive(GTK_TREE_MODEL(self->store), NULL, iters);
+    rows = g_new0(LrRowState, iters->len);
+
+    for (i = 0; i < iters->len; i++)
+    {
+        GtkTreeIter *it = g_ptr_array_index(iters, i);
+        gchar *name = NULL, *data = NULL, *enabled = NULL;
+        gchar *comment = NULL, *type = NULL;
+        guint source_line;
+
+        gtk_tree_model_get(GTK_TREE_MODEL(self->store), it,
+                           COL_NAME, &name, COL_DATA, &data,
+                           COL_ENABLED, &enabled, COL_COMMENT, &comment,
+                           COL_TYPE, &type, COL_SOURCE, &source_line, -1);
+        if (g_strcmp0(type, "Section") != 0)
+        {
+            rows[real].line = source_line;
+            rows[real].key = name;
+            rows[real].data = data;
+            rows[real].enabled = enabled;
+            rows[real].comment = comment;
+            rows[real].type = type;
+            real++;
+        }
+        else
+        {
+            g_free(name);
+            g_free(data);
+            g_free(enabled);
+            g_free(comment);
+        }
+        g_free(type);
+    }
+    g_ptr_array_unref(iters);
+
+    ok = lr_build_edits_from_rows(self->current_path, self->source_content,
+                                  rows, real, &edits, &n_edits, error);
+
+    for (i = 0; i < real; i++)
+    {
+        g_free((gchar *)rows[i].key);
+        g_free((gchar *)rows[i].data);
+        g_free((gchar *)rows[i].enabled);
+        g_free((gchar *)rows[i].comment);
+        g_free((gchar *)rows[i].type);
+    }
+    g_free(rows);
+    if (!ok)
+        return FALSE;
+
+    if (n_edits == 0)
+    {
+        g_free(edits);
+        return TRUE;
+    }
+    ok = lr_save_config_file(self->current_path, self->source_content,
+                             edits, n_edits, error);
+    g_free(edits);
+    if (ok)
+        lr_value_pane_load_file(self, self->current_path); /* 重置 dirty */
+    return ok;
+}
+
 void lr_value_pane_clear(LrValuePane *self)
 {
+    g_clear_pointer(&self->current_path, g_free);
+    g_clear_pointer(&self->source_content, g_free);
+    self->saveable = FALSE;
     value_pane_set_dirty(self, FALSE);
     search_reset(self);
     gtk_tree_store_clear(self->store);
@@ -1063,7 +1174,7 @@ void lr_value_pane_add_value(LrValuePane *self, const char *type)
     gtk_tree_store_append(self->store, &iter, NULL);
     gtk_tree_store_set(self->store, &iter, COL_ENABLED, "true", COL_NAME,
                        def_name, COL_TYPE, type, COL_DATA, def_data,
-                       COL_COMMENT, "", -1);
+                       COL_COMMENT, "", COL_SOURCE, G_MAXUINT, -1);
     value_pane_set_dirty(self, TRUE);
 }
 
@@ -1409,7 +1520,7 @@ lr_value_pane_new(void)
 
     self->store = gtk_tree_store_new(N_COLS, G_TYPE_STRING, G_TYPE_STRING,
                                      G_TYPE_STRING, G_TYPE_STRING,
-                                     G_TYPE_STRING);
+                                     G_TYPE_STRING, G_TYPE_UINT);
     self->view = GTK_TREE_VIEW(gtk_tree_view_new_with_model(
         GTK_TREE_MODEL(self->store)));
     g_object_unref(self->store);
@@ -1529,6 +1640,8 @@ void lr_value_pane_free(LrValuePane *self)
 {
     if (self == NULL)
         return;
+    g_clear_pointer(&self->current_path, g_free);
+    g_clear_pointer(&self->source_content, g_free);
     search_reset(self);
     g_free(self->current_basename);
     g_free(self->current_name);

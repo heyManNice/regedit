@@ -144,8 +144,7 @@ on_value_dirty_changed(gboolean dirty, gpointer user_data)
     {
         gchar *markup = g_markup_printf_escaped(
             "<span foreground=\"#b45309\">⚠ %s</span>",
-            _("Editing in memory only — changes are lost when switching "
-              "files (this build is read-only)."));
+            _("Edits are not saved until you choose File → Save Changes."));
         gtk_label_set_markup(GTK_LABEL(mw->dirty_bar), markup);
         g_free(markup);
         gtk_widget_set_visible(mw->dirty_bar, TRUE);
@@ -192,6 +191,26 @@ on_compare_with_file(GtkWidget *widget, gpointer user_data)
     LrMainWindow *mw = user_data;
     (void)widget;
     lr_compare_with_file(GTK_WINDOW(mw->window), mw->current_path);
+}
+
+static void
+on_save_changes(GtkWidget *widget, gpointer user_data)
+{
+    LrMainWindow *mw = user_data;
+    GError *err = NULL;
+    (void)widget;
+
+    if (!lr_value_pane_save_changes(mw->value, &err))
+    {
+        GtkWidget *dialog = gtk_message_dialog_new(
+            GTK_WINDOW(mw->window), GTK_DIALOG_DESTROY_WITH_PARENT,
+            GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "%s",
+            err != NULL ? err->message : _("Unknown Error"));
+        g_signal_connect(dialog, "response",
+                         G_CALLBACK(lr_dialog_destroy_on_response), NULL);
+        lr_dialog_center_on(dialog, GTK_WINDOW(mw->window));
+        g_clear_error(&err);
+    }
 }
 
 /* ========== 关于对话框（模仿 regedit：图标 + 系统名 + 系统信息） ========== */
@@ -691,6 +710,17 @@ build_menubar(LrMainWindow *mw)
 
     item = gtk_menu_item_new_with_label(_("Compare with File..."));
     g_signal_connect(item, "activate", G_CALLBACK(on_compare_with_file), mw);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
+
+    item = gtk_menu_item_new_with_label(_("Save Changes..."));
+    g_signal_connect(item, "activate", G_CALLBACK(on_save_changes), mw);
+    {
+        GtkAccelGroup *accel = gtk_accel_group_new();
+        gtk_window_add_accel_group(GTK_WINDOW(mw->window), accel);
+        gtk_widget_add_accelerator(
+            item, "activate", accel, GDK_KEY_s,
+            GDK_CONTROL_MASK, GTK_ACCEL_VISIBLE);
+    }
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
     item = gtk_separator_menu_item_new();

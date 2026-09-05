@@ -54,6 +54,8 @@ def test_accessible_surface_and_menu_states(regedit):
     for menu in ("File", "Edit", "View", "Favorites", "Help"):
         assert wait_node(app, name=menu, role="menu"), f"missing menu {menu}"
 
+    assert wait_node(app, name="Save Changes...", role="menu item")
+
     # 查看 → 地址栏 是勾选状态
     loc = wait_node(app, name="Address", role="check menu item")
     assert tree.has_state(loc, "CHECKED")
@@ -281,7 +283,7 @@ def test_unsaved_edit_banner(regedit, fake_roots):
     bar = wait_node(app, name="Edit status", role="label", timeout=6)
     wait_until(lambda: tree.has_state(bar, "SHOWING"),
                timeout=5, message="unsaved-edit banner did not appear")
-    assert "memory only" in tree.text_of(bar)
+    assert "not saved" in tree.text_of(bar)
 
     open_sample(app, fake_roots, "sample.json")
     wait_until(lambda: tree.find(app, name="Edit status",

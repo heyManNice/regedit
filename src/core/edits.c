@@ -1,4 +1,5 @@
 #include "core/edits.h"
+#include "core/format.h"
 
 #include <gio/gio.h>
 #include <string.h>
@@ -262,6 +263,134 @@ apply_enable_disable(LrLine *l, const LrEdit *e, gboolean enable,
     g_free(l->text);
     l->text = new_text;
     return TRUE;
+}
+
+static LrConfigItem *
+item_by_line(LrConfigFile *f, guint line)
+{
+    guint i;
+
+    for (i = 0; i < f->items->len; i++)
+    {
+        LrConfigItem *it = g_ptr_array_index(f->items, i);
+        if (it->source_line == line)
+            return it;
+    }
+    return NULL;
+}
+
+static void
+append_edit(LrEdit *edits, gsize *count, gsize cap, LrEditType type,
+            guint line, const char *key, const char *value)
+{
+    if (*count >= cap)
+        return;
+    edits[*count].type = type;
+    edits[*count].line = line;
+    edits[*count].key = key;
+    edits[*count].value = value;
+    (*count)++;
+}
+
+gboolean
+lr_build_edits_from_rows(const char *path, const char *source_content,
+                         const LrRowState *rows, gsize n_rows,
+                         LrEdit **edits_out, gsize *n_edits_out,
+                         GError **error)
+{
+    LrConfigFile *orig;
+    LrEdit *edits;
+    gsize count = 0, i;
+    gsize cap = n_rows * 2;
+
+    *edits_out = NULL;
+    *n_edits_out = 0;
+    orig = lr_parse_config_content(path, source_content,
+                                   strlen(source_content));
+    if (!orig->parsed && orig->items->len == 0)
+    {
+        g_set_error_literal(error, G_IO_ERROR, G_IO_ERROR_FAILED,
+                            "source file could not be parsed for edits");
+        lr_config_file_free(orig);
+        return FALSE;
+    }
+
+    edits = g_new0(LrEdit, MAX(cap, 1));
+    for (i = 0; i < n_rows; i++)
+    {
+        const LrRowState *r = &rows[i];
+        LrConfigItem *it;
+        const char *orig_type;
+        gboolean comment_ok, enabled_now, enabled_orig, type_ok, key_ok;
+
+        if (r->line == G_MAXUINT)
+        {
+            g_set_error_literal(error, G_IO_ERROR, G_IO_ERROR_FAILED,
+                                "new rows cannot be saved yet");
+            goto fail;
+        }
+        it = item_by_line(orig, r->line);
+        if (it == NULL)
+        {
+            g_set_error(error, G_IO_ERROR, G_IO_ERROR_FAILED,
+                        "source line %u not found", r->line);
+            goto fail;
+        }
+
+        key_ok = g_strcmp0(it->key, r->key) == 0;
+        if (!key_ok)
+        {
+            g_set_error(error, G_IO_ERROR, G_IO_ERROR_FAILED,
+                        "renaming key on line %u is not supported yet",
+                        r->line);
+            goto fail;
+        }
+        orig_type = lr_value_type_name(it->type);
+        type_ok = g_strcmp0(orig_type, r->type) == 0;
+        if (!type_ok)
+        {
+            g_set_error(error, G_IO_ERROR, G_IO_ERROR_FAILED,
+                        "type override on line %u is not supported yet",
+                        r->line);
+            goto fail;
+        }
+        comment_ok =
+            (it->comment == NULL || *it->comment == '\0')
+                ? (r->comment == NULL || *r->comment == '\0')
+                : (r->comment != NULL && g_strcmp0(it->comment,
+                                                   r->comment) == 0);
+        if (!comment_ok)
+        {
+            g_set_error(error, G_IO_ERROR, G_IO_ERROR_FAILED,
+                        "comment edit on line %u is not supported yet",
+                        r->line);
+            goto fail;
+        }
+
+        enabled_now = g_strcmp0(r->enabled, "false") != 0;
+        enabled_orig = it->enabled;
+
+        /* 顺序保证：先启用再改值；先改值再禁用 */
+        if (!enabled_orig && enabled_now)
+            append_edit(edits, &count, cap, LR_EDIT_ENABLE, r->line,
+                        it->key, NULL);
+        if (g_strcmp0(it->data, r->data) != 0)
+            append_edit(edits, &count, cap, LR_EDIT_SET_VALUE, r->line,
+                        it->key, r->data);
+        if (enabled_orig && !enabled_now)
+            append_edit(edits, &count, cap, LR_EDIT_DISABLE, r->line,
+                        it->key, NULL);
+    }
+
+    lr_config_file_free(orig);
+    *edits_out = edits;
+    *n_edits_out = count;
+    return TRUE;
+
+fail:
+    lr_config_file_free(orig);
+    g_free(edits);
+    return FALSE;
 }
 
 gboolean

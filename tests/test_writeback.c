@@ -213,4 +213,78 @@ void test_writeback(void)
         lr_config_file_free(new_f);
         g_free(out);
     }
+
+    /* 11. 行状态 → 编辑操作：值变更生成 SET_VALUE */
+    {
+        const gchar *src = "[s]\nPort = 22   # note\nKeep = x\n";
+        LrRowState rows[] = {
+            {1, "Port", "8080", "true", "note", "Number"},
+            {2, "Keep", "x", "true", NULL, "String"},
+        };
+        LrEdit *edits = NULL;
+        gsize n = 0;
+        GError *err = NULL;
+
+        TEST_ASSERT(lr_build_edits_from_rows("t.ini", src, rows, 2,
+                                             &edits, &n, &err));
+        TEST_ASSERT(err == NULL);
+        TEST_ASSERT(n == 1);
+        TEST_ASSERT(edits[0].type == LR_EDIT_SET_VALUE);
+        TEST_ASSERT(edits[0].line == 1);
+        TEST_ASSERT_STR_EQ(edits[0].value, "8080");
+        g_free(edits);
+    }
+
+    /* 12. 禁用变更生成 DISABLE */
+    {
+        const gchar *src = "[s]\nPort = 22\n";
+        LrRowState rows[] = {{1, "Port", "22", "false", NULL, "Number"}};
+        LrEdit *edits = NULL;
+        gsize n = 0;
+        GError *err = NULL;
+
+        TEST_ASSERT(lr_build_edits_from_rows("t.ini", src, rows, 1,
+                                             &edits, &n, &err));
+        TEST_ASSERT(n == 1);
+        TEST_ASSERT(edits[0].type == LR_EDIT_DISABLE);
+        g_free(edits);
+    }
+
+    /* 13. 不支持修改必须拒绝：重命名 / 类型 / 备注 / 新增行 / 未知行 */
+    {
+        const gchar *src = "[s]\nPort = 22   # note\nKeep = x\n";
+        GError *err = NULL;
+        LrEdit *edits = NULL;
+        gsize n = 0;
+
+        LrRowState rename_row[] = {{1, "PortX", "22", "true", "note",
+                                    "Number"}};
+        TEST_ASSERT(!lr_build_edits_from_rows("t.ini", src, rename_row, 1,
+                                              &edits, &n, &err));
+        g_clear_error(&err);
+
+        LrRowState type_row[] = {{1, "Port", "22", "true", "note",
+                                  "String"}};
+        TEST_ASSERT(!lr_build_edits_from_rows("t.ini", src, type_row, 1,
+                                              &edits, &n, &err));
+        g_clear_error(&err);
+
+        LrRowState comment_row[] = {{1, "Port", "22", "true", "other",
+                                     "Number"}};
+        TEST_ASSERT(!lr_build_edits_from_rows("t.ini", src, comment_row, 1,
+                                              &edits, &n, &err));
+        g_clear_error(&err);
+
+        LrRowState new_row[] = {{G_MAXUINT, "New", "1", "true", NULL,
+                                 "Number"}};
+        TEST_ASSERT(!lr_build_edits_from_rows("t.ini", src, new_row, 1,
+                                              &edits, &n, &err));
+        g_clear_error(&err);
+
+        LrRowState unknown_row[] = {{99, "Port", "22", "true", "note",
+                                     "Number"}};
+        TEST_ASSERT(!lr_build_edits_from_rows("t.ini", src, unknown_row, 1,
+                                              &edits, &n, &err));
+        g_clear_error(&err);
+    }
 }
