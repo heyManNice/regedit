@@ -64,17 +64,33 @@ def fake_roots(tmp_path_factory, session_env) -> dict:
     config = base / "config"
     boot = base / "boot"
     xdg = base / "xdg"
-    for d in (etc, config, boot, xdg):
+    data = base / "data"
+    for d in (etc, config, boot, xdg, data):
         d.mkdir(parents=True)
-    shutil.copy(SAMPLES / "sample.ini", etc / "sample.ini")
-    shutil.copy(SAMPLES / "sample.json", config / "sample.json")
-    shutil.copy(SAMPLES / "sample.service", etc / "sample.service")
+    copy_map = {
+        "sample.ini": etc,
+        "sample.json": config,
+        "sample.service": etc,
+        "sample.toml": config,
+        "sample.sshd_config": etc,
+        "sample-apt.conf": etc,
+        "sample.xml": config,
+        "sample.environment.conf": etc,
+        "sample.unknown.txt": config,
+        "sample-script.sh": etc,
+        "sample-evolution.source": etc,
+    }
+    samples = {}
+    for name, dest_dir in copy_map.items():
+        shutil.copy(SAMPLES / name, dest_dir / name)
+        samples[name] = dest_dir / name
     return {
         "env": {
             "LR_TEST_ETC": str(etc),
             "LR_TEST_CONFIG": str(config),
             "LR_TEST_BOOT": str(boot),
             "XDG_CONFIG_HOME": str(xdg),
+            "XDG_DATA_HOME": str(data),
             "HOME": os.environ.get("HOME", "/root"),
             # 回归测试固定走英文界面（源语言回退，无需安装 locale/翻译）
             "LANG": "C.UTF-8",
@@ -85,11 +101,13 @@ def fake_roots(tmp_path_factory, session_env) -> dict:
         "config": config,
         "boot": boot,
         "sample_ini": etc / "sample.ini",
+        "samples": samples,
+        "data_home": data,
     }
 
 
 @pytest.fixture
-def regedit(fake_roots, display):
+def regedit(fake_roots, display, tmp_path):
     assert REGEDIT_BIN.exists(), f"build first: {REGEDIT_BIN}"
     kill_regedit()
     # 等 AT-SPI 注册表彻底清空旧实例，避免抓到“将死”的旧句柄
@@ -98,7 +116,7 @@ def regedit(fake_roots, display):
                message="previous instance still in AT-SPI registry")
     with AppSession([str(REGEDIT_BIN)], env=fake_roots["env"],
                     app_name="linux-regedit", display=display,
-                    log_path="/tmp/lr-gui.log") as app:
+                    log_path=str(tmp_path / "lr.log")) as app:
         try:
             wait_node(app.app, role="frame", timeout=10)
             wait_until(lambda: inp.activate_window(
@@ -112,6 +130,13 @@ def regedit(fake_roots, display):
             yield app
         finally:
             kill_regedit()
+    # 运行日志不得出现 GLib/应用错误级输出（抓 GTK 误用与崩溃前兆）
+    log = tmp_path / "lr.log"
+    if log.exists():
+        bad = [ln for ln in log.read_text(errors="replace").splitlines()
+               if "CRITICAL" in ln or "GLib-ERROR" in ln or "ERROR" in ln]
+        assert not bad, f"app log contains error-level lines:\n" + \
+            "\n".join(bad)
 
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)

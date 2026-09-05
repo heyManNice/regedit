@@ -29,6 +29,21 @@ has_systemd_extension(const char *path)
     return FALSE;
 }
 
+/* 跳过 UTF-8 BOM（若有），返回调整后的起始位置与长度 */
+static const char *
+skip_utf8_bom(const char *content, gsize len, gsize *out_len)
+{
+    if (content != NULL && len >= 3 &&
+        (guchar)content[0] == 0xEF && (guchar)content[1] == 0xBB &&
+        (guchar)content[2] == 0xBF)
+    {
+        *out_len = len - 3;
+        return content + 3;
+    }
+    *out_len = len;
+    return content;
+}
+
 /* 「关键字-参数」行中参数为多词（自然语言特征）的比例阈值，超过则视为普通文本 */
 #define LR_NATURAL_LANG_THRESHOLD 60
 
@@ -302,13 +317,19 @@ LrConfigFormat
 lr_format_detect_content(const char *path, const char *content, gsize len)
 {
     LrSniffCtx ctx = {content, len, path, {0}, FALSE};
+    const char *body;
+    gsize body_len;
     guint i;
 
     if (content == NULL)
         return LR_FORMAT_UNKNOWN;
 
+    body = skip_utf8_bom(content, len, &body_len);
+    ctx.content = body;
+    ctx.len = body_len;
+
     /* 脚本解释器（shebang #!）：一律以文本形式打开，不做配置解析 */
-    if (g_str_has_prefix(content, "#!"))
+    if (g_str_has_prefix(body, "#!"))
         return LR_FORMAT_UNKNOWN;
 
     for (i = 0; i < G_N_ELEMENTS(k_drivers); i++)
@@ -379,15 +400,19 @@ LrConfigFile *
 lr_parse_config_content(const char *path, const char *content, gsize len)
 {
     LrConfigFile *file = lr_config_file_new(path);
-    LrConfigFormat fmt = lr_format_detect_content(path, content, len);
+    const char *body;
+    gsize body_len;
+    LrConfigFormat fmt;
     guint i;
     gboolean ok = FALSE;
 
+    body = skip_utf8_bom(content, len, &body_len);
+    fmt = lr_format_detect_content(path, body, body_len);
     for (i = 0; i < G_N_ELEMENTS(k_drivers); i++)
     {
         if (k_drivers[i].id == fmt)
         {
-            ok = k_drivers[i].parse(content, len, file);
+            ok = k_drivers[i].parse(body, body_len, file);
             break;
         }
     }

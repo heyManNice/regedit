@@ -29,3 +29,8 @@ jobs:
 
       - name: Run unit tests
         run: meson test -C build --print-errorlogs
+
+      - name: Check translations
+        run: |
+          msgfmt --check -o /dev/null po/zh_CN.po
+          msgcmp po/zh_CN.po po/linux-regedit.pot

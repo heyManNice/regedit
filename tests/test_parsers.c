@@ -550,5 +550,113 @@ void test_parsers(void)
             lr_config_file_free(f);
             g_free(p);
         }
+
+        /* ---------- 解析边界：CRLF / BOM / 引号内 # / 重复节 ---------- */
+        {
+            gchar *p = write_tmp("lr-edge-1.ini",
+                                 "Port = 22\r\nEnable = yes\r\n");
+            LrConfigFile *f = lr_parse_config(p);
+
+            TEST_ASSERT(lr_format_detect(p) == LR_FORMAT_KV);
+            TEST_ASSERT(f->parsed);
+            TEST_ASSERT(f->items->len == 2);
+            LrConfigItem *it = g_ptr_array_index(f->items, 0);
+            TEST_ASSERT_STR_EQ(it->key, "Port");
+            TEST_ASSERT_STR_EQ(it->data, "22");
+
+            lr_config_file_free(f);
+            g_unlink(p);
+            g_free(p);
+        }
+        {
+            gchar *p = write_tmp("lr-edge-2.ini",
+                                 "\xEF\xBB\xBF[server]\nPort = 22\n");
+            LrConfigFile *f = lr_parse_config(p);
+
+            TEST_ASSERT(lr_format_detect(p) == LR_FORMAT_INI);
+            TEST_ASSERT(f->parsed);
+            TEST_ASSERT(f->items->len == 1);
+            LrConfigItem *it = g_ptr_array_index(f->items, 0);
+            TEST_ASSERT_STR_EQ(it->section, "server");
+            TEST_ASSERT_STR_EQ(it->data, "22");
+
+            lr_config_file_free(f);
+            g_unlink(p);
+            g_free(p);
+        }
+        {
+            gchar *p = write_tmp("lr-edge-3.conf",
+                                 "Name = \"a#b\"   # 行尾注释\n");
+            LrConfigFile *f = lr_parse_config(p);
+
+            TEST_ASSERT(lr_format_detect(p) == LR_FORMAT_KV);
+            TEST_ASSERT(f->parsed);
+            TEST_ASSERT(f->items->len == 1);
+            LrConfigItem *it = g_ptr_array_index(f->items, 0);
+            TEST_ASSERT_STR_EQ(it->data, "a#b");
+            TEST_ASSERT_STR_EQ(it->comment, "行尾注释");
+
+            lr_config_file_free(f);
+            g_unlink(p);
+            g_free(p);
+        }
+        {
+            gchar *p = write_tmp("lr-edge-4.ini",
+                                 "[s]\na = 1\n[s]\nb = 2\n");
+            LrConfigFile *f = lr_parse_config(p);
+
+            TEST_ASSERT(lr_format_detect(p) == LR_FORMAT_INI);
+            TEST_ASSERT(f->parsed);
+            TEST_ASSERT(f->items->len == 2);
+            LrConfigItem *it0 = g_ptr_array_index(f->items, 0);
+            LrConfigItem *it1 = g_ptr_array_index(f->items, 1);
+            TEST_ASSERT_STR_EQ(it0->section, "s");
+            TEST_ASSERT_STR_EQ(it1->section, "s");
+
+            lr_config_file_free(f);
+            g_unlink(p);
+            g_free(p);
+        }
+
+        /* ---------- 空文件 / 仅注释：不得误判为配置 ---------- */
+        {
+            gchar *p = write_tmp("lr-edge-5.conf", "");
+            LrConfigFile *f = lr_parse_config(p);
+
+            TEST_ASSERT(lr_format_detect(p) == LR_FORMAT_UNKNOWN);
+            TEST_ASSERT(!f->parsed);
+            TEST_ASSERT(f->items->len == 0);
+
+            lr_config_file_free(f);
+            g_unlink(p);
+            g_free(p);
+        }
+        {
+            gchar *p = write_tmp("lr-edge-6.conf",
+                                 "# 只有注释\n; 另一行\n");
+            LrConfigFile *f = lr_parse_config(p);
+
+            TEST_ASSERT(lr_format_detect(p) == LR_FORMAT_UNKNOWN);
+            TEST_ASSERT(!f->parsed);
+
+            lr_config_file_free(f);
+            g_unlink(p);
+            g_free(p);
+        }
+
+        /* ---------- 后缀优先级：相同内容 .toml / .ini ---------- */
+        {
+            const gchar *body = "[x]\nkey = \"v\"\n";
+            gchar *pa = write_tmp("lr-pri.toml", body);
+            gchar *pb = write_tmp("lr-pri.ini", body);
+
+            TEST_ASSERT(lr_format_detect(pa) == LR_FORMAT_TOML);
+            TEST_ASSERT(lr_format_detect(pb) == LR_FORMAT_INI);
+
+            g_unlink(pa);
+            g_unlink(pb);
+            g_free(pa);
+            g_free(pb);
+        }
     }
 }

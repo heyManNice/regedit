@@ -8,6 +8,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from spire import tree
 from spire.input import double_click, click, press, type_text
 from spire.wait import wait_until, wait_node
@@ -17,6 +19,23 @@ def expand_row(app, name: str):
     row = wait_node(app.app, name=name, role="table cell")
     double_click(row)
     return row
+
+
+def open_sample(app, fake_roots, name: str):
+    """通过地址栏直接打开 fake roots 里的某个 testdata 样例。"""
+    entry = wait_node(app, name="Address bar input", role="text")
+    type_text(entry, str(fake_roots["samples"][name]))
+    press("Return")
+
+
+def menu_item_activate(app, menu_name: str, item_name: str):
+    """打开主菜单并触发某项（AT-SPI action，避免坐标脆弱）。"""
+    click(wait_node(app, name=menu_name, role="menu"))
+    item = wait_until(
+        lambda: (tree.find(app, name=item_name, role="check menu item") or
+                 tree.find(app, name=item_name, role="menu item")),
+        timeout=10, message=f"{item_name!r} did not appear in {menu_name}")
+    item.queryAction().doAction(0)
 
 
 def test_accessible_surface_and_menu_states(regedit):
@@ -96,3 +115,84 @@ def test_snapshot_is_serializable(regedit):
     for item in snap:
         assert isinstance(item["idx"], int)
         assert "role" in item and "name" in item and "state" in item
+
+
+CONTENT_CASES = [
+    ("sample.ini", ["Port", "22", "[server]"]),
+    ("sample.json", ["linux-regedit", "version"]),
+    ("sample.service", ["Description", "Example service"]),
+    ("sample.toml", ["port", "8080"]),
+    ("sample.sshd_config", ["PermitRootLogin"]),
+    ("sample-apt.conf", ["MetaKey"]),
+    ("sample.xml", ["layoutmode", "physical"]),
+    ("sample.environment.conf", ["PATH"]),
+    ("sample-evolution.source", ["DisplayName", "默认代理设置"]),
+    ("sample.unknown.txt", ["既不是分节配置"]),
+    ("sample-script.sh", ["hello linux-regedit"]),
+]
+
+
+@pytest.mark.parametrize("name,markers", CONTENT_CASES)
+def test_content_display_matrix(regedit, fake_roots, name, markers):
+    """每种解析格式都要能通过地址栏打开并显示关键内容。"""
+    app = regedit.app
+    open_sample(app, fake_roots, name)
+    for marker in markers:
+        wait_until(lambda: tree.find(app, text=marker) is not None,
+                   timeout=8,
+                   message=f"{name}: marker {marker!r} not visible")
+
+
+def test_find_hits_and_no_match(regedit, fake_roots):
+    """Ctrl+F 查找：命中计数、无匹配提示。"""
+    app = regedit.app
+    open_sample(app, fake_roots, "sample.ini")
+
+    press("ctrl+f")
+    entry = wait_node(app, name="Find what", role="text", timeout=6)
+    type_text(entry, "Port")
+    press("Return")
+    status = wait_node(app, name="Find status", role="label")
+    wait_until(lambda: tree.text_of(status) == "Found 1 match(es).",
+               timeout=5, message="find count label did not update")
+
+    type_text(entry, "zzzz_no_such_key")
+    press("Return")
+    wait_until(lambda: tree.text_of(status) == "No matches found.",
+               timeout=5, message="no-match label did not appear")
+    press("Escape")
+
+
+def test_backup_current_file(regedit, fake_roots):
+    """File → Backup 应把当前文件复制进隔离的 backups 目录。"""
+    app = regedit.app
+    open_sample(app, fake_roots, "sample.ini")
+    menu_item_activate(app, "File", "Backup Current File...")
+
+    bdir = fake_roots["data_home"] / "linux-regedit" / "backups"
+    wait_until(lambda: bdir.exists() and any(bdir.glob("*.bak")),
+               timeout=6, message="backup file was not created")
+    backup = sorted(bdir.glob("*.bak"))[-1]
+    assert backup.read_text(errors="replace") == \
+        (fake_roots["samples"]["sample.ini"]).read_text(errors="replace")
+
+
+def test_refresh_picks_up_external_change(regedit, fake_roots):
+    """View → Refresh 后应看到磁盘上的新配置项。"""
+    app = regedit.app
+    path = fake_roots["samples"]["sample.ini"]
+    open_sample(app, fake_roots, "sample.ini")
+
+    with path.open("a", encoding="utf-8") as fh:
+        fh.write("NewExternalKey = 1\n")
+    menu_item_activate(app, "View", "Refresh")
+    wait_until(lambda: tree.find(app, text="NewExternalKey") is not None,
+               timeout=8, message="refreshed content not visible")
+
+
+def test_snapshot_order_is_stable(regedit):
+    """两次抓取无障碍树快照的结构与顺序应一致。"""
+    snap1 = tree.snapshot(regedit.app, max_depth=30, max_nodes=300)
+    snap2 = tree.snapshot(regedit.app, max_depth=30, max_nodes=300)
+    shape = lambda s: [(i["role"], i["name"]) for i in s]
+    assert shape(snap1) == shape(snap2)
