@@ -1,6 +1,7 @@
 #include "ui/tree_pane.h"
 #include "core/scanner.h"
 #include "ui/dialog_utils.h"
+#include "ui/test_roots.h"
 
 enum
 {
@@ -62,12 +63,13 @@ add_dummy_child(LrTreePane *self, GtkTreeIter *parent)
 static void
 add_computer_root(LrTreePane *self)
 {
-    const gchar *home = g_get_home_dir();
-    gchar *config = g_build_filename(home, ".config", NULL);
-    GtkTreeIter computer, etc, user, boot;
+    const char *etc = lr_etc_root();
+    const char *config = lr_config_root();
+    const char *boot = lr_boot_root();
+    GtkTreeIter computer_iter, etc_iter, user_iter, boot_iter;
 
-    gtk_tree_store_append(self->store, &computer, NULL);
-    gtk_tree_store_set(self->store, &computer,
+    gtk_tree_store_append(self->store, &computer_iter, NULL);
+    gtk_tree_store_set(self->store, &computer_iter,
                        COL_ICON, self->icon_computer,
                        COL_NAME, "计算机",
                        COL_PATH, "",
@@ -76,43 +78,41 @@ add_computer_root(LrTreePane *self)
                        COL_LOADED, TRUE,
                        -1);
 
-    /* HKEY_LOCAL_MACHINE —— 系统级配置，对应 /etc */
-    gtk_tree_store_append(self->store, &etc, &computer);
-    gtk_tree_store_set(self->store, &etc,
+    /* HKEY_LOCAL_MACHINE —— 系统级配置，默认 /etc（LR_TEST_ETC 可覆盖） */
+    gtk_tree_store_append(self->store, &etc_iter, &computer_iter);
+    gtk_tree_store_set(self->store, &etc_iter,
                        COL_ICON, self->icon_folder,
                        COL_NAME, "HKEY_LOCAL_MACHINE",
-                       COL_PATH, "/etc",
+                       COL_PATH, etc,
                        COL_KIND, LR_SCAN_DIR,
                        COL_FORMAT, LR_FORMAT_UNKNOWN,
                        COL_LOADED, FALSE,
                        -1);
-    add_dummy_child(self, &etc);
+    add_dummy_child(self, &etc_iter);
 
-    /* HKEY_CURRENT_USER —— 用户级配置，对应 ~/.config */
-    gtk_tree_store_append(self->store, &user, &computer);
-    gtk_tree_store_set(self->store, &user,
+    /* HKEY_CURRENT_USER —— 用户级配置，默认 ~/.config（LR_TEST_CONFIG 可覆盖） */
+    gtk_tree_store_append(self->store, &user_iter, &computer_iter);
+    gtk_tree_store_set(self->store, &user_iter,
                        COL_ICON, self->icon_folder,
                        COL_NAME, "HKEY_CURRENT_USER",
-                       COL_PATH, config,
+                       COL_PATH, (char *)config,
                        COL_KIND, LR_SCAN_DIR,
                        COL_FORMAT, LR_FORMAT_UNKNOWN,
                        COL_LOADED, FALSE,
                        -1);
-    add_dummy_child(self, &user);
+    add_dummy_child(self, &user_iter);
 
-    /* HKEY_SYSTEM_BOOT —— 引导目录，对应 /boot */
-    gtk_tree_store_append(self->store, &boot, &computer);
-    gtk_tree_store_set(self->store, &boot,
+    /* HKEY_SYSTEM_BOOT —— 引导目录，默认 /boot（LR_TEST_BOOT 可覆盖） */
+    gtk_tree_store_append(self->store, &boot_iter, &computer_iter);
+    gtk_tree_store_set(self->store, &boot_iter,
                        COL_ICON, self->icon_folder,
                        COL_NAME, "HKEY_SYSTEM_BOOT",
-                       COL_PATH, "/boot",
+                       COL_PATH, (char *)boot,
                        COL_KIND, LR_SCAN_DIR,
                        COL_FORMAT, LR_FORMAT_UNKNOWN,
                        COL_LOADED, FALSE,
                        -1);
-    add_dummy_child(self, &boot);
-
-    g_free(config);
+    add_dummy_child(self, &boot_iter);
 }
 
 static GdkPixbuf *
@@ -538,6 +538,8 @@ lr_tree_pane_new(void)
 
     gtk_tree_view_set_headers_visible(self->view, FALSE);
     gtk_container_add(GTK_CONTAINER(self->widget), GTK_WIDGET(self->view));
+    atk_object_set_name(gtk_widget_get_accessible(GTK_WIDGET(self->view)),
+                        "目录树");
 
     pix = gtk_cell_renderer_pixbuf_new();
     txt = gtk_cell_renderer_text_new();

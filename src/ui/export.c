@@ -1,6 +1,7 @@
 /* 导出为 .lreg：递归打包 /etc、~/.config、/boot 或当前选中路径 */
 #include "ui/export.h"
 #include "ui/dialog_utils.h"
+#include "ui/test_roots.h"
 #include "core/limits.h"
 
 #include <glib/gstdio.h>
@@ -62,11 +63,9 @@ do_export(LrMainWindow *mw, gboolean all, const char *dest, GError **err)
 
     if (all)
     {
-        export_path_into(out, "/etc");
-        gchar *cfg = g_build_filename(g_get_home_dir(), ".config", NULL);
-        export_path_into(out, cfg);
-        g_free(cfg);
-        export_path_into(out, "/boot");
+        export_path_into(out, lr_etc_root());
+        export_path_into(out, lr_config_root());
+        export_path_into(out, lr_boot_root());
     }
     else
     {

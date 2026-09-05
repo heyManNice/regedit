@@ -1077,6 +1077,7 @@ lr_value_pane_new(void)
                                             man_page_free);
 
     self->widget = gtk_paned_new(GTK_ORIENTATION_VERTICAL);
+    atk_object_set_name(gtk_widget_get_accessible(self->widget), "配置面板");
 
     self->stack = gtk_stack_new();
     gtk_stack_set_transition_type(GTK_STACK(self->stack),
@@ -1096,6 +1097,8 @@ lr_value_pane_new(void)
     self->view = GTK_TREE_VIEW(gtk_tree_view_new_with_model(
         GTK_TREE_MODEL(self->store)));
     g_object_unref(self->store);
+    atk_object_set_name(gtk_widget_get_accessible(GTK_WIDGET(self->view)),
+                        "配置项表格");
 
     gtk_tree_view_set_grid_lines(self->view, GTK_TREE_VIEW_GRID_LINES_VERTICAL);
     g_signal_connect(gtk_tree_view_get_selection(self->view), "changed",
@@ -1146,6 +1149,8 @@ lr_value_pane_new(void)
     self->json_view = GTK_TREE_VIEW(gtk_tree_view_new_with_model(
         GTK_TREE_MODEL(self->json_store)));
     g_object_unref(self->json_store);
+    atk_object_set_name(gtk_widget_get_accessible(GTK_WIDGET(self->json_view)),
+                        "JSON 树");
 
     append_text_column(self->json_view, "名称", COL_J_NAME, TRUE, FALSE, 0);
     append_text_column(self->json_view, "类型", COL_J_TYPE, FALSE, FALSE, 0);

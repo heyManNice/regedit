@@ -593,6 +593,8 @@ build_location_bar(LrMainWindow *mw)
     mw->location_entry = gtk_entry_new();
     gtk_entry_set_placeholder_text(GTK_ENTRY(mw->location_entry),
                                    "输入路径后回车跳转");
+    atk_object_set_name(gtk_widget_get_accessible(mw->location_entry),
+                        "地址栏输入框");
     add_location_css(mw->location_entry);
     gtk_box_pack_start(GTK_BOX(bar), mw->location_entry, TRUE, TRUE, 0);
 
