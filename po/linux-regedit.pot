@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-05 11:13+0000\n"
+"POT-Creation-Date: 2026-09-05 11:16+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -72,7 +72,7 @@ msgstr ""
 
 #. 文件：导入 / 导出 / 打印 / 退出
 #: src/ui/main_window.c:418
-msgid "Files"
+msgid "File"
 msgstr ""
 
 #: src/ui/main_window.c:421

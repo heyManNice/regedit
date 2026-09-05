@@ -415,7 +415,7 @@ build_menubar(LrMainWindow *mw)
     GtkWidget *menu, *menu_item, *item;
 
     /* 文件：导入 / 导出 / 打印 / 退出 */
-    menu_item = gtk_menu_item_new_with_label(_("Files"));
+    menu_item = gtk_menu_item_new_with_label(_("File"));
     menu = gtk_menu_new();
 
     item = gtk_menu_item_new_with_label(_("Import..."));
