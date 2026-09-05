@@ -84,7 +84,7 @@ find_unquoted(char *s, char c1, char c2)
 /* 处理一条赋值语句 "Key = value" 或 "Key value"（assign 为临时缓冲） */
 static void
 handle_assign(AptCtx *ctx, GPtrArray *items, char *assign,
-              char **pending_comment)
+              char **pending_comment, guint line)
 {
     char *eq = strchr(assign, '=');
     char *key = NULL;
@@ -121,6 +121,7 @@ handle_assign(AptCtx *ctx, GPtrArray *items, char *assign,
         item = lr_config_item_new(key, v, lr_value_detect_type(v),
                                   ctx->path->len > 0 ? ctx->path->str : NULL,
                                   *pending_comment);
+        item->source_line = line;
         g_ptr_array_add(items, item);
         g_free(v);
         g_free(*pending_comment);
@@ -134,7 +135,7 @@ handle_assign(AptCtx *ctx, GPtrArray *items, char *assign,
 /* 处理 apt 列表值元素：块内 { "str"; }，无键名，用 [n] 作名称 */
 static void
 handle_list_value(AptCtx *ctx, GPtrArray *items, const char *raw,
-                  char **pending_comment)
+                  char **pending_comment, guint line)
 {
     gchar *v = unquote(raw);
     gchar *idx = g_strdup_printf("[%u]", ctx->list_idx++);
@@ -142,6 +143,7 @@ handle_list_value(AptCtx *ctx, GPtrArray *items, const char *raw,
         lr_config_item_new(idx, v, LR_VALUE_STRING,
                            ctx->path->len > 0 ? ctx->path->str : NULL,
                            *pending_comment);
+    item->source_line = line;
     g_ptr_array_add(items, item);
     g_free(idx);
     g_free(v);
@@ -151,7 +153,8 @@ handle_list_value(AptCtx *ctx, GPtrArray *items, const char *raw,
 
 /* 解析一行内可能包含的多个语句（{ } ; 分隔） */
 static void
-parse_line(AptCtx *ctx, GPtrArray *items, char *line, char **pending_comment)
+parse_line(AptCtx *ctx, GPtrArray *items, char *line,
+           char **pending_comment, guint source_line)
 {
     char *p = line;
 
@@ -191,9 +194,11 @@ parse_line(AptCtx *ctx, GPtrArray *items, char *line, char **pending_comment)
             {
                 /* 列表值元素：以双引号开头且无键名 */
                 if (assign[0] == '"')
-                    handle_list_value(ctx, items, assign, pending_comment);
+                    handle_list_value(ctx, items, assign, pending_comment,
+                                      source_line);
                 else
-                    handle_assign(ctx, items, assign, pending_comment);
+                    handle_assign(ctx, items, assign, pending_comment,
+                                  source_line);
             }
             g_free(assign);
             p = semi + 1;
@@ -204,9 +209,11 @@ parse_line(AptCtx *ctx, GPtrArray *items, char *line, char **pending_comment)
             if (*s != '\0')
             {
                 if (s[0] == '"')
-                    handle_list_value(ctx, items, s, pending_comment);
+                    handle_list_value(ctx, items, s, pending_comment,
+                                      source_line);
                 else
-                    handle_assign(ctx, items, s, pending_comment);
+                    handle_assign(ctx, items, s, pending_comment,
+                                  source_line);
             }
             break;
         }
@@ -219,6 +226,7 @@ lr_parse_apt(const char *content, gsize length, LrConfigFile *file)
     gchar **lines, **linep;
     AptCtx ctx;
     char *pending_comment = NULL;
+    guint line_idx = 0;
 
     (void)length;
     if (content == NULL)
@@ -232,8 +240,9 @@ lr_parse_apt(const char *content, gsize length, LrConfigFile *file)
 
     lines = g_strsplit(content, "\n", -1);
 
-    for (linep = lines; linep != NULL && *linep != NULL; linep++)
+    for (line_idx = 0; lines[line_idx] != NULL; line_idx++)
     {
+        linep = &lines[line_idx];
         char *line = g_strstrip(*linep);
 
         if (*line == '\0')
@@ -243,7 +252,7 @@ lr_parse_apt(const char *content, gsize length, LrConfigFile *file)
         if (lr_capture_comment(line, &pending_comment))
             continue;
 
-        parse_line(&ctx, file->items, line, &pending_comment);
+        parse_line(&ctx, file->items, line, &pending_comment, line_idx);
     }
 
     g_strfreev(lines);

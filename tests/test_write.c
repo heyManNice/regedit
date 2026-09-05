@@ -4,6 +4,7 @@
 
 #include <glib/gstdio.h>
 #include <gio/gio.h>
+#include <string.h>
 
 static gchar *
 read_file(const char *path)
@@ -161,6 +162,39 @@ void test_write(void)
         TEST_ASSERT(err == NULL);
         gchar *now = read_file(path);
         TEST_ASSERT_STR_EQ(now, "[s]\n#Port = 22\n");
+        g_free(now);
+        g_clear_error(&err);
+    }
+
+    /* 7. apt 块内叶子赋值：builder + 安全管线写回，结构完整保留 */
+    {
+        const gchar *src =
+            "Acquire::IndexTargets {\n"
+            "    deb::DEP-11 {\n"
+            "        MetaKey \"$(COMPONENT)/x.yml\";\n"
+            "        KeepCompressed true;\n"
+            "    }\n"
+            "}\n";
+        LrRowState rows[] = {{2, "MetaKey", "NEW", "true", NULL,
+                              "String"}};
+        LrEdit *edits = NULL;
+        gsize n_edits = 0;
+        GError *err = NULL;
+        gboolean ok;
+
+        g_file_set_contents(path, src, -1, NULL);
+        ok = lr_build_edits_from_rows(path, src, rows, 1,
+                                      &edits, &n_edits, &err);
+        TEST_ASSERT(ok);
+        TEST_ASSERT(n_edits == 1);
+        ok = lr_save_config_file(path, src, edits, n_edits, &err);
+        g_free(edits);
+        TEST_ASSERT(ok);
+        TEST_ASSERT(err == NULL);
+        gchar *now = read_file(path);
+        TEST_ASSERT(strstr(now, "MetaKey \"NEW\";") != NULL);
+        TEST_ASSERT(strstr(now, "KeepCompressed true;") != NULL);
+        TEST_ASSERT(strstr(now, "deb::DEP-11 {") != NULL);
         g_free(now);
         g_clear_error(&err);
     }

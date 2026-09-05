@@ -164,6 +164,31 @@ void test_writeback(void)
         g_free(out);
     }
 
+    /* 7d. apt 块内叶子赋值：只改值，保留 {}、缩进与分号 */
+    {
+        const gchar *src =
+            "Acquire::IndexTargets {\n"
+            "    deb::DEP-11 {\n"
+            "        MetaKey \"$(COMPONENT)/x.yml\";\n"
+            "        KeepCompressed true;\n"
+            "    }\n"
+            "}\n";
+        const gchar *want =
+            "Acquire::IndexTargets {\n"
+            "    deb::DEP-11 {\n"
+            "        MetaKey \"NEW\";\n"
+            "        KeepCompressed true;\n"
+            "    }\n"
+            "}\n";
+        gboolean ok = FALSE;
+        gchar *out = apply_one(src, LR_EDIT_SET_VALUE, 2, "MetaKey",
+                               "NEW", &ok);
+
+        TEST_ASSERT(ok);
+        TEST_ASSERT_STR_EQ(out, want);
+        g_free(out);
+    }
+
     /* 8. 重复键：按行号精确修改，不动其他同名行 */
     {
         const gchar *src = "[s]\na = 1\na = 2\n";

@@ -2,6 +2,7 @@
 #include "core/format.h"
 
 #include <glib/gstdio.h>
+#include <string.h>
 
 static gchar *
 write_tmp(const gchar *name, const gchar *content)
@@ -489,6 +490,22 @@ void test_parsers(void)
             TEST_ASSERT_STR_EQ(it->key, "MetaKey");
             TEST_ASSERT_STR_EQ(it->section,
                                "Acquire::IndexTargets::deb::DEP-11");
+            {
+                gchar *raw = NULL;
+                gsize raw_len = 0;
+                gchar **ls;
+                guint idx;
+
+                g_file_get_contents(p, &raw, &raw_len, NULL);
+                ls = g_strsplit(raw, "\n", -1);
+                for (idx = 0; ls[idx] != NULL; idx++)
+                    if (strstr(ls[idx], "MetaKey") != NULL)
+                        break;
+                TEST_ASSERT(ls[idx] != NULL);
+                TEST_ASSERT(it->source_line == idx);
+                g_strfreev(ls);
+                g_free(raw);
+            }
 
             it = g_ptr_array_index(f->items, 2);
             TEST_ASSERT_STR_EQ(it->key, "KeepCompressed");
