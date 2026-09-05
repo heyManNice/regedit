@@ -116,6 +116,30 @@ on_toggle_location_bar(GtkCheckMenuItem *item, gpointer user_data)
         gtk_widget_set_visible(mw->location_bar, active);
 }
 
+/* 值面板内存编辑状态变化：显示/隐藏“未保存”提示条 */
+static void
+on_value_dirty_changed(gboolean dirty, gpointer user_data)
+{
+    LrMainWindow *mw = user_data;
+
+    if (mw->dirty_bar == NULL)
+        return;
+    if (dirty)
+    {
+        gchar *markup = g_markup_printf_escaped(
+            "<span foreground=\"#b45309\">⚠ %s</span>",
+            _("Editing in memory only — changes are lost when switching "
+              "files (this build is read-only)."));
+        gtk_label_set_markup(GTK_LABEL(mw->dirty_bar), markup);
+        g_free(markup);
+        gtk_widget_set_visible(mw->dirty_bar, TRUE);
+    }
+    else
+    {
+        gtk_widget_set_visible(mw->dirty_bar, FALSE);
+    }
+}
+
 /* 编辑→复制项名称：把当前路径复制到剪贴板 */
 static void
 on_copy_item_name(GtkWidget *widget, gpointer user_data)
@@ -1016,9 +1040,19 @@ lr_main_window_new(void)
     gtk_box_pack_start(GTK_BOX(vbox), location_bar, FALSE, FALSE, 0);
     gtk_box_pack_start(GTK_BOX(vbox), paned, TRUE, TRUE, 0);
 
+    mw->dirty_bar = gtk_label_new(NULL);
+    gtk_label_set_xalign(GTK_LABEL(mw->dirty_bar), 0.0f);
+    gtk_label_set_selectable(GTK_LABEL(mw->dirty_bar), TRUE);
+    atk_object_set_name(gtk_widget_get_accessible(mw->dirty_bar),
+                        _("Edit status"));
+    gtk_widget_set_no_show_all(mw->dirty_bar, TRUE);
+    gtk_widget_set_visible(mw->dirty_bar, FALSE);
+    gtk_box_pack_start(GTK_BOX(vbox), mw->dirty_bar, FALSE, FALSE, 2);
+
     gtk_container_add(GTK_CONTAINER(mw->window), vbox);
 
     lr_tree_pane_set_select_cb(mw->tree, on_tree_select, mw);
+    lr_value_pane_set_dirty_cb(mw->value, on_value_dirty_changed, mw);
 
     /* 窗口显示（show_all）后主循环首个 idle 即把焦点给树视图 */
     g_idle_add(on_focus_tree_idle, mw);

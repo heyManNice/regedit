@@ -6,7 +6,13 @@
 
 typedef struct _LrValuePane LrValuePane;
 
+/* 表格内容被内存编辑（不落盘）时回调，供主窗口显示未保存提示 */
+typedef void (*LrValuePaneDirtyCb)(gboolean dirty, gpointer user_data);
+
 LrValuePane *lr_value_pane_new(void);
+
+void lr_value_pane_set_dirty_cb(LrValuePane *self, LrValuePaneDirtyCb cb,
+                                gpointer user_data);
 
 /* 获取面板顶层 widget（GtkStack） */
 GtkWidget *lr_value_pane_get_widget(LrValuePane *self);

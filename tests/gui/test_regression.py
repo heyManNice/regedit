@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import pytest
 from pathlib import Path
+import time
 
 from spire import tree
 from spire.input import double_click, click, press, type_text
@@ -236,3 +237,32 @@ def test_cli_open_file_outside_roots(display, fake_roots, tmp_path):
         wait_until(lambda: tree.find(app.app, text="port",
                                      max_depth=80) is not None,
                    timeout=6, message="outside-root file did not display")
+
+
+def test_unsaved_edit_banner(regedit, fake_roots):
+    """内存编辑出现“未保存”提示，切换文件后提示消失。"""
+    app = regedit.app
+    open_sample(app, fake_roots, "sample.ini")
+
+    assert tree.find(app, name="Edit status", showing=True) is None
+    # 真实键盘路径：Edit → New → Number
+    click(wait_node(app, name="Edit", role="menu"))
+    time.sleep(0.3)
+    press("Down")          # 聚焦 New
+    time.sleep(0.15)
+    press("Right")         # 展开 New 子菜单
+    time.sleep(0.3)
+    for _ in range(11):    # Folder 之后第 12 项为 Number
+        press("Down")
+        time.sleep(0.05)
+    press("Return")
+
+    bar = wait_node(app, name="Edit status", role="label", timeout=6)
+    wait_until(lambda: tree.has_state(bar, "SHOWING"),
+               timeout=5, message="unsaved-edit banner did not appear")
+    assert "memory only" in tree.text_of(bar)
+
+    open_sample(app, fake_roots, "sample.json")
+    wait_until(lambda: tree.find(app, name="Edit status",
+                                 showing=True) is None,
+               timeout=6, message="banner did not clear after file switch")

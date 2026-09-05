@@ -56,6 +56,10 @@ struct _LrValuePane
     gboolean search_valid;  /* 是否存在可继续的查找 */
 
     GtkTreePath *popup_path; /* 右键菜单作用行 */
+
+    gboolean dirty;         /* 表格存在仅内存的编辑 */
+    LrValuePaneDirtyCb dirty_cb;
+    gpointer dirty_data;
 };
 
 /* 一个配置文件的 man 页缓存（整页文本 + 是否存在该页） */
@@ -654,6 +658,24 @@ lr_value_pane_search_has_query(LrValuePane *self)
            self->search_needle != NULL && *self->search_needle != '\0';
 }
 
+static void
+value_pane_set_dirty(LrValuePane *self, gboolean dirty)
+{
+    if (self->dirty == dirty)
+        return;
+    self->dirty = dirty;
+    if (self->dirty_cb != NULL)
+        self->dirty_cb(dirty, self->dirty_data);
+}
+
+void
+lr_value_pane_set_dirty_cb(LrValuePane *self, LrValuePaneDirtyCb cb,
+                           gpointer user_data)
+{
+    self->dirty_cb = cb;
+    self->dirty_data = user_data;
+}
+
 void lr_value_pane_load_file(LrValuePane *self, const char *path)
 {
     gchar *content = NULL;
@@ -661,6 +683,7 @@ void lr_value_pane_load_file(LrValuePane *self, const char *path)
     GError *error = NULL;
     LrConfigFormat fmt;
 
+    value_pane_set_dirty(self, FALSE);
     search_reset(self);
     g_clear_pointer(&self->popup_path, gtk_tree_path_free);
     g_free(self->current_basename);
@@ -810,6 +833,7 @@ void lr_value_pane_load_file(LrValuePane *self, const char *path)
 
 void lr_value_pane_clear(LrValuePane *self)
 {
+    value_pane_set_dirty(self, FALSE);
     search_reset(self);
     gtk_tree_store_clear(self->store);
     gtk_tree_store_clear(self->json_store);
@@ -985,6 +1009,7 @@ on_data_edited(GtkCellRendererText *renderer, const gchar *path,
         g_free(type);
     }
     gtk_tree_store_set(self->store, &iter, COL_DATA, new_text, -1);
+    value_pane_set_dirty(self, TRUE);
 }
 
 /* 启用列（下拉 true/false）编辑完成 */
@@ -1005,6 +1030,7 @@ on_enabled_edited(GtkCellRendererText *renderer, const gchar *path,
     }
     gtk_tree_path_free(tp);
     gtk_tree_store_set(self->store, &iter, COL_ENABLED, new_text, -1);
+    value_pane_set_dirty(self, TRUE);
 }
 
 /* 在表格末尾追加一个配置项（仅内存，不写盘） */
@@ -1038,6 +1064,7 @@ void lr_value_pane_add_value(LrValuePane *self, const char *type)
     gtk_tree_store_set(self->store, &iter, COL_ENABLED, "true", COL_NAME,
                        def_name, COL_TYPE, type, COL_DATA, def_data,
                        COL_COMMENT, "", -1);
+    value_pane_set_dirty(self, TRUE);
 }
 
 /* 新建一行（仅内存，不写盘） */
@@ -1119,6 +1146,7 @@ on_type_edited(GtkCellRendererText *renderer, const gchar *path,
                            def_data, -1);
     else
         gtk_tree_store_set(self->store, &iter, COL_TYPE, new_text, -1);
+    value_pane_set_dirty(self, TRUE);
 }
 
 /* 类型列：下拉 Section/String/Boolean/Number */
@@ -1188,6 +1216,7 @@ on_text_edited(GtkCellRendererText *renderer, const gchar *path,
     if (gtk_tree_model_get_iter(GTK_TREE_MODEL(self->store), &iter, tp))
         gtk_tree_store_set(self->store, &iter, col, new_text, -1);
     gtk_tree_path_free(tp);
+    value_pane_set_dirty(self, TRUE);
 }
 
 /* 可编辑文本列：title 表头，col 模型列，gray 是否灰色前景，width 固定列宽 */
@@ -1235,6 +1264,7 @@ on_popup_force_type(GtkMenuItem *item, gpointer user_data)
     if (lr_value_type_from_name(new_type) == LR_VALUE_SECTION)
         return;
     gtk_tree_store_set(self->store, &iter, COL_TYPE, new_type, -1);
+    value_pane_set_dirty(self, TRUE);
 }
 
 /* 右键菜单动作：根据数据自动重新识别类型 */
@@ -1259,6 +1289,7 @@ on_popup_detect_type(GtkMenuItem *item, gpointer user_data)
         gtk_tree_store_set(self->store, &iter, COL_TYPE,
                            lr_value_type_name(lr_value_detect_type(data)),
                            -1);
+        value_pane_set_dirty(self, TRUE);
         g_free(data);
     }
 }

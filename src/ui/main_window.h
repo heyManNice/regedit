@@ -20,6 +20,7 @@ typedef struct _LrMainWindow
     char *pending_path;       /* 恢复状态时待定位的路径 */
     LrWindowState *win_state; /* 窗口几何与上次路径状态 */
     GtkWidget *find_dialog;   /* 查找对话框（Find…，单例） */
+    GtkWidget *dirty_bar;     /* “内存编辑未保存”提示条 */
     guint reveal_idle;        /* 待执行的“恢复上次路径” idle 源 id */
     guint reopen_idle;        /* 待执行的“重开命令行文件” idle 源 id */
     gchar *reopen_path;       /* 重开目标（根目录外文件，避开首帧选中风暴） */
