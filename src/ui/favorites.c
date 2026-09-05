@@ -1,18 +1,64 @@
-/* 收藏夹：数据存 /run 临时目录，重启清空 */
+/* 收藏夹：数据存用户数据目录（$XDG_DATA_HOME），重启保留 */
 #include "ui/favorites.h"
 #include "ui/dialog_utils.h"
 
 #include <glib/gstdio.h>
 #include <glib/gi18n.h>
 
-/* 收藏夹数据目录：$XDG_RUNTIME_DIR/linux-regedit/favorites（/run/user/<uid>） */
+/* 收藏夹数据目录：$XDG_DATA_HOME/linux-regedit/favorites（默认 ~/.local/share） */
 static char *
 favorites_dir(void)
 {
-    const char *rt = g_get_user_runtime_dir();
+    const gchar *base = g_get_user_data_dir();
+    return g_build_filename(base, "linux-regedit", "favorites", NULL);
+}
+
+/* 一次性把旧版（XDG_RUNTIME_DIR）收藏夹迁到数据目录 */
+static void
+migrate_legacy_favorites(void)
+{
+    const gchar *rt = g_get_user_runtime_dir();
+    gchar *legacy, *data;
+    GDir *gd;
+    const char *name;
+
     if (rt == NULL)
-        rt = "/tmp";
-    return g_build_filename(rt, "linux-regedit", "favorites", NULL);
+        return;
+    legacy = g_build_filename(rt, "linux-regedit", "favorites", NULL);
+    if (!g_file_test(legacy, G_FILE_TEST_IS_DIR))
+    {
+        g_free(legacy);
+        return;
+    }
+
+    data = favorites_dir();
+    if (g_file_test(data, G_FILE_TEST_IS_DIR))
+    {
+        g_free(legacy);
+        g_free(data);
+        return; /* 数据目录已有内容：不再重复迁移 */
+    }
+
+    g_mkdir_with_parents(data, 0700);
+    gd = g_dir_open(legacy, 0, NULL);
+    if (gd != NULL)
+    {
+        while ((name = g_dir_read_name(gd)) != NULL)
+        {
+            gchar *src = g_build_filename(legacy, name, NULL);
+            gchar *dst = g_build_filename(data, name, NULL);
+            GFile *fs = g_file_new_for_path(src);
+            GFile *fd = g_file_new_for_path(dst);
+            g_file_copy(fs, fd, G_FILE_COPY_NONE, NULL, NULL, NULL, NULL);
+            g_object_unref(fs);
+            g_object_unref(fd);
+            g_free(src);
+            g_free(dst);
+        }
+        g_dir_close(gd);
+    }
+    g_free(legacy);
+    g_free(data);
 }
 
 /* 收藏夹名称转安全文件名（替换 / 等） */
@@ -27,10 +73,13 @@ static GList *
 favorites_list(void)
 {
     GList *list = NULL;
-    gchar *dir = favorites_dir();
-    GDir *gd = g_dir_open(dir, 0, NULL);
+    gchar *dir;
+    GDir *gd;
     const char *name;
 
+    migrate_legacy_favorites();
+    dir = favorites_dir();
+    gd = g_dir_open(dir, 0, NULL);
     if (gd == NULL)
     {
         g_free(dir);
@@ -50,6 +99,7 @@ favorites_add(const char *name, const char *path)
     gchar *file = g_build_filename(dir, favorite_file_name(name), NULL);
     gboolean ok;
 
+    migrate_legacy_favorites();
     g_mkdir_with_parents(dir, 0700);
     ok = g_file_set_contents(file, path, -1, NULL);
     g_free(file);

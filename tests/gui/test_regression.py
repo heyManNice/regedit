@@ -180,6 +180,27 @@ def test_backup_current_file(regedit, fake_roots):
         (fake_roots["samples"]["sample.ini"]).read_text(errors="replace")
 
 
+def test_favorites_load_from_data_home(display, fake_roots):
+    """预置到 XDG_DATA_HOME 的收藏项在启动后应出现在 Favorites 菜单。"""
+    fav_dir = fake_roots["data_home"] / "linux-regedit" / "favorites"
+    fav_dir.mkdir(parents=True, exist_ok=True)
+    (fav_dir / "MyServer").write_text(
+        str(fake_roots["samples"]["sample.ini"]), encoding="utf-8")
+
+    binary = (Path(__file__).resolve().parents[2] / "builddir" /
+              "linux-regedit")
+    wait_until(lambda: tree.app_by_name("linux-regedit") is None, timeout=8)
+    with AppSession([str(binary)], env=fake_roots["env"],
+                    app_name="linux-regedit", display=display) as app:
+        app.app = wait_until(
+            lambda: tree.app_by_name("linux-regedit", live=True), timeout=10)
+        wait_node(app.app, role="frame", timeout=8)
+        click(wait_node(app.app, name="Favorites", role="menu"))
+        item = wait_node(app.app, name="MyServer", role="menu item",
+                         timeout=6)
+        assert item is not None
+
+
 def test_refresh_picks_up_external_change(regedit, fake_roots):
     """View → Refresh 后应看到磁盘上的新配置项。"""
     app = regedit.app
