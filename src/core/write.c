@@ -57,8 +57,13 @@ semantic_gate(const char *path, const char *source_content,
                                                   strlen(candidate));
     guint i;
     gboolean ok = TRUE;
+    gsize k, disabled_lines = 0;
 
-    if (old_f->items->len != new_f->items->len)
+    for (k = 0; k < n_edits; k++)
+        if (edits[k].type == LR_EDIT_DISABLE)
+            disabled_lines++;
+
+    if (new_f->items->len + disabled_lines != old_f->items->len)
     {
         g_set_error_literal(error, G_IO_ERROR, G_IO_ERROR_FAILED,
                             "round-trip gate: item count changed");
@@ -71,8 +76,13 @@ semantic_gate(const char *path, const char *source_content,
         LrConfigItem *old_it = g_ptr_array_index(old_f->items, i);
         LrConfigItem *new_it = NULL;
         guint j;
-        gsize k;
         gboolean edited = FALSE;
+
+        for (k = 0; k < n_edits; k++)
+            if (edits[k].line == old_it->source_line)
+                edited = TRUE;
+        if (edited)
+            continue; /* 被编辑/被禁用的行不再做逐项比对 */
 
         for (j = 0; j < new_f->items->len; j++)
         {
@@ -93,15 +103,10 @@ semantic_gate(const char *path, const char *source_content,
             break;
         }
 
-        for (k = 0; k < n_edits; k++)
-            if (edits[k].line == old_it->source_line)
-                edited = TRUE;
-
-        if (!edited &&
-            (g_strcmp0(old_it->data, new_it->data) != 0 ||
-             g_strcmp0(old_it->section, new_it->section) != 0 ||
-             g_strcmp0(old_it->comment, new_it->comment) != 0 ||
-             old_it->enabled != new_it->enabled))
+        if (g_strcmp0(old_it->data, new_it->data) != 0 ||
+            g_strcmp0(old_it->section, new_it->section) != 0 ||
+            g_strcmp0(old_it->comment, new_it->comment) != 0 ||
+            old_it->enabled != new_it->enabled)
         {
             g_set_error(error, G_IO_ERROR, G_IO_ERROR_FAILED,
                         "round-trip gate: unintended change on line %u",
@@ -202,18 +207,16 @@ lr_save_config_file(const char *path, const char *source_content,
     {
         gchar *verify = NULL;
         gsize vlen = 0;
-        LrConfigFile *vf = NULL;
 
+        ok = FALSE;
         if (g_file_get_contents(path, &verify, &vlen, NULL))
         {
-            vf = lr_parse_config_content(path, verify, vlen);
-            ok = vf->parsed;
-            lr_config_file_free(vf);
-            g_free(verify);
+            ok = vlen == strlen(candidate) &&
+                 memcmp(verify, candidate, vlen) == 0;
+            g_clear_pointer(&verify, g_free);
         }
         if (!ok)
         {
-            g_clear_pointer(&verify, g_free);
             g_set_error_literal(error, G_IO_ERROR, G_IO_ERROR_FAILED,
                                 "post-write parse check failed; rolling back");
             copy_file(backup, path, NULL);

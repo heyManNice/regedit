@@ -140,6 +140,31 @@ void test_write(void)
         g_clear_error(&err);
     }
 
+    /* 6. 启用列修改（true → false）经 builder + 安全管线写回为注释行 */
+    {
+        const gchar *src = "[s]\nPort = 22\n";
+        LrRowState rows[] = {{1, "Port", "22", "false", NULL, "Number"}};
+        LrEdit *edits = NULL;
+        gsize n_edits = 0;
+        GError *err = NULL;
+        gboolean ok;
+
+        g_file_set_contents(path, src, -1, NULL);
+        ok = lr_build_edits_from_rows(path, src, rows, 1,
+                                      &edits, &n_edits, &err);
+        TEST_ASSERT(ok);
+        TEST_ASSERT(n_edits == 1);
+        TEST_ASSERT(edits[0].type == LR_EDIT_DISABLE);
+        ok = lr_save_config_file(path, src, edits, n_edits, &err);
+        g_free(edits);
+        TEST_ASSERT(ok);
+        TEST_ASSERT(err == NULL);
+        gchar *now = read_file(path);
+        TEST_ASSERT_STR_EQ(now, "[s]\n#Port = 22\n");
+        g_free(now);
+        g_clear_error(&err);
+    }
+
     g_free(path);
     g_free(data_home);
     g_free(base);

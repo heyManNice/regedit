@@ -346,6 +346,33 @@ def _window_geometry(display: str, wid: str):
     return pos_x, pos_y, width, height
 
 
+def _window_is_maximized(display: str, wid: str) -> bool:
+    out = subprocess.run(["xprop", "-id", wid, "_NET_WM_STATE"],
+                         capture_output=True, text=True,
+                         env=dict(os.environ, DISPLAY=display)).stdout
+    return ("_NET_WM_STATE_MAXIMIZED_HORZ" in out and
+            "_NET_WM_STATE_MAXIMIZED_VERT" in out)
+
+
+def _maximize_window(display: str, wid: str):
+    from Xlib import X, Xatom, display as xdisplay
+
+    d = xdisplay.Display(display)
+    root = d.screen().root
+    win = d.create_resource_object("window", int(wid))
+    state = d.intern_atom("_NET_WM_STATE")
+    max_h = d.intern_atom("_NET_WM_STATE_MAXIMIZED_HORZ")
+    max_v = d.intern_atom("_NET_WM_STATE_MAXIMIZED_VERT")
+    from Xlib.protocol import event as xevent
+
+    ev = xevent.ClientMessage(
+        window=win, client_type=state,
+        data=(32, [1, max_h, max_v, 0, 0]))
+    root.send_event(ev, event_mask=X.SubstructureRedirectMask |
+                    X.SubstructureNotifyMask)
+    d.flush()
+
+
 def test_window_state_restores_geometry(display, fake_roots, tmp_path):
     """重启后应记住上次的窗口位置与尺寸（XDG_RUNTIME_DIR state.ini）。"""
     binary = (Path(__file__).resolve().parents[2] / "builddir" /
@@ -393,3 +420,38 @@ def test_window_state_restores_geometry(display, fake_roots, tmp_path):
         assert h is not None and abs(h - 620) <= 40, f"height {h}"
         assert x is not None and abs(x - 90) <= 120, f"x {x}"
         assert y is not None and abs(y - 110) <= 120, f"y {y}"
+
+
+def test_window_state_restores_maximized(display, fake_roots):
+    """重启后应恢复最大化状态。"""
+    binary = (Path(__file__).resolve().parents[2] / "builddir" /
+              "linux-regedit")
+    env = dict(fake_roots["env"])
+
+    def _launch(tag: str):
+        e = dict(env, LR_TEST_APP_ID=f"org.linux-regedit.max-{tag}")
+        return AppSession([str(binary)], env=e, app_name="linux-regedit",
+                          display=display)
+
+    wait_until(lambda: tree.app_by_name("linux-regedit") is None, timeout=8)
+    with _launch("a") as app:
+        app.app = wait_until(
+            lambda: tree.app_by_name("linux-regedit", live=True), timeout=10)
+        wait_node(app.app, role="frame", timeout=8)
+        wid = wait_until(lambda: _first_window_id(display), timeout=8,
+                         message="window id not found")
+        _maximize_window(display, wid)
+        time.sleep(1.5)
+        assert _window_is_maximized(display, wid)
+        quit_item = wait_node(app.app, name="Quit", role="menu item")
+        quit_item.queryAction().doAction(0)
+    wait_until(lambda: tree.app_by_name("linux-regedit") is None, timeout=8)
+
+    with _launch("b") as app:
+        app.app = wait_until(
+            lambda: tree.app_by_name("linux-regedit", live=True), timeout=10)
+        wait_node(app.app, role="frame", timeout=8)
+        time.sleep(1)
+        wid2 = wait_until(lambda: _first_window_id(display), timeout=8,
+                          message="restored window id not found")
+        assert _window_is_maximized(display, wid2)
