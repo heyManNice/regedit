@@ -15,5 +15,12 @@ meson-private/
 *~
 .DS_Store
 
+# clangd
+compile_commands.json
+.cache/
+
+# gettext 产物（.mo 由构建生成，不入库）
+*.mo
+
 # 日志与临时文件
 *.log

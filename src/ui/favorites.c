@@ -3,6 +3,7 @@
 #include "ui/dialog_utils.h"
 
 #include <glib/gstdio.h>
+#include <glib/gi18n.h>
 
 /* 收藏夹数据目录：$XDG_RUNTIME_DIR/linux-regedit/favorites（/run/user/<uid>） */
 static char *
@@ -134,14 +135,14 @@ on_add_favorite(GtkWidget *widget, gpointer user_data)
     if (mw->current_path == NULL || *mw->current_path == '\0')
         return;
 
-    dialog = gtk_dialog_new_with_buttons("添加到收藏夹", NULL, 0, "取消",
-                                         GTK_RESPONSE_CANCEL, "确定",
+    dialog = gtk_dialog_new_with_buttons(_("Add to Favorites"), NULL, 0, _("Cancel"),
+                                         GTK_RESPONSE_CANCEL, _("OK"),
                                          GTK_RESPONSE_ACCEPT, NULL);
 
     box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
     gtk_container_set_border_width(GTK_CONTAINER(box), 10);
 
-    label = gtk_label_new_with_mnemonic("收藏夹名称(_F):");
+    label = gtk_label_new_with_mnemonic(_("Favorite Name (_F): "));
     entry = gtk_entry_new();
     base = g_path_get_basename(mw->current_path);
     gtk_entry_set_text(GTK_ENTRY(entry), base);
@@ -194,20 +195,20 @@ on_remove_favorite(GtkWidget *widget, gpointer user_data)
     if (favs == NULL)
     {
         GtkWidget *d = gtk_message_dialog_new(NULL, 0, GTK_MESSAGE_INFO,
-                                              GTK_BUTTONS_OK, "还没有收藏夹。");
+                                              GTK_BUTTONS_OK, _("No favorites yet."));
         g_signal_connect(d, "response",
                          G_CALLBACK(lr_dialog_destroy_on_response), NULL);
         lr_dialog_center_on(d, GTK_WINDOW(mw->window));
         return;
     }
 
-    dialog = gtk_dialog_new_with_buttons("删除收藏夹", NULL, 0, "取消",
-                                         GTK_RESPONSE_CANCEL, "确定",
+    dialog = gtk_dialog_new_with_buttons(_("Delete Favorite"), NULL, 0, _("Cancel"),
+                                         GTK_RESPONSE_CANCEL, _("OK"),
                                          GTK_RESPONSE_ACCEPT, NULL);
 
     box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 8);
     gtk_container_set_border_width(GTK_CONTAINER(box), 10);
-    label = gtk_label_new("选择收藏夹:");
+    label = gtk_label_new(_("Select favorite: "));
     gtk_widget_set_halign(label, GTK_ALIGN_START);
     combo = gtk_combo_box_text_new();
     {
@@ -240,11 +241,11 @@ void lr_favorites_fill_menu(GtkWidget *menu, gpointer user_data)
         gtk_container_remove(GTK_CONTAINER(menu), GTK_WIDGET(l->data));
     g_list_free(children);
 
-    GtkWidget *item = gtk_menu_item_new_with_label("添加到收藏夹…");
+    GtkWidget *item = gtk_menu_item_new_with_label(_("Add to Favorites…"));
     g_signal_connect(item, "activate", G_CALLBACK(on_add_favorite), mw);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
-    item = gtk_menu_item_new_with_label("删除收藏夹…");
+    item = gtk_menu_item_new_with_label(_("Delete Favorite…"));
     g_signal_connect(item, "activate", G_CALLBACK(on_remove_favorite), mw);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 

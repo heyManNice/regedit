@@ -2,6 +2,7 @@
 #include "core/limits.h"
 
 #include <string.h>
+#include <glib/gi18n.h>
 #include <json-glib/json-glib.h>
 #include "core/parsers/ini.h"
 #include "core/parsers/json.h"
@@ -279,13 +280,13 @@ typedef struct
 } LrFormatDriver;
 
 static const LrFormatDriver k_drivers[] = {
-    {"systemd unit", LR_FORMAT_SYSTEMD, sniff_systemd, lr_parse_systemd},
+    {"systemd Unit", LR_FORMAT_SYSTEMD, sniff_systemd, lr_parse_systemd},
     {"JSON", LR_FORMAT_JSON, sniff_json, lr_parse_json},
     {"XML", LR_FORMAT_XML, sniff_xml, lr_parse_xml},
-    {"apt 配置", LR_FORMAT_APT, sniff_apt, lr_parse_apt},
+    {N_("APT Configuration"), LR_FORMAT_APT, sniff_apt, lr_parse_apt},
     {"INI", LR_FORMAT_INI, sniff_ini, lr_parse_ini},
-    {"键值对", LR_FORMAT_KV, sniff_kv, lr_parse_kv},
-    {"关键字-参数", LR_FORMAT_KEYWORD, sniff_keyword, lr_parse_keyword},
+    {N_("Key-value"), LR_FORMAT_KV, sniff_kv, lr_parse_kv},
+    {N_("Keyword-Argument"), LR_FORMAT_KEYWORD, sniff_keyword, lr_parse_keyword},
 };
 
 LrConfigFormat
@@ -337,13 +338,13 @@ lr_format_name(LrConfigFormat fmt)
 
 /* 新建文件时可选的格式显示名（静态数组，NULL 结尾） */
 static const char *const k_new_file_names[] = {
-    "INI 文件",
-    "键值对文件",
-    "JSON 文件",
-    "XML 文件",
-    "systemd unit 文件",
-    "apt 配置",
-    "关键字-参数文件",
+    N_("INI File"),
+    N_("Key-Value Pair File"),
+    N_("JSON File"),
+    N_("XML File"),
+    N_("systemd Unit File"),
+    N_("APT Configuration"),
+    N_("Keyword-Argument File"),
     NULL,
 };
 
