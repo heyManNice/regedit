@@ -42,7 +42,7 @@ def menu_item_activate(app, menu_name: str, item_name: str):
 
 
 def test_accessible_surface_and_menu_states(regedit):
-    """Static surface: menus, named panes and disabled actions."""
+    """Static surface: menus, named panes and honest menu contents."""
     app = regedit.app
     assert wait_node(app, role="frame", name="Regedit")
 
@@ -58,11 +58,11 @@ def test_accessible_surface_and_menu_states(regedit):
     loc = wait_node(app, name="Address", role="check menu item")
     assert tree.has_state(loc, "CHECKED")
 
-    # 只读阶段的禁用菜单项
-    assert tree.has_state(wait_node(app, name="Permission", role="menu item"),
-                          "DISABLED")
-    assert tree.has_state(wait_node(app, name="Delete", role="menu item"),
-                          "DISABLED")
+    # 只读阶段不提供“点了才说没做”的入口
+    for gone in ("Import...", "Print", "Split", "Fonts",
+                 "Permission", "Delete", "Rename"):
+        assert tree.find(app, name=gone, role="menu item") is None, \
+            f"stub menu item {gone!r} should not exist"
 
 
 def test_fake_root_tree_navigation(regedit, fake_roots):
@@ -252,7 +252,7 @@ def test_unsaved_edit_banner(regedit, fake_roots):
     time.sleep(0.15)
     press("Right")         # 展开 New 子菜单
     time.sleep(0.3)
-    for _ in range(11):    # Folder 之后第 12 项为 Number
+    for _ in range(3):     # Section/String/Boolean 之后为 Number
         press("Down")
         time.sleep(0.05)
     press("Return")

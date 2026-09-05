@@ -11,7 +11,4 @@ void lr_dialog_center_on(GtkWidget *dialog, GtkWindow *parent);
 void lr_dialog_destroy_on_response(GtkDialog *dialog, gint response_id,
                                    gpointer user_data);
 
-/* 尚未实现的功能提示（供菜单/右键菜单占位项复用） */
-void lr_dialog_not_impl(GtkWidget *toplevel, const char *label);
-
 #endif /* LR_UI_DIALOG_UTILS_H */

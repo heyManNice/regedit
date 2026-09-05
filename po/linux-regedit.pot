@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-05 13:07+0000\n"
+"POT-Creation-Date: 2026-09-05 14:15+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,7 +27,7 @@ msgid ""
 "is read-only)."
 msgstr ""
 
-#: src/ui/main_window.c:270 src/ui/main_window.c:810
+#: src/ui/main_window.c:270 src/ui/main_window.c:750
 msgid "About Regedit"
 msgstr ""
 
@@ -68,154 +68,118 @@ msgid ""
 "use it"
 msgstr ""
 
-#: src/ui/main_window.c:459 src/ui/tree_pane.c:367
-msgid "Folder"
-msgstr ""
-
-#: src/ui/main_window.c:461 src/ui/tree_pane.c:369
-msgid "New Folder"
-msgstr ""
-
-#: src/ui/main_window.c:525
+#: src/ui/main_window.c:493
 msgid "Type a search term."
 msgstr ""
 
-#: src/ui/main_window.c:536 src/ui/main_window.c:546
+#: src/ui/main_window.c:504 src/ui/main_window.c:514
 msgid "No matches found."
 msgstr ""
 
-#: src/ui/main_window.c:550
+#: src/ui/main_window.c:518
 #, c-format
 msgid "Found %u match(es)."
 msgstr ""
 
-#: src/ui/main_window.c:600 src/ui/tree_pane.c:427 src/ui/tree_pane.c:429
+#: src/ui/main_window.c:568
 msgid "Find"
 msgstr ""
 
-#: src/ui/main_window.c:601 src/ui/export.c:105 src/ui/export.c:181
+#: src/ui/main_window.c:569 src/ui/export.c:105 src/ui/export.c:181
 #: src/ui/file_tools.c:191 src/ui/favorites.c:138 src/ui/favorites.c:205
 msgid "Cancel"
 msgstr ""
 
-#: src/ui/main_window.c:601 src/ui/main_window.c:758
+#: src/ui/main_window.c:569 src/ui/main_window.c:706
 msgid "Find Next"
 msgstr ""
 
-#: src/ui/main_window.c:615
+#: src/ui/main_window.c:583
 msgid "Find what:"
 msgstr ""
 
-#: src/ui/main_window.c:617
+#: src/ui/main_window.c:585
 msgid "Find what"
 msgstr ""
 
-#: src/ui/main_window.c:624
+#: src/ui/main_window.c:592
 msgid "Find status"
 msgstr ""
 
-#. 文件：导入 / 导出 / 打印 / 退出
-#: src/ui/main_window.c:687
+#. 文件：导出 / 备份 / 对比 / 退出
+#: src/ui/main_window.c:655
 msgid "File"
 msgstr ""
 
-#: src/ui/main_window.c:690
-msgid "Import..."
-msgstr ""
-
-#: src/ui/main_window.c:694
+#: src/ui/main_window.c:658
 msgid "Export..."
 msgstr ""
 
-#: src/ui/main_window.c:701
+#: src/ui/main_window.c:665
 msgid "Backup Current File..."
 msgstr ""
 
-#: src/ui/main_window.c:705
+#: src/ui/main_window.c:669
 msgid "Compare with File..."
 msgstr ""
 
-#: src/ui/main_window.c:709
-msgid "Print"
-msgstr ""
-
-#: src/ui/main_window.c:716
+#: src/ui/main_window.c:676
 msgid "Quit"
 msgstr ""
 
-#. 编辑：新建 / 权限 / 删除 / 重命名 / 复制项名称 / 查找 / 查找下一个
-#: src/ui/main_window.c:724
+#. 编辑：新建（仅内存）/ 复制项名称 / 查找
+#: src/ui/main_window.c:684
 msgid "Edit"
 msgstr ""
 
-#: src/ui/main_window.c:727 src/ui/value_pane.c:1330 src/ui/tree_pane.c:418
+#: src/ui/main_window.c:687 src/ui/value_pane.c:1330
 msgid "New"
 msgstr ""
 
-#: src/ui/main_window.c:735 src/ui/tree_pane.c:447 src/ui/tree_pane.c:449
-msgid "Permission"
-msgstr ""
-
-#: src/ui/main_window.c:739 src/ui/tree_pane.c:432 src/ui/tree_pane.c:434
-msgid "Delete"
-msgstr ""
-
-#: src/ui/main_window.c:743 src/ui/tree_pane.c:437 src/ui/tree_pane.c:439
-msgid "Rename"
-msgstr ""
-
-#: src/ui/main_window.c:747 src/ui/tree_pane.c:455
+#: src/ui/main_window.c:695 src/ui/tree_pane.c:385
 msgid "Copy Name"
 msgstr ""
 
-#: src/ui/main_window.c:754
+#: src/ui/main_window.c:702
 msgid "Find..."
 msgstr ""
 
-#. 查看：地址栏 / 拆分 / 刷新 / 字体
-#: src/ui/main_window.c:766
+#. 查看：地址栏 / 刷新
+#: src/ui/main_window.c:714
 msgid "View"
 msgstr ""
 
-#: src/ui/main_window.c:769
+#: src/ui/main_window.c:717
 msgid "Address"
 msgstr ""
 
-#: src/ui/main_window.c:782
-msgid "Split"
-msgstr ""
-
-#: src/ui/main_window.c:789
+#: src/ui/main_window.c:733
 msgid "Refresh"
 msgstr ""
 
-#: src/ui/main_window.c:793
-msgid "Fonts"
-msgstr ""
-
 #. 收藏夹：添加/删除 + 分割线 + 收藏项（菜单显示时动态刷新）
-#: src/ui/main_window.c:801
+#: src/ui/main_window.c:741
 msgid "Favorites"
 msgstr ""
 
 #. 帮助
-#: src/ui/main_window.c:808
+#: src/ui/main_window.c:748
 msgid "Help"
 msgstr ""
 
-#: src/ui/main_window.c:882
+#: src/ui/main_window.c:822
 msgid "Type a Path and Press Enter"
 msgstr ""
 
-#: src/ui/main_window.c:884
+#: src/ui/main_window.c:824
 msgid "Address bar input"
 msgstr ""
 
-#: src/ui/main_window.c:1013
+#: src/ui/main_window.c:953
 msgid "Regedit"
 msgstr ""
 
-#: src/ui/main_window.c:1047
+#: src/ui/main_window.c:987
 msgid "Edit status"
 msgstr ""
 
@@ -367,19 +331,15 @@ msgstr ""
 msgid "TOML File"
 msgstr ""
 
-#: src/ui/tree_pane.c:410
+#: src/ui/tree_pane.c:376
 msgid "Collapse"
 msgstr ""
 
-#: src/ui/tree_pane.c:410
+#: src/ui/tree_pane.c:376
 msgid "Expand"
 msgstr ""
 
-#: src/ui/tree_pane.c:442 src/ui/tree_pane.c:444 src/ui/export.c:181
-msgid "Export"
-msgstr ""
-
-#: src/ui/tree_pane.c:535
+#: src/ui/tree_pane.c:465
 msgid "Directory tree"
 msgstr ""
 
@@ -424,6 +384,10 @@ msgstr ""
 #: src/ui/export.c:160
 #, c-format
 msgid "Export failed: %s"
+msgstr ""
+
+#: src/ui/export.c:181
+msgid "Export"
 msgstr ""
 
 #: src/ui/export.c:188
@@ -529,9 +493,4 @@ msgstr ""
 
 #: src/ui/favorites.c:248
 msgid "Delete Favorite…"
-msgstr ""
-
-#: src/ui/dialog_utils.c:34
-#, c-format
-msgid "%s is not implemented yet."
 msgstr ""

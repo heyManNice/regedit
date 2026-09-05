@@ -432,14 +432,6 @@ on_about(GtkWidget *widget, gpointer user_data)
     lr_dialog_center_on(dialog, GTK_WINDOW(window));
 }
 
-/* 未实现功能：复用通用提示框 */
-static void
-on_new_not_impl(GtkMenuItem *item, gpointer user_data)
-{
-    (void)item;
-    lr_dialog_not_impl(gtk_widget_get_toplevel(GTK_WIDGET(item)), user_data);
-}
-
 /* 编辑菜单「新建配置项」：在当前表格追加一行（仅内存） */
 static void
 on_new_value_item(GtkMenuItem *item, gpointer user_data)
@@ -448,44 +440,20 @@ on_new_value_item(GtkMenuItem *item, gpointer user_data)
     lr_value_pane_add_value(mw->value, gtk_menu_item_get_label(item));
 }
 
-/* 新建 → 子菜单（编辑菜单，更全面）：文件夹 + 文件格式 + 分割线 + 配置项 */
+/* 新建 → 子菜单：当前表格追加一个配置项（仅内存，写回属未来 v0.4） */
 static void
 build_new_submenu(LrMainWindow *mw, GtkWidget *menu)
 {
-    const char *const *names;
+    const char *const *types = lr_value_type_names();
     GtkWidget *item;
     gint i;
 
-    item = gtk_menu_item_new_with_label(_("Folder"));
-    g_signal_connect(item, "activate", G_CALLBACK(on_new_not_impl),
-                     (gpointer) _("New Folder"));
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-
-    item = gtk_separator_menu_item_new();
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-
-    names = lr_format_new_file_names();
-    for (i = 0; names[i] != NULL; i++)
+    for (i = 0; types[i] != NULL; i++)
     {
-        item = gtk_menu_item_new_with_label(_(names[i]));
-        g_signal_connect(item, "activate", G_CALLBACK(on_new_not_impl),
-                         (gpointer)names[i]);
+        item = gtk_menu_item_new_with_label(types[i]);
+        g_signal_connect(item, "activate", G_CALLBACK(on_new_value_item),
+                         mw);
         gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-    }
-
-    item = gtk_separator_menu_item_new();
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-
-    /* 配置项：追加到当前表格（仅内存） */
-    {
-        const char *const *types = lr_value_type_names();
-        for (i = 0; types[i] != NULL; i++)
-        {
-            item = gtk_menu_item_new_with_label(types[i]);
-            g_signal_connect(item, "activate", G_CALLBACK(on_new_value_item),
-                             mw);
-            gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-        }
     }
 }
 
@@ -683,13 +651,9 @@ build_menubar(LrMainWindow *mw)
     GtkWidget *menubar = gtk_menu_bar_new();
     GtkWidget *menu, *menu_item, *item;
 
-    /* 文件：导入 / 导出 / 打印 / 退出 */
+    /* 文件：导出 / 备份 / 对比 / 退出 */
     menu_item = gtk_menu_item_new_with_label(_("File"));
     menu = gtk_menu_new();
-
-    item = gtk_menu_item_new_with_label(_("Import..."));
-    gtk_widget_set_sensitive(item, FALSE); /* 占位 */
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
     item = gtk_menu_item_new_with_label(_("Export..."));
     g_signal_connect(item, "activate", G_CALLBACK(lr_export_show_dialog), mw);
@@ -706,10 +670,6 @@ build_menubar(LrMainWindow *mw)
     g_signal_connect(item, "activate", G_CALLBACK(on_compare_with_file), mw);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
-    item = gtk_menu_item_new_with_label(_("Print"));
-    gtk_widget_set_sensitive(item, FALSE);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-
     item = gtk_separator_menu_item_new();
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
@@ -720,7 +680,7 @@ build_menubar(LrMainWindow *mw)
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(menu_item), menu);
     gtk_menu_shell_append(GTK_MENU_SHELL(menubar), menu_item);
 
-    /* 编辑：新建 / 权限 / 删除 / 重命名 / 复制项名称 / 查找 / 查找下一个 */
+    /* 编辑：新建（仅内存）/ 复制项名称 / 查找 */
     menu_item = gtk_menu_item_new_with_label(_("Edit"));
     menu = gtk_menu_new();
 
@@ -730,18 +690,6 @@ build_menubar(LrMainWindow *mw)
         build_new_submenu(mw, new_sub);
         gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), new_sub);
     }
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-
-    item = gtk_menu_item_new_with_label(_("Permission"));
-    gtk_widget_set_sensitive(item, FALSE);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-
-    item = gtk_menu_item_new_with_label(_("Delete"));
-    gtk_widget_set_sensitive(item, FALSE);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-
-    item = gtk_menu_item_new_with_label(_("Rename"));
-    gtk_widget_set_sensitive(item, FALSE);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
     item = gtk_menu_item_new_with_label(_("Copy Name"));
@@ -762,7 +710,7 @@ build_menubar(LrMainWindow *mw)
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(menu_item), menu);
     gtk_menu_shell_append(GTK_MENU_SHELL(menubar), menu_item);
 
-    /* 查看：地址栏 / 拆分 / 刷新 / 字体 */
+    /* 查看：地址栏 / 刷新 */
     menu_item = gtk_menu_item_new_with_label(_("View"));
     menu = gtk_menu_new();
 
@@ -779,19 +727,11 @@ build_menubar(LrMainWindow *mw)
     }
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
-    item = gtk_menu_item_new_with_label(_("Split"));
-    gtk_widget_set_sensitive(item, FALSE);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-
     item = gtk_separator_menu_item_new();
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
     item = gtk_menu_item_new_with_label(_("Refresh"));
     g_signal_connect(item, "activate", G_CALLBACK(on_refresh), mw);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-
-    item = gtk_menu_item_new_with_label(_("Fonts"));
-    gtk_widget_set_sensitive(item, FALSE);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(menu_item), menu);

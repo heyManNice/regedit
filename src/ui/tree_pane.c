@@ -347,41 +347,7 @@ on_popup_copy_name(GtkMenuItem *item, gpointer user_data)
     }
 }
 
-/* 尚未实现的功能：复用通用提示框 */
-static void
-on_popup_not_impl(GtkMenuItem *item, gpointer user_data)
-{
-    (void)item;
-    lr_dialog_not_impl(gtk_widget_get_toplevel(GTK_WIDGET(item)), user_data);
-}
-
-/* 新建 → 子菜单：文件夹 + 分割线 + 支持的文件格式（未实现，点击提示） */
-static void
-build_new_submenu(LrTreePane *self, GtkWidget *menu)
-{
-    const char *const *names;
-    GtkWidget *item;
-    gint i;
-
-    (void)self;
-    item = gtk_menu_item_new_with_label(_("Folder"));
-    g_signal_connect(item, "activate", G_CALLBACK(on_popup_not_impl),
-                     (gpointer) _("New Folder"));
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-
-    item = gtk_separator_menu_item_new();
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-
-    names = lr_format_new_file_names();
-    for (i = 0; names[i] != NULL; i++)
-    {
-        item = gtk_menu_item_new_with_label(_(names[i]));
-        g_signal_connect(item, "activate", G_CALLBACK(on_popup_not_impl),
-                         (gpointer)names[i]);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-    }
-}
-
+/* 右键菜单：只保留当前版本真实可用的动作（写操作随 v0.4 写回回归） */
 static void
 show_popup_menu(LrTreePane *self, GtkTreePath *path, GdkEventButton *event)
 {
@@ -403,7 +369,7 @@ show_popup_menu(LrTreePane *self, GtkTreePath *path, GdkEventButton *event)
 
     menu = gtk_menu_new();
 
-    /* 目录节点：展开/折叠（按当前状态显示） + 新建 */
+    /* 目录节点：展开/折叠（按当前状态显示） */
     if (kind == LR_SCAN_DIR)
     {
         expanded = gtk_tree_view_row_expanded(self->view, path);
@@ -414,43 +380,7 @@ show_popup_menu(LrTreePane *self, GtkTreePath *path, GdkEventButton *event)
 
         item = gtk_separator_menu_item_new();
         gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-
-        item = gtk_menu_item_new_with_label(_("New"));
-        {
-            GtkWidget *new_sub = gtk_menu_new();
-            build_new_submenu(self, new_sub);
-            gtk_menu_item_set_submenu(GTK_MENU_ITEM(item), new_sub);
-        }
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
     }
-
-    item = gtk_menu_item_new_with_label(_("Find"));
-    g_signal_connect(item, "activate", G_CALLBACK(on_popup_not_impl),
-                     (gpointer) _("Find"));
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-
-    item = gtk_menu_item_new_with_label(_("Delete"));
-    g_signal_connect(item, "activate", G_CALLBACK(on_popup_not_impl),
-                     (gpointer) _("Delete"));
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-
-    item = gtk_menu_item_new_with_label(_("Rename"));
-    g_signal_connect(item, "activate", G_CALLBACK(on_popup_not_impl),
-                     (gpointer) _("Rename"));
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-
-    item = gtk_menu_item_new_with_label(_("Export"));
-    g_signal_connect(item, "activate", G_CALLBACK(on_popup_not_impl),
-                     (gpointer) _("Export"));
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-
-    item = gtk_menu_item_new_with_label(_("Permission"));
-    g_signal_connect(item, "activate", G_CALLBACK(on_popup_not_impl),
-                     (gpointer) _("Permission"));
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-
-    item = gtk_separator_menu_item_new();
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
     item = gtk_menu_item_new_with_label(_("Copy Name"));
     g_signal_connect(item, "activate", G_CALLBACK(on_popup_copy_name), self);
