@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linux-regedit 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-05 11:08+0000\n"
+"POT-Creation-Date: 2026-09-05 11:13+0000\n"
 "PO-Revision-Date: 2026-08-24 17:05+0800\n"
 "Last-Translator: SMILE CAI <smile.cai@yandex.com>\n"
 "Language-Team: Chinese (simplified) <i18n-zh@googlegroups.com>\n"
@@ -216,21 +216,33 @@ msgstr "未知错误"
 msgid "Enable"
 msgstr "启用"
 
-#: src/ui/value_pane.c:961 src/ui/value_pane.c:1158
+#: src/ui/value_pane.c:961 src/ui/value_pane.c:1159
 msgid "Type"
 msgstr "类型"
 
-#: src/ui/value_pane.c:984 src/ui/value_pane.c:1159
+#: src/ui/value_pane.c:984 src/ui/value_pane.c:1160
 msgid "Data"
 msgstr "数据"
 
-#: src/ui/value_pane.c:1112 src/ui/value_pane.c:1157
+#: src/ui/value_pane.c:1083
+msgid "Value panel"
+msgstr "配置面板"
+
+#: src/ui/value_pane.c:1104
+msgid "Value table"
+msgstr "配置项表格"
+
+#: src/ui/value_pane.c:1113 src/ui/value_pane.c:1158
 msgid "Name"
 msgstr "名称"
 
-#: src/ui/value_pane.c:1115 src/ui/value_pane.c:1177
+#: src/ui/value_pane.c:1116 src/ui/value_pane.c:1178
 msgid "Note"
 msgstr "备注"
+
+#: src/ui/value_pane.c:1156
+msgid "JSON tree"
+msgstr "JSON 树"
 
 #: src/core/format.c:286 src/core/format.c:346
 msgid "APT Configuration"
@@ -283,6 +295,10 @@ msgstr "查找"
 #: src/ui/tree_pane.c:451 src/ui/tree_pane.c:453 src/ui/export.c:181
 msgid "Export"
 msgstr "导出"
+
+#: src/ui/tree_pane.c:544
+msgid "Directory tree"
+msgstr "目录树"
 
 #: src/ui/export.c:23
 #, c-format

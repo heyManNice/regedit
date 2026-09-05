@@ -541,7 +541,7 @@ lr_tree_pane_new(void)
     gtk_tree_view_set_headers_visible(self->view, FALSE);
     gtk_container_add(GTK_CONTAINER(self->widget), GTK_WIDGET(self->view));
     atk_object_set_name(gtk_widget_get_accessible(GTK_WIDGET(self->view)),
-                        "目录树");
+                        _("Directory tree"));
 
     pix = gtk_cell_renderer_pixbuf_new();
     txt = gtk_cell_renderer_text_new();

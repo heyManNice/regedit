@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the linux-regedit package.
+# This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: linux-regedit\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-05 11:10+0000\n"
+"POT-Creation-Date: 2026-09-05 11:13+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -214,20 +214,32 @@ msgstr ""
 msgid "Enable"
 msgstr ""
 
-#: src/ui/value_pane.c:961 src/ui/value_pane.c:1158
+#: src/ui/value_pane.c:961 src/ui/value_pane.c:1159
 msgid "Type"
 msgstr ""
 
-#: src/ui/value_pane.c:984 src/ui/value_pane.c:1159
+#: src/ui/value_pane.c:984 src/ui/value_pane.c:1160
 msgid "Data"
 msgstr ""
 
-#: src/ui/value_pane.c:1112 src/ui/value_pane.c:1157
+#: src/ui/value_pane.c:1083
+msgid "Value panel"
+msgstr ""
+
+#: src/ui/value_pane.c:1104
+msgid "Value table"
+msgstr ""
+
+#: src/ui/value_pane.c:1113 src/ui/value_pane.c:1158
 msgid "Name"
 msgstr ""
 
-#: src/ui/value_pane.c:1115 src/ui/value_pane.c:1177
+#: src/ui/value_pane.c:1116 src/ui/value_pane.c:1178
 msgid "Note"
+msgstr ""
+
+#: src/ui/value_pane.c:1156
+msgid "JSON tree"
 msgstr ""
 
 #: src/core/format.c:286 src/core/format.c:346
@@ -280,6 +292,10 @@ msgstr ""
 
 #: src/ui/tree_pane.c:451 src/ui/tree_pane.c:453 src/ui/export.c:181
 msgid "Export"
+msgstr ""
+
+#: src/ui/tree_pane.c:544
+msgid "Directory tree"
 msgstr ""
 
 #: src/ui/export.c:23
