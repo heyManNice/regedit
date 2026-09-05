@@ -1,5 +1,5 @@
 project('linux-regedit', 'c',
-  version: '0.1.0',
+  version: '0.4.0-dev',
   license: 'GPL-3.0-or-later',
   meson_version: '>=0.60',
   default_options: ['c_std=c11', 'warning_level=3', 'buildtype=debugoptimized'])
@@ -9,6 +9,7 @@ i18n = import('i18n')
 add_project_arguments(
   '-DGETTEXT_PACKAGE="' + meson.project_name() + '"',
   '-DLOCALEDIR="' + join_paths(get_option('prefix'), get_option('localedir')) + '"',
+  '-DLR_APP_VERSION="' + meson.project_version() + '"',
   language: 'c')
 
 glibdep = dependency('glib-2.0')
@@ -88,3 +89,11 @@ if get_option('tests')
 endif
 
 subdir('po')
+
+install_data('data/linux-regedit.desktop',
+             install_dir: get_option('datadir') / 'applications')
+install_data('data/linux-regedit.svg',
+             install_dir: get_option('datadir') / 'icons' / 'hicolor' /
+                          'scalable' / 'apps')
+install_data('data/linux-regedit.appdata.xml',
+             install_dir: get_option('datadir') / 'metainfo')

@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=linux-regedit
+Name[zh_CN]=注册表编辑器（Linux 配置浏览）
+GenericName=Configuration Browser
+GenericName[zh_CN]=系统配置浏览器
+Comment=Browse Linux configuration files with the Windows regedit experience
+Comment[zh_CN]=以 Windows 注册表编辑器风格浏览 Linux 系统配置
+Exec=linux-regedit %F
+Icon=linux-regedit
+Terminal=false
+Categories=Utility;System;Settings;
+StartupNotify=true
+StartupWMClass=linux-regedit

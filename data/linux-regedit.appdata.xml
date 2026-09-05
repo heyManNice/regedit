@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>org.linux-regedit.app</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <name>linux-regedit</name>
+  <name xml:lang="zh_CN">注册表编辑器（Linux 配置浏览）</name>
+  <summary>Windows-regedit-style browser for Linux configuration files</summary>
+  <summary xml:lang="zh_CN">以 Windows 注册表编辑器风格浏览 Linux 系统配置</summary>
+  <description>
+    <p>
+      A playful yet carefully engineered configuration browser: /etc, ~/.config
+      and /boot are presented with the classic regedit tree and value columns.
+      Content sniffing supports INI, TOML, flat key-value, systemd units,
+      keyword files, JSON, XML and apt configuration.
+    </p>
+    <p xml:lang="zh_CN">
+      一个“表层整活、内核认真”的配置浏览器：把 /etc、~/.config、/boot 伪装成
+      Windows 注册表来浏览。支持 INI、TOML、扁平键值、systemd、关键字文件、
+      JSON、XML 与 apt 配置的内容嗅探与解析。
+    </p>
+  </description>
+  <launchable type="desktop-id">linux-regedit.desktop</launchable>
+  <url type="homepage">https://github.com/heyManNice/regedit</url>
+  <developer_name>heyManNice</developer_name>
+  <releases>
+    <release version="0.4.0-dev" date="2026-09-05"/>
+  </releases>
+  <content_rating type="oars-1.1"/>
+</component>

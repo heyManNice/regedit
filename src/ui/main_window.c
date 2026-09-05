@@ -363,6 +363,11 @@ on_about(GtkWidget *widget, gpointer user_data)
     about_add_line(right, tmp);
     g_free(tmp);
 
+    /* 行1.5：应用自身版本（整活不改真实版本） */
+    tmp = g_strdup_printf("linux-regedit %s", LR_APP_VERSION);
+    about_add_line(right, tmp);
+    g_free(tmp);
+
     /* 行2：版本 + 系统信息（内核/init/图形服务器）；去掉版本代号括号 */
     {
         gchar *paren = strstr(version, " (");
