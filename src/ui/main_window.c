@@ -2,6 +2,7 @@
 #include "ui/window_state.h"
 #include "ui/favorites.h"
 #include "ui/export.h"
+#include "ui/file_tools.h"
 #include "ui/dialog_utils.h"
 #include "core/format.h"
 
@@ -90,6 +91,22 @@ on_quit(GtkWidget *widget, gpointer user_data)
     GtkWidget *window = user_data;
     (void)widget;
     gtk_widget_destroy(window);
+}
+
+static void
+on_backup_current_file(GtkWidget *widget, gpointer user_data)
+{
+    LrMainWindow *mw = user_data;
+    (void)widget;
+    lr_backup_current_file(GTK_WINDOW(mw->window), mw->current_path);
+}
+
+static void
+on_compare_with_file(GtkWidget *widget, gpointer user_data)
+{
+    LrMainWindow *mw = user_data;
+    (void)widget;
+    lr_compare_with_file(GTK_WINDOW(mw->window), mw->current_path);
 }
 
 /* ========== 关于对话框（模仿 regedit：图标 + 系统名 + 系统信息） ========== */
@@ -607,6 +624,17 @@ build_menubar(LrMainWindow *mw)
 
     item = gtk_menu_item_new_with_label(_("Export..."));
     g_signal_connect(item, "activate", G_CALLBACK(lr_export_show_dialog), mw);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
+
+    item = gtk_separator_menu_item_new();
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
+
+    item = gtk_menu_item_new_with_label(_("Backup Current File..."));
+    g_signal_connect(item, "activate", G_CALLBACK(on_backup_current_file), mw);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
+
+    item = gtk_menu_item_new_with_label(_("Compare with File..."));
+    g_signal_connect(item, "activate", G_CALLBACK(on_compare_with_file), mw);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
     item = gtk_menu_item_new_with_label(_("Print"));

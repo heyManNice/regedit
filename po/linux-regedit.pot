@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-05 11:32+0000\n"
+"POT-Creation-Date: 2026-09-05 11:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,35 +17,35 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/ui/main_window.c:20 src/ui/tree_pane.c:76
+#: src/ui/main_window.c:21 src/ui/tree_pane.c:76
 msgid "Computer"
 msgstr ""
 
-#: src/ui/main_window.c:184 src/ui/main_window.c:705
+#: src/ui/main_window.c:201 src/ui/main_window.c:733
 msgid "About Regedit"
 msgstr ""
 
-#: src/ui/main_window.c:184 src/ui/export.c:182 src/ui/favorites.c:139
-#: src/ui/favorites.c:206
+#: src/ui/main_window.c:201 src/ui/export.c:182 src/ui/file_tools.c:116
+#: src/ui/favorites.c:139 src/ui/favorites.c:206
 msgid "OK"
 msgstr ""
 
-#: src/ui/main_window.c:203 src/ui/main_window.c:204 src/ui/main_window.c:205
-#: src/ui/main_window.c:218 src/core/format.c:345
+#: src/ui/main_window.c:220 src/ui/main_window.c:221 src/ui/main_window.c:222
+#: src/ui/main_window.c:235 src/core/format.c:345
 msgid "Unknown"
 msgstr ""
 
-#: src/ui/main_window.c:270
+#: src/ui/main_window.c:287
 #, c-format
 msgid "Version %s (Linux %s, %s, %s)"
 msgstr ""
 
 #. 行3：版权符号 + 文案
-#: src/ui/main_window.c:276
+#: src/ui/main_window.c:293
 msgid "© heyManNice All rights reversed."
 msgstr ""
 
-#: src/ui/main_window.c:283
+#: src/ui/main_window.c:300
 msgid ""
 "This GNU/Linux operating system and its components are built upon Free and "
 "Open-Source Software (FOSS) and are distributed by their respective "
@@ -56,148 +56,156 @@ msgid ""
 msgstr ""
 
 #. 许可行
-#: src/ui/main_window.c:295
+#: src/ui/main_window.c:312
 msgid ""
 "In accordance with open source licenses, the following users are allowed to "
 "use it"
 msgstr ""
 
-#: src/ui/main_window.c:373 src/ui/tree_pane.c:367
+#: src/ui/main_window.c:390 src/ui/tree_pane.c:367
 msgid "Folder"
 msgstr ""
 
-#: src/ui/main_window.c:375 src/ui/tree_pane.c:369
+#: src/ui/main_window.c:392 src/ui/tree_pane.c:369
 msgid "New Folder"
 msgstr ""
 
-#: src/ui/main_window.c:439
+#: src/ui/main_window.c:456
 msgid "Type a search term."
 msgstr ""
 
-#: src/ui/main_window.c:450 src/ui/main_window.c:460
+#: src/ui/main_window.c:467 src/ui/main_window.c:477
 msgid "No matches found."
 msgstr ""
 
-#: src/ui/main_window.c:464
+#: src/ui/main_window.c:481
 #, c-format
 msgid "Found %u match(es)."
 msgstr ""
 
-#: src/ui/main_window.c:514 src/ui/tree_pane.c:427 src/ui/tree_pane.c:429
+#: src/ui/main_window.c:531 src/ui/tree_pane.c:427 src/ui/tree_pane.c:429
 msgid "Find"
 msgstr ""
 
-#: src/ui/main_window.c:515 src/ui/export.c:105 src/ui/export.c:181
-#: src/ui/favorites.c:138 src/ui/favorites.c:205
+#: src/ui/main_window.c:532 src/ui/export.c:105 src/ui/export.c:181
+#: src/ui/file_tools.c:190 src/ui/favorites.c:138 src/ui/favorites.c:205
 msgid "Cancel"
 msgstr ""
 
-#: src/ui/main_window.c:515 src/ui/main_window.c:661
+#: src/ui/main_window.c:532 src/ui/main_window.c:689
 msgid "Find Next"
 msgstr ""
 
-#: src/ui/main_window.c:529
+#: src/ui/main_window.c:546
 msgid "Find what:"
 msgstr ""
 
-#: src/ui/main_window.c:531
+#: src/ui/main_window.c:548
 msgid "Find what"
 msgstr ""
 
-#: src/ui/main_window.c:538
+#: src/ui/main_window.c:555
 msgid "Find status"
 msgstr ""
 
 #. 文件：导入 / 导出 / 打印 / 退出
-#: src/ui/main_window.c:601
+#: src/ui/main_window.c:618
 msgid "File"
 msgstr ""
 
-#: src/ui/main_window.c:604
+#: src/ui/main_window.c:621
 msgid "Import..."
 msgstr ""
 
-#: src/ui/main_window.c:608
+#: src/ui/main_window.c:625
 msgid "Export..."
 msgstr ""
 
-#: src/ui/main_window.c:612
+#: src/ui/main_window.c:632
+msgid "Backup Current File..."
+msgstr ""
+
+#: src/ui/main_window.c:636
+msgid "Compare with File..."
+msgstr ""
+
+#: src/ui/main_window.c:640
 msgid "Print"
 msgstr ""
 
-#: src/ui/main_window.c:619
+#: src/ui/main_window.c:647
 msgid "Quit"
 msgstr ""
 
 #. 编辑：新建 / 权限 / 删除 / 重命名 / 复制项名称 / 查找 / 查找下一个
-#: src/ui/main_window.c:627
+#: src/ui/main_window.c:655
 msgid "Edit"
 msgstr ""
 
-#: src/ui/main_window.c:630 src/ui/value_pane.c:1277 src/ui/tree_pane.c:418
+#: src/ui/main_window.c:658 src/ui/value_pane.c:1277 src/ui/tree_pane.c:418
 msgid "New"
 msgstr ""
 
-#: src/ui/main_window.c:638 src/ui/tree_pane.c:447 src/ui/tree_pane.c:449
+#: src/ui/main_window.c:666 src/ui/tree_pane.c:447 src/ui/tree_pane.c:449
 msgid "Permission"
 msgstr ""
 
-#: src/ui/main_window.c:642 src/ui/tree_pane.c:432 src/ui/tree_pane.c:434
+#: src/ui/main_window.c:670 src/ui/tree_pane.c:432 src/ui/tree_pane.c:434
 msgid "Delete"
 msgstr ""
 
-#: src/ui/main_window.c:646 src/ui/tree_pane.c:437 src/ui/tree_pane.c:439
+#: src/ui/main_window.c:674 src/ui/tree_pane.c:437 src/ui/tree_pane.c:439
 msgid "Rename"
 msgstr ""
 
-#: src/ui/main_window.c:650 src/ui/tree_pane.c:455
+#: src/ui/main_window.c:678 src/ui/tree_pane.c:455
 msgid "Copy Name"
 msgstr ""
 
-#: src/ui/main_window.c:657
+#: src/ui/main_window.c:685
 msgid "Find..."
 msgstr ""
 
 #. 查看：地址栏 / 拆分 / 刷新 / 字体
-#: src/ui/main_window.c:669
+#: src/ui/main_window.c:697
 msgid "View"
 msgstr ""
 
-#: src/ui/main_window.c:672
+#: src/ui/main_window.c:700
 msgid "Address"
 msgstr ""
 
-#: src/ui/main_window.c:677
+#: src/ui/main_window.c:705
 msgid "Split"
 msgstr ""
 
-#: src/ui/main_window.c:684
+#: src/ui/main_window.c:712
 msgid "Refresh"
 msgstr ""
 
-#: src/ui/main_window.c:688
+#: src/ui/main_window.c:716
 msgid "Fonts"
 msgstr ""
 
 #. 收藏夹：添加/删除 + 分割线 + 收藏项（菜单显示时动态刷新）
-#: src/ui/main_window.c:696
+#: src/ui/main_window.c:724
 msgid "Favorites"
 msgstr ""
 
 #. 帮助
-#: src/ui/main_window.c:703
+#: src/ui/main_window.c:731
 msgid "Help"
 msgstr ""
 
-#: src/ui/main_window.c:777
+#: src/ui/main_window.c:805
 msgid "Type a Path and Press Enter"
 msgstr ""
 
-#: src/ui/main_window.c:779
+#: src/ui/main_window.c:807
 msgid "Address bar input"
 msgstr ""
 
-#: src/ui/main_window.c:890
+#: src/ui/main_window.c:918
 msgid "Regedit"
 msgstr ""
 
@@ -240,7 +248,7 @@ msgstr ""
 msgid "Unable to read file: %s"
 msgstr ""
 
-#: src/ui/value_pane.c:672 src/ui/export.c:161
+#: src/ui/value_pane.c:672 src/ui/export.c:161 src/ui/file_tools.c:95
 msgid "Unknown Error"
 msgstr ""
 
@@ -417,6 +425,63 @@ msgstr ""
 
 #: src/ui/export.c:211
 msgid "Save to: "
+msgstr ""
+
+#: src/ui/file_tools.c:48 src/ui/file_tools.c:56 src/ui/file_tools.c:88
+#: src/ui/file_tools.c:96
+msgid "Backup"
+msgstr ""
+
+#: src/ui/file_tools.c:49
+msgid "Select a file to back up first."
+msgstr ""
+
+#: src/ui/file_tools.c:57
+msgid "Unable to create the backups directory."
+msgstr ""
+
+#: src/ui/file_tools.c:87
+#, c-format
+msgid "Backup saved to %s."
+msgstr ""
+
+#: src/ui/file_tools.c:93
+#, c-format
+msgid "Backup failed: %s"
+msgstr ""
+
+#: src/ui/file_tools.c:128
+msgid "Diff output"
+msgstr ""
+
+#: src/ui/file_tools.c:182 src/ui/file_tools.c:191 src/ui/file_tools.c:203
+#: src/ui/file_tools.c:220 src/ui/file_tools.c:226 src/ui/file_tools.c:242
+msgid "Compare"
+msgstr ""
+
+#: src/ui/file_tools.c:183
+msgid "Select a file to compare first."
+msgstr ""
+
+#: src/ui/file_tools.c:188
+msgid "Choose file to compare with..."
+msgstr ""
+
+#: src/ui/file_tools.c:204
+msgid "The two files are the same."
+msgstr ""
+
+#: src/ui/file_tools.c:221 src/ui/file_tools.c:243
+msgid "Files are identical."
+msgstr ""
+
+#: src/ui/file_tools.c:222
+msgid "Files differ (diff(1) unavailable)."
+msgstr ""
+
+#: src/ui/file_tools.c:233
+#, c-format
+msgid "Compare: %s ↔ %s"
 msgstr ""
 
 #: src/ui/favorites.c:138
