@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linux-regedit 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-05 14:15+0000\n"
+"POT-Creation-Date: 2026-09-05 14:25+0000\n"
 "PO-Revision-Date: 2026-08-24 17:05+0800\n"
 "Last-Translator: SMILE CAI <smile.cai@yandex.com>\n"
 "Language-Team: Chinese (simplified) <i18n-zh@googlegroups.com>\n"
@@ -16,41 +16,45 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/ui/main_window.c:22 src/ui/tree_pane.c:76
+#: src/ui/main_window.c:23 src/ui/main_window.c:25 src/ui/main_window.c:971
+msgid "Regedit"
+msgstr "注册表编辑器"
+
+#: src/ui/main_window.c:36 src/ui/tree_pane.c:76
 msgid "Computer"
 msgstr "计算机"
 
-#: src/ui/main_window.c:131
+#: src/ui/main_window.c:147
 msgid ""
 "Editing in memory only — changes are lost when switching files (this build "
 "is read-only)."
 msgstr "仅内存编辑：切换文件后修改将丢失（当前版本为只读）。"
 
-#: src/ui/main_window.c:270 src/ui/main_window.c:750
+#: src/ui/main_window.c:286 src/ui/main_window.c:768
 msgid "About Regedit"
 msgstr "关于注册表编辑器"
 
-#: src/ui/main_window.c:270 src/ui/export.c:182 src/ui/file_tools.c:117
-#: src/ui/favorites.c:139 src/ui/favorites.c:206
+#: src/ui/main_window.c:286 src/ui/export.c:182 src/ui/file_tools.c:117
+#: src/ui/favorites.c:189 src/ui/favorites.c:256
 msgid "OK"
 msgstr "确定"
 
-#: src/ui/main_window.c:289 src/ui/main_window.c:290 src/ui/main_window.c:291
-#: src/ui/main_window.c:304 src/core/format.c:366
+#: src/ui/main_window.c:305 src/ui/main_window.c:306 src/ui/main_window.c:307
+#: src/ui/main_window.c:320 src/core/format.c:366
 msgid "Unknown"
 msgstr "未知"
 
-#: src/ui/main_window.c:356
+#: src/ui/main_window.c:372
 #, c-format
 msgid "Version %s (Linux %s, %s, %s)"
 msgstr "版本 %s （Linux %s，%s，%s）"
 
 #. 行3：版权符号 + 文案
-#: src/ui/main_window.c:362
+#: src/ui/main_window.c:378
 msgid "© heyManNice All rights reversed."
 msgstr "© heyManNice 保留不了所有权利"
 
-#: src/ui/main_window.c:369
+#: src/ui/main_window.c:385
 msgid ""
 "This GNU/Linux operating system and its components are built upon Free and "
 "Open-Source Software (FOSS) and are distributed by their respective "
@@ -64,124 +68,124 @@ msgstr ""
 "关开源许可证与版权法保护。"
 
 #. 许可行
-#: src/ui/main_window.c:381
+#: src/ui/main_window.c:397
 msgid ""
 "In accordance with open source licenses, the following users are allowed to "
 "use it"
 msgstr "根据开源许可条款，许可如下用户使用本产品："
 
-#: src/ui/main_window.c:493
+#: src/ui/main_window.c:509
 msgid "Type a search term."
 msgstr "请输入要查找的内容。"
 
-#: src/ui/main_window.c:504 src/ui/main_window.c:514
+#: src/ui/main_window.c:520 src/ui/main_window.c:530
 msgid "No matches found."
 msgstr "未找到匹配项。"
 
-#: src/ui/main_window.c:518
+#: src/ui/main_window.c:534
 #, c-format
 msgid "Found %u match(es)."
 msgstr "找到 %u 个匹配项。"
 
-#: src/ui/main_window.c:568
+#: src/ui/main_window.c:584
 msgid "Find"
 msgstr "查找"
 
-#: src/ui/main_window.c:569 src/ui/export.c:105 src/ui/export.c:181
-#: src/ui/file_tools.c:191 src/ui/favorites.c:138 src/ui/favorites.c:205
+#: src/ui/main_window.c:585 src/ui/export.c:105 src/ui/export.c:181
+#: src/ui/file_tools.c:191 src/ui/favorites.c:188 src/ui/favorites.c:255
 msgid "Cancel"
 msgstr "取消"
 
-#: src/ui/main_window.c:569 src/ui/main_window.c:706
+#: src/ui/main_window.c:585 src/ui/main_window.c:724
 msgid "Find Next"
 msgstr "查找下一个"
 
-#: src/ui/main_window.c:583
+#: src/ui/main_window.c:599
 msgid "Find what:"
 msgstr "查找内容:"
 
-#: src/ui/main_window.c:585
+#: src/ui/main_window.c:601
 msgid "Find what"
 msgstr "查找内容"
 
-#: src/ui/main_window.c:592
+#: src/ui/main_window.c:608
 msgid "Find status"
 msgstr "查找状态"
 
+#: src/ui/main_window.c:610
+msgid "Searches the currently opened file."
+msgstr "在当前打开的文件中查找。"
+
 #. 文件：导出 / 备份 / 对比 / 退出
-#: src/ui/main_window.c:655
+#: src/ui/main_window.c:673
 msgid "File"
 msgstr "文件"
 
-#: src/ui/main_window.c:658
+#: src/ui/main_window.c:676
 msgid "Export..."
 msgstr "导出"
 
-#: src/ui/main_window.c:665
+#: src/ui/main_window.c:683
 msgid "Backup Current File..."
 msgstr "备份当前文件…"
 
-#: src/ui/main_window.c:669
+#: src/ui/main_window.c:687
 msgid "Compare with File..."
 msgstr "与其他文件比较…"
 
-#: src/ui/main_window.c:676
+#: src/ui/main_window.c:694
 msgid "Quit"
 msgstr "退出"
 
 #. 编辑：新建（仅内存）/ 复制项名称 / 查找
-#: src/ui/main_window.c:684
+#: src/ui/main_window.c:702
 msgid "Edit"
 msgstr "编辑"
 
-#: src/ui/main_window.c:687 src/ui/value_pane.c:1330
+#: src/ui/main_window.c:705 src/ui/value_pane.c:1330
 msgid "New"
 msgstr "新建"
 
-#: src/ui/main_window.c:695 src/ui/tree_pane.c:385
+#: src/ui/main_window.c:713 src/ui/tree_pane.c:385
 msgid "Copy Name"
 msgstr "复制项名称"
 
-#: src/ui/main_window.c:702
+#: src/ui/main_window.c:720
 msgid "Find..."
 msgstr "查找"
 
 #. 查看：地址栏 / 刷新
-#: src/ui/main_window.c:714
+#: src/ui/main_window.c:732
 msgid "View"
 msgstr "视图"
 
-#: src/ui/main_window.c:717
+#: src/ui/main_window.c:735
 msgid "Address"
 msgstr "地址栏"
 
-#: src/ui/main_window.c:733
+#: src/ui/main_window.c:751
 msgid "Refresh"
 msgstr "刷新"
 
 #. 收藏夹：添加/删除 + 分割线 + 收藏项（菜单显示时动态刷新）
-#: src/ui/main_window.c:741
+#: src/ui/main_window.c:759
 msgid "Favorites"
 msgstr "收藏夹"
 
 #. 帮助
-#: src/ui/main_window.c:748
+#: src/ui/main_window.c:766
 msgid "Help"
 msgstr "帮助"
 
-#: src/ui/main_window.c:822
+#: src/ui/main_window.c:840
 msgid "Type a Path and Press Enter"
 msgstr "输入路径后回车跳转"
 
-#: src/ui/main_window.c:824
+#: src/ui/main_window.c:842
 msgid "Address bar input"
 msgstr "地址栏输入框"
 
-#: src/ui/main_window.c:953
-msgid "Regedit"
-msgstr "注册表编辑器"
-
-#: src/ui/main_window.c:987
+#: src/ui/main_window.c:1005
 msgid "Edit status"
 msgstr "编辑状态"
 
@@ -471,30 +475,30 @@ msgstr "文件不同（缺少 diff 命令）。"
 msgid "Compare: %s ↔ %s"
 msgstr "比较：%s ↔ %s"
 
-#: src/ui/favorites.c:138
+#: src/ui/favorites.c:188
 msgid "Add to Favorites"
 msgstr "添加到收藏夹"
 
-#: src/ui/favorites.c:145
+#: src/ui/favorites.c:195
 msgid "Favorite Name (_F): "
 msgstr "收藏夹名称(_F): "
 
-#: src/ui/favorites.c:198
+#: src/ui/favorites.c:248
 msgid "No favorites yet."
 msgstr "还没有收藏夹。"
 
-#: src/ui/favorites.c:205
+#: src/ui/favorites.c:255
 msgid "Delete Favorite"
 msgstr "删除收藏夹"
 
-#: src/ui/favorites.c:211
+#: src/ui/favorites.c:261
 msgid "Select favorite: "
 msgstr "选择收藏夹:"
 
-#: src/ui/favorites.c:244
+#: src/ui/favorites.c:294
 msgid "Add to Favorites…"
 msgstr "添加到收藏夹…"
 
-#: src/ui/favorites.c:248
+#: src/ui/favorites.c:298
 msgid "Delete Favorite…"
 msgstr "删除收藏夹…"

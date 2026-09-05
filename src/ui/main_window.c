@@ -13,6 +13,20 @@
 #include <string.h>
 #include <sys/utsname.h>
 
+/* 窗口标题：Regedit（未打开任何内容）或 “路径 — Regedit” */
+static void
+update_window_title(LrMainWindow *mw, const char *path)
+{
+    gchar *title;
+
+    if (path == NULL || *path == '\0')
+        title = g_strdup(_("Regedit"));
+    else
+        title = g_strdup_printf("%s — %s", path, _("Regedit"));
+    gtk_window_set_title(GTK_WINDOW(mw->window), title);
+    g_free(title);
+}
+
 static void
 open_path(LrMainWindow *mw, const char *path, gboolean is_dir)
 {
@@ -24,6 +38,7 @@ open_path(LrMainWindow *mw, const char *path, gboolean is_dir)
         g_free(mw->current_path);
         mw->current_path = NULL;
         lr_window_state_set_path(mw->win_state, NULL);
+        update_window_title(mw, NULL);
         return;
     }
 
@@ -32,6 +47,7 @@ open_path(LrMainWindow *mw, const char *path, gboolean is_dir)
     g_free(mw->current_path);
     mw->current_path = g_strdup(path);
     lr_window_state_set_path(mw->win_state, path);
+    update_window_title(mw, path);
 
     if (is_dir)
         lr_value_pane_clear(mw->value);
@@ -590,6 +606,8 @@ open_find_dialog(LrMainWindow *mw)
     status = gtk_label_new(NULL);
     gtk_label_set_xalign(GTK_LABEL(status), 0.0f);
     atk_object_set_name(gtk_widget_get_accessible(status), _("Find status"));
+    gtk_label_set_text(GTK_LABEL(status),
+                       _("Searches the currently opened file."));
 
     gtk_box_pack_start(GTK_BOX(content), hbox, FALSE, FALSE, 8);
     gtk_box_pack_start(GTK_BOX(content), status, FALSE, FALSE, 4);
