@@ -190,6 +190,25 @@ def test_refresh_picks_up_external_change(regedit, fake_roots):
                timeout=8, message="refreshed content not visible")
 
 
+def test_toggle_address_bar(regedit):
+    """View → Address 勾选切换应隐藏/恢复地址栏。
+
+    注意：隐藏后 AT-SPI 节点仍然存在，必须用 SHOWING 状态判断可见性。
+    """
+    app = regedit.app
+    assert wait_node(app, name="Address bar input", role="text",
+                     state="SHOWING")
+
+    menu_item_activate(app, "View", "Address")
+    wait_until(lambda: tree.find(app, name="Address bar input", role="text",
+                                 state="SHOWING") is None,
+               timeout=5, message="address bar still SHOWING after toggle")
+
+    menu_item_activate(app, "View", "Address")
+    wait_node(app, name="Address bar input", role="text", state="SHOWING",
+              timeout=5)
+
+
 def test_snapshot_order_is_stable(regedit):
     """两次抓取无障碍树快照的结构与顺序应一致。"""
     snap1 = tree.snapshot(regedit.app, max_depth=30, max_nodes=300)
