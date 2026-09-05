@@ -231,6 +231,7 @@ void test_parsers(void)
         TEST_ASSERT_STR_EQ(it->data, "22");
         TEST_ASSERT(it->type == LR_VALUE_NUMBER);
         TEST_ASSERT(!it->enabled);
+        TEST_ASSERT(it->source_line == 1);
         /* 上方最近一条说明文字作为备注 */
         TEST_ASSERT_STR_EQ(it->comment, "注释行");
 

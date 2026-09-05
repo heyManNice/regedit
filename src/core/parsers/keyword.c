@@ -45,6 +45,7 @@ lr_parse_keyword(const char *content, gsize length, LrConfigFile *file)
     gchar **lines = NULL;
     gchar **linep;
     char *pending_comment = NULL;
+    guint line_idx = 0;
 
     (void)length;
     if (content == NULL)
@@ -55,8 +56,9 @@ lr_parse_keyword(const char *content, gsize length, LrConfigFile *file)
 
     lines = g_strsplit(content, "\n", -1);
 
-    for (linep = lines; linep != NULL && *linep != NULL; linep++)
+    for (line_idx = 0; lines[line_idx] != NULL; line_idx++)
     {
+        linep = &lines[line_idx];
         char *line = g_strstrip(*linep);
         char *content;
         char *space;
@@ -131,6 +133,7 @@ lr_parse_keyword(const char *content, gsize length, LrConfigFile *file)
             LrConfigItem *item = lr_config_item_new(
                 key, norm, lr_value_detect_type(norm), NULL, pending_comment);
             item->enabled = !commented;
+            item->source_line = line_idx;
             g_ptr_array_add(file->items, item);
             g_free(norm);
         }

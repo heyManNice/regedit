@@ -140,6 +140,30 @@ void test_writeback(void)
         g_free(out);
     }
 
+    /* 7b. keyword 风格：空白分隔行同样只替换值 */
+    {
+        const gchar *src = "Port 22\nProtocol 2\n";
+        gboolean ok = FALSE;
+        gchar *out = apply_one(src, LR_EDIT_SET_VALUE, 0, "Port", "2222",
+                               &ok);
+
+        TEST_ASSERT(ok);
+        TEST_ASSERT_STR_EQ(out, "Port 2222\nProtocol 2\n");
+        g_free(out);
+    }
+
+    /* 7c. keyword 风格：分隔空白保留 */
+    {
+        const gchar *src = "Port  22\n";
+        gboolean ok = FALSE;
+        gchar *out = apply_one(src, LR_EDIT_SET_VALUE, 0, "Port", "2222",
+                               &ok);
+
+        TEST_ASSERT(ok);
+        TEST_ASSERT_STR_EQ(out, "Port  2222\n");
+        g_free(out);
+    }
+
     /* 8. 重复键：按行号精确修改，不动其他同名行 */
     {
         const gchar *src = "[s]\na = 1\na = 2\n";
@@ -247,6 +271,23 @@ void test_writeback(void)
                                              &edits, &n, &err));
         TEST_ASSERT(n == 1);
         TEST_ASSERT(edits[0].type == LR_EDIT_DISABLE);
+        g_free(edits);
+    }
+
+    /* 12b. keyword 被注释行启用生成 ENABLE */
+    {
+        const gchar *src = "#Port 22\nProtocol 2\n";
+        LrRowState rows[] = {{0, "Port", "22", "true", NULL, "Number"},
+                             {1, "Protocol", "2", "true", NULL, "Number"}};
+        LrEdit *edits = NULL;
+        gsize n = 0;
+        GError *err = NULL;
+
+        TEST_ASSERT(lr_build_edits_from_rows("t.conf", src, rows, 2,
+                                             &edits, &n, &err));
+        TEST_ASSERT(err == NULL);
+        TEST_ASSERT(n >= 1);
+        TEST_ASSERT(edits[0].type == LR_EDIT_ENABLE);
         g_free(edits);
     }
 

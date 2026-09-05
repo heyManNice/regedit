@@ -737,7 +737,8 @@ void lr_value_pane_load_file(LrValuePane *self, const char *path)
     self->current_path = g_strdup(path);
     self->source_content = g_strdup(content);
     self->saveable = (fmt == LR_FORMAT_INI || fmt == LR_FORMAT_KV ||
-                      fmt == LR_FORMAT_SYSTEMD || fmt == LR_FORMAT_TOML);
+                      fmt == LR_FORMAT_SYSTEMD || fmt == LR_FORMAT_TOML ||
+                      fmt == LR_FORMAT_KEYWORD);
     if (!lr_format_supported(fmt))
     {
         show_text_content(self, content, len);

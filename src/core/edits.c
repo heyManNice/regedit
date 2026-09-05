@@ -111,14 +111,28 @@ parse_kv_line(const char *line, gsize *key_start, gsize *key_len,
     if (*key_len == 0)
         return FALSE;
 
-    while (line[i] == ' ' || line[i] == '\t')
-        i++;
-    if (line[i] != '=' && line[i] != ':')
-        return FALSE;
-    *sep = i;
-
-    i++;
-    *value_begin = skip_spaces_from(line, i);
+    {
+        gsize ws_sep = i;
+        while (line[i] == ' ' || line[i] == '\t')
+            i++;
+        if (line[i] == '=' || line[i] == ':')
+        {
+            *sep = i;
+            i++;
+            *value_begin = skip_spaces_from(line, i);
+        }
+        else if (ws_sep > *key_start && line[ws_sep] != '\0')
+        {
+            /* 空白分隔风格（keyword/扁平 KV）：ws_sep 即分隔位置，
+             * i 已越过空白，直接作为 value 起点 */
+            *sep = ws_sep;
+            *value_begin = i;
+        }
+        else
+        {
+            return FALSE;
+        }
+    }
 
     /* 找行内注释起点（引号外）与值结束 */
     *comment_start = strlen(line);
