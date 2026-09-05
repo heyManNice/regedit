@@ -74,7 +74,6 @@ msgstr "新建文件夹"
 
 #. 文件：导入 / 导出 / 打印 / 退出
 #: src/ui/main_window.c:418
-#, fuzzy
 msgid "File"
 msgstr "文件"
 
