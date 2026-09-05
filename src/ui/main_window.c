@@ -6,6 +6,7 @@
 #include "core/format.h"
 
 #include <gtk/gtk.h>
+#include <gdk/gdkkeysyms.h>
 #include <glib/gi18n.h>
 #include <string.h>
 #include <sys/utsname.h>
@@ -403,6 +404,194 @@ build_new_submenu(LrMainWindow *mw, GtkWidget *menu)
     }
 }
 
+/* ---------- 查找对话框（Edit → Find… / Ctrl+F / F3） ---------- */
+
+typedef struct
+{
+    LrMainWindow *mw;
+    GtkWidget *entry;
+    GtkWidget *status;
+    gchar *last_needle; /* 上次执行查找的词，用于区分 first/next */
+} FindCtx;
+
+static void
+find_destroy(FindCtx *ctx)
+{
+    if (ctx == NULL)
+        return;
+    g_free(ctx->last_needle);
+    g_free(ctx);
+}
+
+/* 执行一次查找：词未变且存在可继续状态时查找下一处，否则从头查找 */
+static gboolean
+find_do_next(FindCtx *ctx)
+{
+    LrMainWindow *mw = ctx->mw;
+    gchar *needle;
+    gboolean ok;
+    guint total = 0;
+
+    needle = g_strstrip(g_strdup(gtk_entry_get_text(GTK_ENTRY(ctx->entry))));
+    if (*needle == '\0')
+    {
+        g_free(needle);
+        gtk_label_set_text(GTK_LABEL(ctx->status),
+                           _("Type a search term."));
+        return FALSE;
+    }
+
+    if (lr_value_pane_search_has_query(mw->value) &&
+        ctx->last_needle != NULL &&
+        g_strcmp0(ctx->last_needle, needle) == 0)
+    {
+        ok = lr_value_pane_search_next(mw->value);
+        if (!ok)
+            gtk_label_set_text(GTK_LABEL(ctx->status),
+                               _("No matches found."));
+    }
+    else
+    {
+        g_free(ctx->last_needle);
+        ctx->last_needle = g_strdup(needle);
+        ok = lr_value_pane_search_first(mw->value, needle, &total);
+        if (!ok)
+        {
+            gtk_label_set_text(GTK_LABEL(ctx->status),
+                               _("No matches found."));
+        }
+        else
+        {
+            gchar *msg = g_strdup_printf(_("Found %u match(es)."), total);
+            gtk_label_set_text(GTK_LABEL(ctx->status), msg);
+            g_free(msg);
+        }
+    }
+
+    g_free(needle);
+    return ok;
+}
+
+static void
+on_find_dialog_response(GtkDialog *dialog, gint response_id,
+                        gpointer user_data)
+{
+    FindCtx *ctx = user_data;
+
+    if (response_id == GTK_RESPONSE_ACCEPT)
+    {
+        find_do_next(ctx);
+        gtk_widget_grab_focus(ctx->entry);
+        return;
+    }
+    gtk_widget_destroy(GTK_WIDGET(dialog));
+}
+
+static void
+on_find_dialog_destroy(GtkWidget *dialog, gpointer user_data)
+{
+    LrMainWindow *mw = user_data;
+    FindCtx *ctx = g_object_get_data(G_OBJECT(dialog), "lr-find-ctx");
+
+    if (mw != NULL && mw->find_dialog == dialog)
+        mw->find_dialog = NULL;
+    find_destroy(ctx);
+}
+
+static void
+open_find_dialog(LrMainWindow *mw)
+{
+    GtkWidget *dialog, *content, *hbox, *label, *status;
+    GtkWidget *entry;
+    FindCtx *ctx;
+
+    if (mw->find_dialog != NULL)
+    {
+        gtk_window_present(GTK_WINDOW(mw->find_dialog));
+        return;
+    }
+
+    dialog = gtk_dialog_new_with_buttons(
+        _("Find"), GTK_WINDOW(mw->window), GTK_DIALOG_DESTROY_WITH_PARENT,
+        _("Cancel"), GTK_RESPONSE_CANCEL, _("Find Next"),
+        GTK_RESPONSE_ACCEPT, NULL);
+    gtk_dialog_set_default_response(GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT);
+
+    ctx = g_new0(FindCtx, 1);
+    ctx->mw = mw;
+    g_object_set_data(G_OBJECT(dialog), "lr-find-ctx", ctx);
+    g_signal_connect(dialog, "response",
+                     G_CALLBACK(on_find_dialog_response), ctx);
+    g_signal_connect(dialog, "destroy",
+                     G_CALLBACK(on_find_dialog_destroy), mw);
+
+    content = gtk_dialog_get_content_area(GTK_DIALOG(dialog));
+    hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 8);
+    label = gtk_label_new(_("Find what:"));
+    entry = gtk_entry_new();
+    atk_object_set_name(gtk_widget_get_accessible(entry), _("Find what"));
+    gtk_entry_set_activates_default(GTK_ENTRY(entry), TRUE);
+    gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(hbox), entry, TRUE, TRUE, 0);
+
+    status = gtk_label_new(NULL);
+    gtk_label_set_xalign(GTK_LABEL(status), 0.0f);
+    atk_object_set_name(gtk_widget_get_accessible(status), _("Find status"));
+
+    gtk_box_pack_start(GTK_BOX(content), hbox, FALSE, FALSE, 8);
+    gtk_box_pack_start(GTK_BOX(content), status, FALSE, FALSE, 4);
+    gtk_widget_set_margin_start(hbox, 8);
+    gtk_widget_set_margin_end(hbox, 8);
+
+    ctx->entry = entry;
+    ctx->status = status;
+    mw->find_dialog = dialog;
+
+    gtk_widget_show_all(dialog);
+    lr_dialog_center_on(dialog, GTK_WINDOW(mw->window));
+    gtk_widget_grab_focus(entry);
+}
+
+static void
+on_find_activate(GtkWidget *widget, gpointer user_data)
+{
+    LrMainWindow *mw = user_data;
+    (void)widget;
+    open_find_dialog(mw);
+}
+
+static void
+on_find_next_activate(GtkWidget *widget, gpointer user_data)
+{
+    LrMainWindow *mw = user_data;
+    (void)widget;
+
+    if (!lr_value_pane_search_next(mw->value))
+        open_find_dialog(mw);
+}
+
+/* Ctrl+F 打开查找；F3 继续查找（无结果时打开对话框） */
+static gboolean
+on_window_key_press(GtkWidget *widget, GdkEventKey *event,
+                    gpointer user_data)
+{
+    LrMainWindow *mw = user_data;
+    (void)widget;
+
+    if ((event->state & GDK_CONTROL_MASK) != 0 && event->keyval == GDK_KEY_f)
+    {
+        open_find_dialog(mw);
+        return TRUE;
+    }
+    if (event->keyval == GDK_KEY_F3)
+    {
+        if (!lr_value_pane_search_next(mw->value))
+            open_find_dialog(mw);
+        return TRUE;
+    }
+    return FALSE;
+}
+
 static GtkWidget *
 build_menubar(LrMainWindow *mw)
 {
@@ -467,11 +656,11 @@ build_menubar(LrMainWindow *mw)
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
     item = gtk_menu_item_new_with_label(_("Find..."));
-    gtk_widget_set_sensitive(item, FALSE);
+    g_signal_connect(item, "activate", G_CALLBACK(on_find_activate), mw);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
     item = gtk_menu_item_new_with_label(_("Find Next"));
-    gtk_widget_set_sensitive(item, FALSE);
+    g_signal_connect(item, "activate", G_CALLBACK(on_find_next_activate), mw);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(menu_item), menu);
@@ -708,6 +897,8 @@ lr_main_window_new(void)
                      G_CALLBACK(on_configure_event), mw);
     g_signal_connect(mw->window, "window-state-event",
                      G_CALLBACK(on_window_state_event), mw);
+    g_signal_connect(mw->window, "key-press-event",
+                     G_CALLBACK(on_window_key_press), mw);
 
     vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 

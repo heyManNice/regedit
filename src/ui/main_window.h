@@ -19,6 +19,7 @@ typedef struct _LrMainWindow
     char *current_path;       /* 当前打开/选中的路径 */
     char *pending_path;       /* 恢复状态时待定位的路径 */
     LrWindowState *win_state; /* 窗口几何与上次路径状态 */
+    GtkWidget *find_dialog;   /* 查找对话框（Find…，单例） */
 } LrMainWindow;
 
 LrMainWindow *lr_main_window_new(void);

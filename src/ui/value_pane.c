@@ -45,6 +45,13 @@ struct _LrValuePane
     char *current_basename; /* 当前配置文件 basename（用于 man 5 查询） */
     char *current_name;     /* 当前选中配置项名（用于过滤段落） */
     GHashTable *man_pages;  /* basename → ManPage*（整页文本 + 是否有页） */
+
+    /* 表格内查找状态 */
+    GPtrArray *search_rows; /* 表行快照（GtkTreeIter*，加载后扁平化） */
+    gchar *search_needle;   /* 上次查找词 */
+    guint search_index;     /* 上次命中的行下标 */
+    guint search_total;     /* 最近一次 first 扫描的总命中数 */
+    gboolean search_valid;  /* 是否存在可继续的查找 */
 };
 
 /* 一个配置文件的 man 页缓存（整页文本 + 是否存在该页） */
@@ -491,6 +498,158 @@ lr_value_pane_load_json(LrValuePane *self, const char *content, gsize length)
     g_object_unref(parser);
 }
 
+/* ---------- 表格内查找（Edit → Find… / F3） ---------- */
+
+static void
+search_reset(LrValuePane *self)
+{
+    if (self->search_rows != NULL)
+        g_ptr_array_unref(self->search_rows);
+    self->search_rows = NULL;
+    g_free(self->search_needle);
+    self->search_needle = NULL;
+    self->search_index = 0;
+    self->search_total = 0;
+    self->search_valid = FALSE;
+}
+
+/* 递归收集子树全部行（含节/容器行），快照为 GtkTreeIter 数组 */
+static void
+collect_rows_recursive(GtkTreeModel *model, GtkTreeIter *parent,
+                       GPtrArray *out)
+{
+    GtkTreeIter iter;
+    gboolean valid = (parent == NULL)
+                         ? gtk_tree_model_get_iter_first(model, &iter)
+                         : gtk_tree_model_iter_children(model, &iter, parent);
+
+    while (valid)
+    {
+        g_ptr_array_add(out, g_memdup2(&iter, sizeof(GtkTreeIter)));
+        collect_rows_recursive(model, &iter, out);
+        valid = gtk_tree_model_iter_next(model, &iter);
+    }
+}
+
+/* 折叠后是否包含查找词（大小写不敏感，UTF-8 安全） */
+static gboolean
+text_contains(const gchar *text, const gchar *folded_needle)
+{
+    gchar *folded;
+    gboolean ok;
+
+    if (text == NULL || *text == '\0')
+        return FALSE;
+    folded = g_utf8_casefold(text, -1);
+    ok = strstr(folded, folded_needle) != NULL;
+    g_free(folded);
+    return ok;
+}
+
+static gboolean
+row_matches(LrValuePane *self, GtkTreeIter *iter, const gchar *folded)
+{
+    gchar *name = NULL, *data = NULL, *comment = NULL;
+    gboolean ok;
+
+    gtk_tree_model_get(GTK_TREE_MODEL(self->store), iter,
+                       COL_NAME, &name, COL_DATA, &data,
+                       COL_COMMENT, &comment, -1);
+    ok = text_contains(name, folded) || text_contains(data, folded) ||
+         text_contains(comment, folded);
+    g_free(name);
+    g_free(data);
+    g_free(comment);
+    return ok;
+}
+
+/* 选中并滚动到指定行 */
+static void
+select_row(LrValuePane *self, GtkTreeIter *iter)
+{
+    GtkTreePath *path = gtk_tree_model_get_path(GTK_TREE_MODEL(self->store),
+                                                iter);
+    gtk_tree_view_set_cursor(self->view, path, NULL, FALSE);
+    gtk_tree_view_scroll_to_cell(self->view, path, NULL, FALSE, 0.0, 0.0);
+    gtk_tree_path_free(path);
+}
+
+gboolean
+lr_value_pane_search_first(LrValuePane *self, const char *needle,
+                           guint *matches)
+{
+    gchar *folded;
+    guint i, total = 0;
+    gboolean found = FALSE;
+
+    if (self == NULL || needle == NULL || *needle == '\0')
+        return FALSE;
+
+    search_reset(self);
+    self->search_rows =
+        g_ptr_array_new_with_free_func((GDestroyNotify)g_free);
+    collect_rows_recursive(GTK_TREE_MODEL(self->store), NULL,
+                           self->search_rows);
+
+    folded = g_utf8_casefold(needle, -1);
+    for (i = 0; i < self->search_rows->len; i++)
+    {
+        GtkTreeIter *it = g_ptr_array_index(self->search_rows, i);
+        if (!row_matches(self, it, folded))
+            continue;
+        total++;
+        if (!found)
+        {
+            select_row(self, it);
+            self->search_index = i;
+            found = TRUE;
+        }
+    }
+    g_free(folded);
+
+    self->search_total = total;
+    self->search_valid = TRUE;
+    self->search_needle = g_strdup(needle);
+    if (matches != NULL)
+        *matches = total;
+    return found;
+}
+
+gboolean
+lr_value_pane_search_next(LrValuePane *self)
+{
+    gchar *folded;
+    guint len, k, idx;
+
+    if (self == NULL || !self->search_valid ||
+        self->search_rows == NULL || self->search_rows->len == 0)
+        return FALSE;
+
+    len = self->search_rows->len;
+    folded = g_utf8_casefold(self->search_needle, -1);
+    for (k = 1; k <= len; k++)
+    {
+        idx = (self->search_index + k) % len;
+        GtkTreeIter *it = g_ptr_array_index(self->search_rows, idx);
+        if (row_matches(self, it, folded))
+        {
+            g_free(folded);
+            select_row(self, it);
+            self->search_index = idx;
+            return TRUE;
+        }
+    }
+    g_free(folded);
+    return FALSE;
+}
+
+gboolean
+lr_value_pane_search_has_query(LrValuePane *self)
+{
+    return self != NULL && self->search_valid &&
+           self->search_needle != NULL && *self->search_needle != '\0';
+}
+
 void lr_value_pane_load_file(LrValuePane *self, const char *path)
 {
     gchar *content = NULL;
@@ -498,6 +657,7 @@ void lr_value_pane_load_file(LrValuePane *self, const char *path)
     GError *error = NULL;
     LrConfigFormat fmt;
 
+    search_reset(self);
     g_free(self->current_basename);
     self->current_basename = g_path_get_basename(path);
 
@@ -625,6 +785,7 @@ void lr_value_pane_load_file(LrValuePane *self, const char *path)
 
 void lr_value_pane_clear(LrValuePane *self)
 {
+    search_reset(self);
     gtk_tree_store_clear(self->store);
     gtk_tree_store_clear(self->json_store);
     gtk_stack_set_visible_child_name(GTK_STACK(self->stack), "empty");
@@ -1216,6 +1377,7 @@ void lr_value_pane_free(LrValuePane *self)
 {
     if (self == NULL)
         return;
+    search_reset(self);
     g_free(self->current_basename);
     g_free(self->current_name);
     g_hash_table_destroy(self->man_pages);

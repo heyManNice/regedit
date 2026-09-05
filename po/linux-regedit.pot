@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-05 11:22+0000\n"
+"POT-Creation-Date: 2026-09-05 11:28+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,35 +17,35 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/ui/main_window.c:19 src/ui/tree_pane.c:76
+#: src/ui/main_window.c:20 src/ui/tree_pane.c:76
 msgid "Computer"
 msgstr ""
 
-#: src/ui/main_window.c:183 src/ui/main_window.c:517
+#: src/ui/main_window.c:184 src/ui/main_window.c:706
 msgid "About Regedit"
 msgstr ""
 
-#: src/ui/main_window.c:183 src/ui/export.c:182 src/ui/favorites.c:139
+#: src/ui/main_window.c:184 src/ui/export.c:182 src/ui/favorites.c:139
 #: src/ui/favorites.c:206
 msgid "OK"
 msgstr ""
 
-#: src/ui/main_window.c:202 src/ui/main_window.c:203 src/ui/main_window.c:204
-#: src/ui/main_window.c:217 src/core/format.c:345
+#: src/ui/main_window.c:203 src/ui/main_window.c:204 src/ui/main_window.c:205
+#: src/ui/main_window.c:218 src/core/format.c:345
 msgid "Unknown"
 msgstr ""
 
-#: src/ui/main_window.c:269
+#: src/ui/main_window.c:270
 #, c-format
 msgid "Version %s (Linux %s, %s, %s)"
 msgstr ""
 
 #. 行3：版权符号 + 文案
-#: src/ui/main_window.c:275
+#: src/ui/main_window.c:276
 msgid "© heyManNice All rights reversed."
 msgstr ""
 
-#: src/ui/main_window.c:282
+#: src/ui/main_window.c:283
 msgid ""
 "This GNU/Linux operating system and its components are built upon Free and "
 "Open-Source Software (FOSS) and are distributed by their respective "
@@ -56,189 +56,223 @@ msgid ""
 msgstr ""
 
 #. 许可行
-#: src/ui/main_window.c:294
+#: src/ui/main_window.c:295
 msgid ""
 "In accordance with open source licenses, the following users are allowed to "
 "use it"
 msgstr ""
 
-#: src/ui/main_window.c:372 src/ui/tree_pane.c:367
+#: src/ui/main_window.c:373 src/ui/tree_pane.c:367
 msgid "Folder"
 msgstr ""
 
-#: src/ui/main_window.c:374 src/ui/tree_pane.c:369
+#: src/ui/main_window.c:375 src/ui/tree_pane.c:369
 msgid "New Folder"
 msgstr ""
 
+#: src/ui/main_window.c:440
+msgid "Type a search term."
+msgstr ""
+
+#: src/ui/main_window.c:451 src/ui/main_window.c:461
+msgid "No matches found."
+msgstr ""
+
+#: src/ui/main_window.c:465
+#, c-format
+msgid "Found %u match(es)."
+msgstr ""
+
+#: src/ui/main_window.c:515 src/ui/tree_pane.c:427 src/ui/tree_pane.c:429
+msgid "Find"
+msgstr ""
+
+#: src/ui/main_window.c:516 src/ui/export.c:105 src/ui/export.c:181
+#: src/ui/favorites.c:138 src/ui/favorites.c:205
+msgid "Cancel"
+msgstr ""
+
+#: src/ui/main_window.c:516 src/ui/main_window.c:662
+msgid "Find Next"
+msgstr ""
+
+#: src/ui/main_window.c:530
+msgid "Find what:"
+msgstr ""
+
+#: src/ui/main_window.c:532
+msgid "Find what"
+msgstr ""
+
+#: src/ui/main_window.c:539
+msgid "Find status"
+msgstr ""
+
 #. 文件：导入 / 导出 / 打印 / 退出
-#: src/ui/main_window.c:413
+#: src/ui/main_window.c:602
 msgid "File"
 msgstr ""
 
-#: src/ui/main_window.c:416
+#: src/ui/main_window.c:605
 msgid "Import..."
 msgstr ""
 
-#: src/ui/main_window.c:420
+#: src/ui/main_window.c:609
 msgid "Export..."
 msgstr ""
 
-#: src/ui/main_window.c:424
+#: src/ui/main_window.c:613
 msgid "Print"
 msgstr ""
 
-#: src/ui/main_window.c:431
+#: src/ui/main_window.c:620
 msgid "Quit"
 msgstr ""
 
 #. 编辑：新建 / 权限 / 删除 / 重命名 / 复制项名称 / 查找 / 查找下一个
-#: src/ui/main_window.c:439
+#: src/ui/main_window.c:628
 msgid "Edit"
 msgstr ""
 
-#: src/ui/main_window.c:442 src/ui/value_pane.c:1044 src/ui/tree_pane.c:418
+#: src/ui/main_window.c:631 src/ui/value_pane.c:1205 src/ui/tree_pane.c:418
 msgid "New"
 msgstr ""
 
-#: src/ui/main_window.c:450 src/ui/tree_pane.c:447 src/ui/tree_pane.c:449
+#: src/ui/main_window.c:639 src/ui/tree_pane.c:447 src/ui/tree_pane.c:449
 msgid "Permission"
 msgstr ""
 
-#: src/ui/main_window.c:454 src/ui/tree_pane.c:432 src/ui/tree_pane.c:434
+#: src/ui/main_window.c:643 src/ui/tree_pane.c:432 src/ui/tree_pane.c:434
 msgid "Delete"
 msgstr ""
 
-#: src/ui/main_window.c:458 src/ui/tree_pane.c:437 src/ui/tree_pane.c:439
+#: src/ui/main_window.c:647 src/ui/tree_pane.c:437 src/ui/tree_pane.c:439
 msgid "Rename"
 msgstr ""
 
-#: src/ui/main_window.c:462 src/ui/tree_pane.c:455
+#: src/ui/main_window.c:651 src/ui/tree_pane.c:455
 msgid "Copy Name"
 msgstr ""
 
-#: src/ui/main_window.c:469
+#: src/ui/main_window.c:658
 msgid "Find..."
 msgstr ""
 
-#: src/ui/main_window.c:473
-msgid "Find Next"
-msgstr ""
-
 #. 查看：地址栏 / 拆分 / 刷新 / 字体
-#: src/ui/main_window.c:481
+#: src/ui/main_window.c:670
 msgid "View"
 msgstr ""
 
-#: src/ui/main_window.c:484
+#: src/ui/main_window.c:673
 msgid "Address"
 msgstr ""
 
-#: src/ui/main_window.c:489
+#: src/ui/main_window.c:678
 msgid "Split"
 msgstr ""
 
-#: src/ui/main_window.c:496
+#: src/ui/main_window.c:685
 msgid "Refresh"
 msgstr ""
 
-#: src/ui/main_window.c:500
+#: src/ui/main_window.c:689
 msgid "Fonts"
 msgstr ""
 
 #. 收藏夹：添加/删除 + 分割线 + 收藏项（菜单显示时动态刷新）
-#: src/ui/main_window.c:508
+#: src/ui/main_window.c:697
 msgid "Favorites"
 msgstr ""
 
 #. 帮助
-#: src/ui/main_window.c:515
+#: src/ui/main_window.c:704
 msgid "Help"
 msgstr ""
 
-#: src/ui/main_window.c:589
+#: src/ui/main_window.c:778
 msgid "Type a Path and Press Enter"
 msgstr ""
 
-#: src/ui/main_window.c:591
+#: src/ui/main_window.c:780
 msgid "Address bar input"
 msgstr ""
 
-#: src/ui/main_window.c:702
+#: src/ui/main_window.c:891
 msgid "Regedit"
 msgstr ""
 
-#: src/ui/value_pane.c:132
+#: src/ui/value_pane.c:139
 msgid "man query failed."
 msgstr ""
 
-#: src/ui/value_pane.c:157 src/ui/value_pane.c:226
+#: src/ui/value_pane.c:164 src/ui/value_pane.c:233
 #, c-format
 msgid "No manual entry found for %s!"
 msgstr ""
 
-#: src/ui/value_pane.c:173 src/ui/value_pane.c:233
+#: src/ui/value_pane.c:180 src/ui/value_pane.c:240
 msgid "No manual entry for that name."
 msgstr ""
 
-#: src/ui/value_pane.c:194
+#: src/ui/value_pane.c:201
 #, c-format
 msgid "Explain: %s (man 5 %s)"
 msgstr ""
 
-#: src/ui/value_pane.c:207
+#: src/ui/value_pane.c:214
 msgid "Could not resolve the configuration filename."
 msgstr ""
 
-#: src/ui/value_pane.c:238
+#: src/ui/value_pane.c:245
 msgid "Fetching man page..."
 msgstr ""
 
-#: src/ui/value_pane.c:258
+#: src/ui/value_pane.c:265
 msgid "Unable to start manual page query."
 msgstr ""
 
-#: src/ui/value_pane.c:344
+#: src/ui/value_pane.c:351
 msgid "Unable to read file."
 msgstr ""
 
-#: src/ui/value_pane.c:507
+#: src/ui/value_pane.c:667
 #, c-format
 msgid "Unable to read file: %s"
 msgstr ""
 
-#: src/ui/value_pane.c:509 src/ui/export.c:161
+#: src/ui/value_pane.c:669 src/ui/export.c:161
 msgid "Unknown Error"
 msgstr ""
 
-#: src/ui/value_pane.c:902
+#: src/ui/value_pane.c:1063
 msgid "Enable"
 msgstr ""
 
-#: src/ui/value_pane.c:961 src/ui/value_pane.c:1159
+#: src/ui/value_pane.c:1122 src/ui/value_pane.c:1320
 msgid "Type"
 msgstr ""
 
-#: src/ui/value_pane.c:984 src/ui/value_pane.c:1160
+#: src/ui/value_pane.c:1145 src/ui/value_pane.c:1321
 msgid "Data"
 msgstr ""
 
-#: src/ui/value_pane.c:1083
+#: src/ui/value_pane.c:1244
 msgid "Value panel"
 msgstr ""
 
-#: src/ui/value_pane.c:1104
+#: src/ui/value_pane.c:1265
 msgid "Value table"
 msgstr ""
 
-#: src/ui/value_pane.c:1113 src/ui/value_pane.c:1158
+#: src/ui/value_pane.c:1274 src/ui/value_pane.c:1319
 msgid "Name"
 msgstr ""
 
-#: src/ui/value_pane.c:1116 src/ui/value_pane.c:1178
+#: src/ui/value_pane.c:1277 src/ui/value_pane.c:1339
 msgid "Note"
 msgstr ""
 
-#: src/ui/value_pane.c:1156
+#: src/ui/value_pane.c:1317
 msgid "JSON tree"
 msgstr ""
 
@@ -310,10 +344,6 @@ msgstr ""
 msgid "Expand"
 msgstr ""
 
-#: src/ui/tree_pane.c:427 src/ui/tree_pane.c:429
-msgid "Find"
-msgstr ""
-
 #: src/ui/tree_pane.c:442 src/ui/tree_pane.c:444 src/ui/export.c:181
 msgid "Export"
 msgstr ""
@@ -345,11 +375,6 @@ msgstr ""
 
 #: src/ui/export.c:105
 msgid "Export to..."
-msgstr ""
-
-#: src/ui/export.c:105 src/ui/export.c:181 src/ui/favorites.c:138
-#: src/ui/favorites.c:205
-msgid "Cancel"
 msgstr ""
 
 #: src/ui/export.c:106
