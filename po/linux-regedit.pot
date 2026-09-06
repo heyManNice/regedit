@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-06 09:45+0000\n"
+"POT-Creation-Date: 2026-09-06 13:13+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -153,7 +153,7 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
-#: src/ui/main_window.c:746 src/ui/value_pane.c:1473
+#: src/ui/main_window.c:746 src/ui/value_pane.c:1499
 msgid "New"
 msgstr ""
 
@@ -260,35 +260,39 @@ msgstr ""
 msgid "Enable"
 msgstr ""
 
-#: src/ui/value_pane.c:1313 src/ui/value_pane.c:1476 src/ui/value_pane.c:1615
+#: src/ui/value_pane.c:1313 src/ui/value_pane.c:1502 src/ui/value_pane.c:1650
 msgid "Type"
 msgstr ""
 
-#: src/ui/value_pane.c:1336 src/ui/value_pane.c:1616
+#: src/ui/value_pane.c:1336 src/ui/value_pane.c:1651
 msgid "Data"
 msgstr ""
 
-#: src/ui/value_pane.c:1462
+#: src/ui/value_pane.c:1488
 msgid "Detect automatically"
 msgstr ""
 
-#: src/ui/value_pane.c:1539
+#: src/ui/value_pane.c:1520
+msgid "Comment Out (soft delete)"
+msgstr ""
+
+#: src/ui/value_pane.c:1574
 msgid "Value panel"
 msgstr ""
 
-#: src/ui/value_pane.c:1560
+#: src/ui/value_pane.c:1595
 msgid "Value table"
 msgstr ""
 
-#: src/ui/value_pane.c:1569 src/ui/value_pane.c:1614
+#: src/ui/value_pane.c:1604 src/ui/value_pane.c:1649
 msgid "Name"
 msgstr ""
 
-#: src/ui/value_pane.c:1572 src/ui/value_pane.c:1634
+#: src/ui/value_pane.c:1607 src/ui/value_pane.c:1669
 msgid "Note"
 msgstr ""
 
-#: src/ui/value_pane.c:1612
+#: src/ui/value_pane.c:1647
 msgid "JSON tree"
 msgstr ""
 
@@ -532,43 +536,44 @@ msgstr ""
 msgid "line is already commented"
 msgstr ""
 
-#: src/core/edits.c:328
+#: src/core/edits.c:343
 msgid "source file could not be parsed for edits"
 msgstr ""
 
-#: src/core/edits.c:344
+#: src/core/edits.c:359
 msgid "new rows cannot be saved yet"
 msgstr ""
 
-#: src/core/edits.c:351
+#: src/core/edits.c:366
 #, c-format
 msgid "source line %u not found"
 msgstr ""
 
-#: src/core/edits.c:359
+#: src/core/edits.c:374
 #, c-format
 msgid "renaming key on line %u is not supported yet"
 msgstr ""
 
-#: src/core/edits.c:368
+#: src/core/edits.c:383
 #, c-format
 msgid "type override on line %u is not supported yet"
 msgstr ""
 
-#: src/core/edits.c:380
+#: src/core/edits.c:395
 #, c-format
 msgid "comment edit on line %u is not supported yet"
 msgstr ""
 
-#: src/core/edits.c:461
+#: src/core/edits.c:449 src/core/edits.c:486
+#, c-format
+msgid "line %u out of range"
+msgstr ""
+
+#: src/core/edits.c:495
 msgid "unknown edit type"
 msgstr ""
 
-#: src/core/write.c:70
-msgid "round-trip gate: item count changed"
-msgstr ""
-
-#: src/core/write.c:101
+#: src/core/write.c:96
 #, c-format
 msgid "round-trip gate: item %s missing after edit"
 msgstr ""
@@ -578,18 +583,23 @@ msgstr ""
 msgid "round-trip gate: unintended change on line %u"
 msgstr ""
 
-#: src/core/write.c:150
+#: src/core/write.c:129
+#, c-format
+msgid "round-trip gate: unexpected item %s added"
+msgstr ""
+
+#: src/core/write.c:168
 msgid "refusing to write through a symbolic link"
 msgstr ""
 
-#: src/core/write.c:159
+#: src/core/write.c:177
 msgid "file changed on disk since it was opened"
 msgstr ""
 
-#: src/core/write.c:181
+#: src/core/write.c:199
 msgid "cannot create backup directory"
 msgstr ""
 
-#: src/core/write.c:222
+#: src/core/write.c:240
 msgid "post-write parse check failed; rolling back"
 msgstr ""

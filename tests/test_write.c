@@ -216,6 +216,23 @@ void test_write(void)
         TEST_ASSERT((st.st_mode & 07777) == 0640);
     }
 
+    /* 9. 物理删除行：安全管线写回后行消失、其余保留 */
+    {
+        const gchar *src = "[s]\na = 1\nb = 2\nc = 3\n";
+        LrEdit edit = {LR_EDIT_REMOVE, 2, NULL, NULL};
+        GError *err = NULL;
+        gboolean ok;
+
+        g_file_set_contents(path, src, -1, NULL);
+        ok = lr_save_config_file(path, src, &edit, 1, &err);
+        TEST_ASSERT(ok);
+        TEST_ASSERT(err == NULL);
+        gchar *now = read_file(path);
+        TEST_ASSERT_STR_EQ(now, "[s]\na = 1\nc = 3\n");
+        g_free(now);
+        g_clear_error(&err);
+    }
+
     g_free(path);
     g_free(data_home);
     g_free(base);

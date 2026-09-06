@@ -1437,6 +1437,32 @@ on_popup_detect_type(GtkMenuItem *item, gpointer user_data)
     }
 }
 
+/* 右键菜单动作：软删除 = 把启用列置为 false，保存时写回为注释行 */
+static void
+on_popup_comment_out(GtkMenuItem *item, gpointer user_data)
+{
+    LrValuePane *self = user_data;
+    GtkTreeIter iter;
+    gchar *type = NULL;
+
+    (void)item;
+    if (self->popup_path == NULL)
+        return;
+    if (!gtk_tree_model_get_iter(GTK_TREE_MODEL(self->store),
+                                 &iter, self->popup_path))
+        return;
+    gtk_tree_model_get(GTK_TREE_MODEL(self->store), &iter,
+                       COL_TYPE, &type, -1);
+    if (g_strcmp0(type, "Section") == 0)
+    {
+        g_free(type);
+        return;
+    }
+    g_free(type);
+    gtk_tree_store_set(self->store, &iter, COL_ENABLED, "false", -1);
+    value_pane_set_dirty(self, TRUE);
+}
+
 /* 类型子菜单：String / Boolean / Number + 自动识别 */
 static void
 build_type_submenu(LrValuePane *self, GtkWidget *menu)
@@ -1475,6 +1501,7 @@ show_value_popup_menu(LrValuePane *self, GdkEventButton *event)
     GtkWidget *sep;
     GtkWidget *type_item = gtk_menu_item_new_with_label(_("Type"));
     GtkWidget *type_sub = gtk_menu_new();
+    GtkWidget *item;
 
     build_new_submenu(self, new_sub);
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(new_item), new_sub);
@@ -1486,6 +1513,14 @@ show_value_popup_menu(LrValuePane *self, GdkEventButton *event)
     build_type_submenu(self, type_sub);
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(type_item), type_sub);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), type_item);
+
+    item = gtk_separator_menu_item_new();
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
+
+    item = gtk_menu_item_new_with_label(_("Comment Out (soft delete)"));
+    g_signal_connect(item, "activate", G_CALLBACK(on_popup_comment_out),
+                     self);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
 
     gtk_widget_show_all(menu);
     gtk_menu_popup_at_pointer(GTK_MENU(menu), (GdkEvent *)event);

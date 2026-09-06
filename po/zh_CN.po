@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linux-regedit 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-06 09:45+0000\n"
+"POT-Creation-Date: 2026-09-06 13:13+0000\n"
 "PO-Revision-Date: 2026-08-24 17:05+0800\n"
 "Last-Translator: SMILE CAI <smile.cai@yandex.com>\n"
 "Language-Team: Chinese (simplified) <i18n-zh@googlegroups.com>\n"
@@ -155,7 +155,7 @@ msgstr "退出"
 msgid "Edit"
 msgstr "编辑"
 
-#: src/ui/main_window.c:746 src/ui/value_pane.c:1473
+#: src/ui/main_window.c:746 src/ui/value_pane.c:1499
 msgid "New"
 msgstr "新建"
 
@@ -262,35 +262,39 @@ msgstr "没有可保存的文件。"
 msgid "Enable"
 msgstr "启用"
 
-#: src/ui/value_pane.c:1313 src/ui/value_pane.c:1476 src/ui/value_pane.c:1615
+#: src/ui/value_pane.c:1313 src/ui/value_pane.c:1502 src/ui/value_pane.c:1650
 msgid "Type"
 msgstr "类型"
 
-#: src/ui/value_pane.c:1336 src/ui/value_pane.c:1616
+#: src/ui/value_pane.c:1336 src/ui/value_pane.c:1651
 msgid "Data"
 msgstr "数据"
 
-#: src/ui/value_pane.c:1462
+#: src/ui/value_pane.c:1488
 msgid "Detect automatically"
 msgstr "自动识别"
 
-#: src/ui/value_pane.c:1539
+#: src/ui/value_pane.c:1520
+msgid "Comment Out (soft delete)"
+msgstr "注释掉（软删除）"
+
+#: src/ui/value_pane.c:1574
 msgid "Value panel"
 msgstr "配置面板"
 
-#: src/ui/value_pane.c:1560
+#: src/ui/value_pane.c:1595
 msgid "Value table"
 msgstr "配置项表格"
 
-#: src/ui/value_pane.c:1569 src/ui/value_pane.c:1614
+#: src/ui/value_pane.c:1604 src/ui/value_pane.c:1649
 msgid "Name"
 msgstr "名称"
 
-#: src/ui/value_pane.c:1572 src/ui/value_pane.c:1634
+#: src/ui/value_pane.c:1607 src/ui/value_pane.c:1669
 msgid "Note"
 msgstr "备注"
 
-#: src/ui/value_pane.c:1612
+#: src/ui/value_pane.c:1647
 msgid "JSON tree"
 msgstr "JSON 树"
 
@@ -536,43 +540,44 @@ msgstr "该行未被注释。"
 msgid "line is already commented"
 msgstr "该行已被注释。"
 
-#: src/core/edits.c:328
+#: src/core/edits.c:343
 msgid "source file could not be parsed for edits"
 msgstr "无法解析源文件以生成编辑。"
 
-#: src/core/edits.c:344
+#: src/core/edits.c:359
 msgid "new rows cannot be saved yet"
 msgstr "新增行暂不支持保存。"
 
-#: src/core/edits.c:351
+#: src/core/edits.c:366
 #, c-format
 msgid "source line %u not found"
 msgstr "找不到源文件第 %u 行。"
 
-#: src/core/edits.c:359
+#: src/core/edits.c:374
 #, c-format
 msgid "renaming key on line %u is not supported yet"
 msgstr "暂不支持重命名第 %u 行的键。"
 
-#: src/core/edits.c:368
+#: src/core/edits.c:383
 #, c-format
 msgid "type override on line %u is not supported yet"
 msgstr "暂不支持覆盖第 %u 行的类型。"
 
-#: src/core/edits.c:380
+#: src/core/edits.c:395
 #, c-format
 msgid "comment edit on line %u is not supported yet"
 msgstr "暂不支持修改第 %u 行的备注。"
 
-#: src/core/edits.c:461
+#: src/core/edits.c:449 src/core/edits.c:486
+#, c-format
+msgid "line %u out of range"
+msgstr "第 %u 行超出范围。"
+
+#: src/core/edits.c:495
 msgid "unknown edit type"
 msgstr "未知的编辑类型。"
 
-#: src/core/write.c:70
-msgid "round-trip gate: item count changed"
-msgstr "往返校验失败：条目数量发生变化。"
-
-#: src/core/write.c:101
+#: src/core/write.c:96
 #, c-format
 msgid "round-trip gate: item %s missing after edit"
 msgstr "往返校验失败：编辑后缺少配置项 %s。"
@@ -582,23 +587,23 @@ msgstr "往返校验失败：编辑后缺少配置项 %s。"
 msgid "round-trip gate: unintended change on line %u"
 msgstr "往返校验失败：第 %u 行出现非预期修改。"
 
-#: src/core/write.c:150
+#: src/core/write.c:129
+#, c-format
+msgid "round-trip gate: unexpected item %s added"
+msgstr "往返校验失败：编辑后出现非预期的配置项 %s。"
+
+#: src/core/write.c:168
 msgid "refusing to write through a symbolic link"
 msgstr "拒绝通过符号链接写入。"
 
-#: src/core/write.c:159
+#: src/core/write.c:177
 msgid "file changed on disk since it was opened"
 msgstr "文件在打开后已被外部修改。"
 
-#: src/core/write.c:181
+#: src/core/write.c:199
 msgid "cannot create backup directory"
 msgstr "无法创建备份目录。"
 
-#: src/core/write.c:222
+#: src/core/write.c:240
 msgid "post-write parse check failed; rolling back"
 msgstr "写入后校验失败，已回滚。"
-
-#~ msgid ""
-#~ "Editing in memory only — changes are lost when switching files (this "
-#~ "build is read-only)."
-#~ msgstr "仅内存编辑：切换文件后修改将丢失（当前版本为只读）。"

@@ -9,6 +9,7 @@ typedef enum
     LR_EDIT_SET_VALUE, /* 只替换 value 区段（保留引号/行内注释/前缀） */
     LR_EDIT_ENABLE,    /* 去掉行首注释标记 */
     LR_EDIT_DISABLE,   /* 在行首加注释标记 */
+    LR_EDIT_REMOVE,    /* 物理删除整行（含行尾） */
 } LrEditType;
 
 typedef struct

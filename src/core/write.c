@@ -56,67 +56,85 @@ semantic_gate(const char *path, const char *source_content,
                                                   strlen(source_content));
     LrConfigFile *new_f = lr_parse_config_content(path, candidate,
                                                   strlen(candidate));
-    guint i;
+    guint i, j;
     gboolean ok = TRUE;
-    gsize k, disabled_lines = 0;
+    gboolean *consumed;
+    gsize k;
 
-    for (k = 0; k < n_edits; k++)
-        if (edits[k].type == LR_EDIT_DISABLE)
-            disabled_lines++;
-
-    if (new_f->items->len + disabled_lines != old_f->items->len)
-    {
-        g_set_error_literal(error, G_IO_ERROR, G_IO_ERROR_FAILED,
-                            _("round-trip gate: item count changed"));
-        ok = FALSE;
-        goto out;
-    }
+    consumed = g_new0(gboolean, new_f->items->len);
 
     for (i = 0; i < old_f->items->len && ok; i++)
     {
         LrConfigItem *old_it = g_ptr_array_index(old_f->items, i);
-        LrConfigItem *new_it = NULL;
-        guint j;
-        gboolean edited = FALSE;
+        gint op = -1;
+        gint found = -1;
 
         for (k = 0; k < n_edits; k++)
             if (edits[k].line == old_it->source_line)
-                edited = TRUE;
-        if (edited)
-            continue; /* 被编辑/被禁用的行不再做逐项比对 */
+                op = edits[k].type;
+
+        if (op == LR_EDIT_REMOVE)
+            continue; /* 物理删除：允许该项消失 */
 
         for (j = 0; j < new_f->items->len; j++)
         {
             LrConfigItem *cand = g_ptr_array_index(new_f->items, j);
-            if (cand->source_line == old_it->source_line &&
-                g_strcmp0(cand->key, old_it->key) == 0)
+            if (!consumed[j] &&
+                g_strcmp0(cand->key, old_it->key) == 0 &&
+                g_strcmp0(cand->section, old_it->section) == 0)
             {
-                new_it = cand;
+                found = (gint)j;
                 break;
             }
         }
-        if (new_it == NULL)
+
+        if (found < 0)
         {
+            if (op == LR_EDIT_DISABLE)
+                continue; /* 注释掉整行：某些格式解析后该项消失，允许 */
             g_set_error(error, G_IO_ERROR, G_IO_ERROR_FAILED,
                         _("round-trip gate: item %s missing after edit"),
                         old_it->key);
             ok = FALSE;
             break;
         }
+        consumed[found] = TRUE;
 
-        if (g_strcmp0(old_it->data, new_it->data) != 0 ||
-            g_strcmp0(old_it->section, new_it->section) != 0 ||
-            g_strcmp0(old_it->comment, new_it->comment) != 0 ||
-            old_it->enabled != new_it->enabled)
+        if (op >= 0)
+            continue; /* 被编辑的行不做逐项比对 */
+
         {
-            g_set_error(error, G_IO_ERROR, G_IO_ERROR_FAILED,
-                        _("round-trip gate: unintended change on line %u"),
-                        old_it->source_line);
-            ok = FALSE;
+            LrConfigItem *new_it = g_ptr_array_index(new_f->items, found);
+            if (g_strcmp0(old_it->data, new_it->data) != 0 ||
+                g_strcmp0(old_it->comment, new_it->comment) != 0 ||
+                old_it->enabled != new_it->enabled)
+            {
+                g_set_error(error, G_IO_ERROR, G_IO_ERROR_FAILED,
+                            _("round-trip gate: unintended change on line %u"),
+                            old_it->source_line);
+                ok = FALSE;
+            }
         }
     }
 
-out:
+    if (ok)
+    {
+        for (j = 0; j < new_f->items->len; j++)
+        {
+            if (!consumed[j])
+            {
+                LrConfigItem *extra =
+                    g_ptr_array_index(new_f->items, j);
+                g_set_error(error, G_IO_ERROR, G_IO_ERROR_FAILED,
+                            _("round-trip gate: unexpected item %s added"),
+                            extra->key);
+                ok = FALSE;
+                break;
+            }
+        }
+    }
+
+    g_free(consumed);
     lr_config_file_free(old_f);
     lr_config_file_free(new_f);
     return ok;

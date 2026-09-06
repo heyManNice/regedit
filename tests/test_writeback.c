@@ -206,6 +206,19 @@ void test_writeback(void)
         g_free(out);
     }
 
+    /* 7f. REMOVE：物理删除整行，其余行逐字保留 */
+    {
+        const gchar *src = "a=1\nb=2\nc=3\n";
+        LrEdit edit = {LR_EDIT_REMOVE, 1, NULL, NULL};
+        GError *err = NULL;
+        gchar *out = NULL;
+
+        TEST_ASSERT(lr_apply_edits(src, &edit, 1, &out, &err));
+        TEST_ASSERT(err == NULL);
+        TEST_ASSERT_STR_EQ(out, "a=1\nc=3\n");
+        g_free(out);
+    }
+
     /* 8. 重复键：按行号精确修改，不动其他同名行 */
     {
         const gchar *src = "[s]\na = 1\na = 2\n";

@@ -3,6 +3,7 @@
 
 #include <gio/gio.h>
 #include <glib/gi18n.h>
+#include <stdlib.h>
 #include <string.h>
 
 typedef struct
@@ -307,6 +308,20 @@ append_edit(LrEdit *edits, gsize *count, gsize cap, LrEditType type,
     (*count)++;
 }
 
+/* 按行号降序执行，先处理高行，低行删除才不会移动后续编辑目标 */
+static gint
+compare_edit_desc(const void *a, const void *b)
+{
+    const LrEdit *ea = a;
+    const LrEdit *eb = b;
+
+    if (ea->line < eb->line)
+        return 1;
+    if (ea->line > eb->line)
+        return -1;
+    return 0;
+}
+
 gboolean
 lr_build_edits_from_rows(const char *path, const char *source_content,
                          const LrRowState *rows, gsize n_rows,
@@ -413,22 +428,26 @@ lr_apply_edits(const char *content, const LrEdit *edits,
                gsize n_edits, gchar **out, GError **error)
 {
     GPtrArray *lines;
+    LrEdit *order;
     gsize k;
 
     if (content == NULL)
         content = "";
     lines = split_lines(content, strlen(content));
+    order = g_memdup2(edits, n_edits * sizeof(LrEdit));
+    qsort(order, n_edits, sizeof(LrEdit), compare_edit_desc);
 
     for (k = 0; k < n_edits; k++)
     {
-        const LrEdit *e = &edits[k];
+        const LrEdit *e = &order[k];
         LrLine *l;
 
         if (e->line >= lines->len)
         {
             g_set_error(error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT,
-                        "line %u out of range", e->line);
+                        _("line %u out of range"), e->line);
             g_ptr_array_unref(lines);
+            g_free(order);
             return FALSE;
         }
         l = g_ptr_array_index(lines, e->line);
@@ -439,6 +458,7 @@ lr_apply_edits(const char *content, const LrEdit *edits,
             if (!apply_set_value(l, e, error))
             {
                 g_ptr_array_unref(lines);
+                g_free(order);
                 return FALSE;
             }
             break;
@@ -446,6 +466,7 @@ lr_apply_edits(const char *content, const LrEdit *edits,
             if (!apply_enable_disable(l, e, TRUE, error))
             {
                 g_ptr_array_unref(lines);
+                g_free(order);
                 return FALSE;
             }
             break;
@@ -453,18 +474,33 @@ lr_apply_edits(const char *content, const LrEdit *edits,
             if (!apply_enable_disable(l, e, FALSE, error))
             {
                 g_ptr_array_unref(lines);
+                g_free(order);
                 return FALSE;
             }
+            break;
+        case LR_EDIT_REMOVE:
+            if (e->line >= lines->len)
+            {
+                g_set_error(error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT,
+                            _("line %u out of range"), e->line);
+                g_ptr_array_unref(lines);
+                g_free(order);
+                return FALSE;
+            }
+            g_ptr_array_remove_index(lines, e->line);
             break;
         default:
             g_set_error_literal(error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT,
                                 _("unknown edit type"));
             g_ptr_array_unref(lines);
+            g_free(order);
             return FALSE;
         }
+        /* 中途失败的错误路径已在各分支内释放 */
     }
 
     *out = rebuild_lines(lines);
     g_ptr_array_unref(lines);
+    g_free(order);
     return TRUE;
 }
