@@ -9,6 +9,7 @@ int main(void)
     test_parsers();
     test_scanner();
     test_writeback();
+    test_writeback_fuzz();
     test_write();
 
     g_print("\n共 %d 项断言，%d 项失败\n", g_test_count, g_test_failures);

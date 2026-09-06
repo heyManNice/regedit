@@ -371,3 +371,59 @@ void test_writeback(void)
         g_clear_error(&err);
     }
 }
+
+/* 确定性模糊：随机畸形内容 + 随机编辑，绝不允许崩溃/内存错误 */
+void test_writeback_fuzz(void)
+{
+    static const gchar *const tokens[] = {
+        "a", "b", "Key", "value", "\"q # x\"", "#comment", "; semi",
+        "[s]", "{", "}", ";", "=", ":", "\t", "\\", "中文配置",
+        "x=1", "#Port 22", "K\"v", "Port 22", "http://x/#y",
+        NULL};
+    GRand *r = g_rand_new_with_seed(0x20260906);
+    guint iter, i;
+
+    for (iter = 0; iter < 300; iter++)
+    {
+        GString *content = g_string_new(NULL);
+        guint nlines = 1 + g_rand_int_range(r, 0, 8);
+        LrEdit edit;
+        GError *err = NULL;
+        gchar *out = NULL;
+
+        for (i = 0; i < nlines; i++)
+        {
+            guint ntoks = 1 + g_rand_int_range(r, 0, 5);
+            guint j;
+
+            for (j = 0; j < ntoks; j++)
+            {
+                const gchar *tok =
+                    tokens[g_rand_int_range(r, 0, 21)];
+                g_string_append(content, tok);
+                if (j + 1 < ntoks && g_rand_boolean(r))
+                    g_string_append_c(content,
+                                      g_rand_boolean(r) ? ' ' : '\t');
+            }
+            g_string_append_c(content, '\n');
+        }
+
+        edit.type = (LrEditType)g_rand_int_range(r, 0, 3);
+        edit.line = g_rand_int_range(r, 0, nlines + 4);
+        edit.key = tokens[g_rand_int_range(r, 0, 21)];
+        edit.value = tokens[g_rand_int_range(r, 0, 21)];
+
+        (void)lr_apply_edits(content->str, &edit, 1, &out, &err);
+        g_clear_error(&err);
+        g_free(out);
+
+        /* 随机内容也能安全走解析器（成败皆可，但不得崩溃） */
+        {
+            LrConfigFile *f = lr_parse_config_content(
+                "fuzz.conf", content->str, content->len);
+            lr_config_file_free(f);
+        }
+        g_string_free(content, TRUE);
+    }
+    g_rand_free(r);
+}
