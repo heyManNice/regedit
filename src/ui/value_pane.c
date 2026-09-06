@@ -866,13 +866,13 @@ lr_value_pane_save_changes(LrValuePane *self, GError **error)
     if (!self->saveable)
     {
         g_set_error_literal(error, G_IO_ERROR, G_IO_ERROR_FAILED,
-                            "write-back is not supported for this format yet");
+                            _("write-back is not supported for this format yet"));
         return FALSE;
     }
     if (self->current_path == NULL || self->source_content == NULL)
     {
         g_set_error_literal(error, G_IO_ERROR, G_IO_ERROR_FAILED,
-                            "no file loaded to save");
+                            _("no file loaded to save"));
         return FALSE;
     }
 
@@ -963,6 +963,12 @@ lr_value_pane_save_changes(LrValuePane *self, GError **error)
     }
     g_free(rows);
     return ok;
+}
+
+gboolean
+lr_value_pane_can_save(LrValuePane *self)
+{
+    return self != NULL && self->saveable;
 }
 
 void lr_value_pane_clear(LrValuePane *self)

@@ -17,6 +17,9 @@ void lr_value_pane_set_dirty_cb(LrValuePane *self, LrValuePaneDirtyCb cb,
 /* 把当前表格中可写回的变化安全保存（值/启用；其余变化返回错误）。 */
 gboolean lr_value_pane_save_changes(LrValuePane *self, GError **error);
 
+/* 当前打开文件的格式是否支持行级写回 */
+gboolean lr_value_pane_can_save(LrValuePane *self);
+
 /* 获取面板顶层 widget（GtkStack） */
 GtkWidget *lr_value_pane_get_widget(LrValuePane *self);
 

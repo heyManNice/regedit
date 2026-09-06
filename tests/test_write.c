@@ -199,6 +199,23 @@ void test_write(void)
         g_clear_error(&err);
     }
 
+    /* 8. 保存后文件权限保持（0640） */
+    {
+        const gchar *src = "Port = 22\n";
+        LrEdit edit = {LR_EDIT_SET_VALUE, 0, "Port", "8080"};
+        GError *err = NULL;
+        gboolean ok;
+        GStatBuf st;
+
+        g_file_set_contents(path, src, -1, NULL);
+        g_chmod(path, 0640);
+        ok = lr_save_config_file(path, src, &edit, 1, &err);
+        TEST_ASSERT(ok);
+        g_clear_error(&err);
+        TEST_ASSERT(g_stat(path, &st) == 0);
+        TEST_ASSERT((st.st_mode & 07777) == 0640);
+    }
+
     g_free(path);
     g_free(data_home);
     g_free(base);

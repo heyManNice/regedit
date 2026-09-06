@@ -4,6 +4,7 @@
 
 #include <errno.h>
 #include <gio/gio.h>
+#include <glib/gi18n.h>
 #include <glib/gstdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -66,7 +67,7 @@ semantic_gate(const char *path, const char *source_content,
     if (new_f->items->len + disabled_lines != old_f->items->len)
     {
         g_set_error_literal(error, G_IO_ERROR, G_IO_ERROR_FAILED,
-                            "round-trip gate: item count changed");
+                            _("round-trip gate: item count changed"));
         ok = FALSE;
         goto out;
     }
@@ -97,7 +98,7 @@ semantic_gate(const char *path, const char *source_content,
         if (new_it == NULL)
         {
             g_set_error(error, G_IO_ERROR, G_IO_ERROR_FAILED,
-                        "round-trip gate: item %s missing after edit",
+                        _("round-trip gate: item %s missing after edit"),
                         old_it->key);
             ok = FALSE;
             break;
@@ -109,7 +110,7 @@ semantic_gate(const char *path, const char *source_content,
             old_it->enabled != new_it->enabled)
         {
             g_set_error(error, G_IO_ERROR, G_IO_ERROR_FAILED,
-                        "round-trip gate: unintended change on line %u",
+                        _("round-trip gate: unintended change on line %u"),
                         old_it->source_line);
             ok = FALSE;
         }
@@ -146,7 +147,7 @@ lr_save_config_file(const char *path, const char *source_content,
     if (g_file_test(path, G_FILE_TEST_IS_SYMLINK))
     {
         g_set_error_literal(error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT,
-                            "refusing to write through a symbolic link");
+                            _("refusing to write through a symbolic link"));
         return FALSE;
     }
     if (!g_file_get_contents(path, &disk, &disk_len, error))
@@ -155,7 +156,7 @@ lr_save_config_file(const char *path, const char *source_content,
     {
         g_free(disk);
         g_set_error_literal(error, G_IO_ERROR, G_IO_ERROR_FAILED,
-                            "file changed on disk since it was opened");
+                            _("file changed on disk since it was opened"));
         return FALSE;
     }
 
@@ -177,7 +178,7 @@ lr_save_config_file(const char *path, const char *source_content,
     if (backup == NULL)
     {
         g_set_error_literal(error, G_IO_ERROR, G_IO_ERROR_FAILED,
-                            "cannot create backup directory");
+                            _("cannot create backup directory"));
         g_free(candidate);
         return FALSE;
     }
@@ -218,7 +219,7 @@ lr_save_config_file(const char *path, const char *source_content,
         if (!ok)
         {
             g_set_error_literal(error, G_IO_ERROR, G_IO_ERROR_FAILED,
-                                "post-write parse check failed; rolling back");
+                                _("post-write parse check failed; rolling back"));
             copy_file(backup, path, NULL);
         }
     }

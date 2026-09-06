@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: linux-regedit 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-05 15:02+0000\n"
+"POT-Creation-Date: 2026-09-06 09:45+0000\n"
 "PO-Revision-Date: 2026-08-24 17:05+0800\n"
 "Last-Translator: SMILE CAI <smile.cai@yandex.com>\n"
 "Language-Team: Chinese (simplified) <i18n-zh@googlegroups.com>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/ui/main_window.c:23 src/ui/main_window.c:25 src/ui/main_window.c:1006
+#: src/ui/main_window.c:23 src/ui/main_window.c:25 src/ui/main_window.c:1012
 msgid "Regedit"
 msgstr "注册表编辑器"
 
@@ -24,40 +24,46 @@ msgstr "注册表编辑器"
 msgid "Computer"
 msgstr "计算机"
 
-#: src/ui/main_window.c:147
+#: src/ui/main_window.c:146
 msgid "Edits are not saved until you choose File → Save Changes."
 msgstr "更改尚未保存：请使用“文件 → 保存更改”写回。"
 
-#: src/ui/main_window.c:208 src/ui/value_pane.c:712 src/ui/export.c:183
+#: src/ui/main_window.c:148
+msgid ""
+"This file type is read-only: edits stay in memory and are lost when you "
+"switch files."
+msgstr "该文件类型为只读：编辑仅保留在内存中，切换文件后将丢失。"
+
+#: src/ui/main_window.c:214 src/ui/value_pane.c:712 src/ui/export.c:183
 #: src/ui/file_tools.c:96
 msgid "Unknown Error"
 msgstr "未知错误"
 
-#: src/ui/main_window.c:305 src/ui/main_window.c:803
+#: src/ui/main_window.c:311 src/ui/main_window.c:809
 msgid "About Regedit"
 msgstr "关于注册表编辑器"
 
-#: src/ui/main_window.c:305 src/ui/export.c:204 src/ui/file_tools.c:117
+#: src/ui/main_window.c:311 src/ui/export.c:204 src/ui/file_tools.c:117
 #: src/ui/favorites.c:189 src/ui/favorites.c:256
 msgid "OK"
 msgstr "确定"
 
-#: src/ui/main_window.c:324 src/ui/main_window.c:325 src/ui/main_window.c:326
-#: src/ui/main_window.c:339 src/core/format.c:366
+#: src/ui/main_window.c:330 src/ui/main_window.c:331 src/ui/main_window.c:332
+#: src/ui/main_window.c:345 src/core/format.c:366
 msgid "Unknown"
 msgstr "未知"
 
-#: src/ui/main_window.c:396
+#: src/ui/main_window.c:402
 #, c-format
 msgid "Version %s (Linux %s, %s, %s)"
 msgstr "版本 %s （Linux %s，%s，%s）"
 
 #. 行3：版权符号 + 文案
-#: src/ui/main_window.c:402
+#: src/ui/main_window.c:408
 msgid "© heyManNice All rights reversed."
 msgstr "© heyManNice 保留不了所有权利"
 
-#: src/ui/main_window.c:409
+#: src/ui/main_window.c:415
 msgid ""
 "This GNU/Linux operating system and its components are built upon Free and "
 "Open-Source Software (FOSS) and are distributed by their respective "
@@ -71,128 +77,128 @@ msgstr ""
 "关开源许可证与版权法保护。"
 
 #. 许可行
-#: src/ui/main_window.c:421
+#: src/ui/main_window.c:427
 msgid ""
 "In accordance with open source licenses, the following users are allowed to "
 "use it"
 msgstr "根据开源许可条款，许可如下用户使用本产品："
 
-#: src/ui/main_window.c:533
+#: src/ui/main_window.c:539
 msgid "Type a search term."
 msgstr "请输入要查找的内容。"
 
-#: src/ui/main_window.c:544 src/ui/main_window.c:554
+#: src/ui/main_window.c:550 src/ui/main_window.c:560
 msgid "No matches found."
 msgstr "未找到匹配项。"
 
-#: src/ui/main_window.c:558
+#: src/ui/main_window.c:564
 #, c-format
 msgid "Found %u match(es)."
 msgstr "找到 %u 个匹配项。"
 
-#: src/ui/main_window.c:608
+#: src/ui/main_window.c:614
 msgid "Find"
 msgstr "查找"
 
-#: src/ui/main_window.c:609 src/ui/export.c:127 src/ui/export.c:203
+#: src/ui/main_window.c:615 src/ui/export.c:127 src/ui/export.c:203
 #: src/ui/file_tools.c:191 src/ui/favorites.c:188 src/ui/favorites.c:255
 msgid "Cancel"
 msgstr "取消"
 
-#: src/ui/main_window.c:609 src/ui/main_window.c:759
+#: src/ui/main_window.c:615 src/ui/main_window.c:765
 msgid "Find Next"
 msgstr "查找下一个"
 
-#: src/ui/main_window.c:623
+#: src/ui/main_window.c:629
 msgid "Find what:"
 msgstr "查找内容:"
 
-#: src/ui/main_window.c:625
+#: src/ui/main_window.c:631
 msgid "Find what"
 msgstr "查找内容"
 
-#: src/ui/main_window.c:632
+#: src/ui/main_window.c:638
 msgid "Find status"
 msgstr "查找状态"
 
-#: src/ui/main_window.c:634
+#: src/ui/main_window.c:640
 msgid "Searches the currently opened file."
 msgstr "在当前打开的文件中查找。"
 
 #. 文件：导出 / 备份 / 对比 / 退出
-#: src/ui/main_window.c:697
+#: src/ui/main_window.c:703
 msgid "File"
 msgstr "文件"
 
-#: src/ui/main_window.c:700
+#: src/ui/main_window.c:706
 msgid "Export..."
 msgstr "导出"
 
-#: src/ui/main_window.c:707
+#: src/ui/main_window.c:713
 msgid "Backup Current File..."
 msgstr "备份当前文件…"
 
-#: src/ui/main_window.c:711
+#: src/ui/main_window.c:717
 msgid "Compare with File..."
 msgstr "与其他文件比较…"
 
-#: src/ui/main_window.c:715
+#: src/ui/main_window.c:721
 msgid "Save Changes..."
 msgstr "保存更改…"
 
-#: src/ui/main_window.c:729
+#: src/ui/main_window.c:735
 msgid "Quit"
 msgstr "退出"
 
 #. 编辑：新建（仅内存）/ 复制项名称 / 查找
-#: src/ui/main_window.c:737
+#: src/ui/main_window.c:743
 msgid "Edit"
 msgstr "编辑"
 
-#: src/ui/main_window.c:740 src/ui/value_pane.c:1441
+#: src/ui/main_window.c:746 src/ui/value_pane.c:1473
 msgid "New"
 msgstr "新建"
 
-#: src/ui/main_window.c:748 src/ui/tree_pane.c:385
+#: src/ui/main_window.c:754 src/ui/tree_pane.c:385
 msgid "Copy Name"
 msgstr "复制项名称"
 
-#: src/ui/main_window.c:755
+#: src/ui/main_window.c:761
 msgid "Find..."
 msgstr "查找"
 
 #. 查看：地址栏 / 刷新
-#: src/ui/main_window.c:767
+#: src/ui/main_window.c:773
 msgid "View"
 msgstr "视图"
 
-#: src/ui/main_window.c:770
+#: src/ui/main_window.c:776
 msgid "Address"
 msgstr "地址栏"
 
-#: src/ui/main_window.c:786
+#: src/ui/main_window.c:792
 msgid "Refresh"
 msgstr "刷新"
 
 #. 收藏夹：添加/删除 + 分割线 + 收藏项（菜单显示时动态刷新）
-#: src/ui/main_window.c:794
+#: src/ui/main_window.c:800
 msgid "Favorites"
 msgstr "收藏夹"
 
 #. 帮助
-#: src/ui/main_window.c:801
+#: src/ui/main_window.c:807
 msgid "Help"
 msgstr "帮助"
 
-#: src/ui/main_window.c:875
+#: src/ui/main_window.c:881
 msgid "Type a Path and Press Enter"
 msgstr "输入路径后回车跳转"
 
-#: src/ui/main_window.c:877
+#: src/ui/main_window.c:883
 msgid "Address bar input"
 msgstr "地址栏输入框"
 
-#: src/ui/main_window.c:1040
+#: src/ui/main_window.c:1046
 msgid "Edit status"
 msgstr "编辑状态"
 
@@ -244,39 +250,47 @@ msgstr "文件过大（上限 %u KiB）。"
 msgid "File appears to be binary."
 msgstr "文件疑似二进制，无法显示。"
 
-#: src/ui/value_pane.c:1221
+#: src/ui/value_pane.c:869
+msgid "write-back is not supported for this format yet"
+msgstr "该格式暂不支持写回。"
+
+#: src/ui/value_pane.c:875
+msgid "no file loaded to save"
+msgstr "没有可保存的文件。"
+
+#: src/ui/value_pane.c:1253
 msgid "Enable"
 msgstr "启用"
 
-#: src/ui/value_pane.c:1281 src/ui/value_pane.c:1444 src/ui/value_pane.c:1583
+#: src/ui/value_pane.c:1313 src/ui/value_pane.c:1476 src/ui/value_pane.c:1615
 msgid "Type"
 msgstr "类型"
 
-#: src/ui/value_pane.c:1304 src/ui/value_pane.c:1584
+#: src/ui/value_pane.c:1336 src/ui/value_pane.c:1616
 msgid "Data"
 msgstr "数据"
 
-#: src/ui/value_pane.c:1430
+#: src/ui/value_pane.c:1462
 msgid "Detect automatically"
 msgstr "自动识别"
 
-#: src/ui/value_pane.c:1507
+#: src/ui/value_pane.c:1539
 msgid "Value panel"
 msgstr "配置面板"
 
-#: src/ui/value_pane.c:1528
+#: src/ui/value_pane.c:1560
 msgid "Value table"
 msgstr "配置项表格"
 
-#: src/ui/value_pane.c:1537 src/ui/value_pane.c:1582
+#: src/ui/value_pane.c:1569 src/ui/value_pane.c:1614
 msgid "Name"
 msgstr "名称"
 
-#: src/ui/value_pane.c:1540 src/ui/value_pane.c:1602
+#: src/ui/value_pane.c:1572 src/ui/value_pane.c:1634
 msgid "Note"
 msgstr "备注"
 
-#: src/ui/value_pane.c:1580
+#: src/ui/value_pane.c:1612
 msgid "JSON tree"
 msgstr "JSON 树"
 
@@ -505,6 +519,84 @@ msgstr "添加到收藏夹…"
 #: src/ui/favorites.c:298
 msgid "Delete Favorite…"
 msgstr "删除收藏夹…"
+
+#: src/core/edits.c:193
+msgid "target line is not a key-value line"
+msgstr "目标行不是键值行。"
+
+#: src/core/edits.c:199 src/core/edits.c:240
+msgid "target line key does not match edit"
+msgstr "目标行键名与编辑不一致。"
+
+#: src/core/edits.c:251
+msgid "line is not commented"
+msgstr "该行未被注释。"
+
+#: src/core/edits.c:271
+msgid "line is already commented"
+msgstr "该行已被注释。"
+
+#: src/core/edits.c:328
+msgid "source file could not be parsed for edits"
+msgstr "无法解析源文件以生成编辑。"
+
+#: src/core/edits.c:344
+msgid "new rows cannot be saved yet"
+msgstr "新增行暂不支持保存。"
+
+#: src/core/edits.c:351
+#, c-format
+msgid "source line %u not found"
+msgstr "找不到源文件第 %u 行。"
+
+#: src/core/edits.c:359
+#, c-format
+msgid "renaming key on line %u is not supported yet"
+msgstr "暂不支持重命名第 %u 行的键。"
+
+#: src/core/edits.c:368
+#, c-format
+msgid "type override on line %u is not supported yet"
+msgstr "暂不支持覆盖第 %u 行的类型。"
+
+#: src/core/edits.c:380
+#, c-format
+msgid "comment edit on line %u is not supported yet"
+msgstr "暂不支持修改第 %u 行的备注。"
+
+#: src/core/edits.c:461
+msgid "unknown edit type"
+msgstr "未知的编辑类型。"
+
+#: src/core/write.c:70
+msgid "round-trip gate: item count changed"
+msgstr "往返校验失败：条目数量发生变化。"
+
+#: src/core/write.c:101
+#, c-format
+msgid "round-trip gate: item %s missing after edit"
+msgstr "往返校验失败：编辑后缺少配置项 %s。"
+
+#: src/core/write.c:113
+#, c-format
+msgid "round-trip gate: unintended change on line %u"
+msgstr "往返校验失败：第 %u 行出现非预期修改。"
+
+#: src/core/write.c:150
+msgid "refusing to write through a symbolic link"
+msgstr "拒绝通过符号链接写入。"
+
+#: src/core/write.c:159
+msgid "file changed on disk since it was opened"
+msgstr "文件在打开后已被外部修改。"
+
+#: src/core/write.c:181
+msgid "cannot create backup directory"
+msgstr "无法创建备份目录。"
+
+#: src/core/write.c:222
+msgid "post-write parse check failed; rolling back"
+msgstr "写入后校验失败，已回滚。"
 
 #~ msgid ""
 #~ "Editing in memory only — changes are lost when switching files (this "

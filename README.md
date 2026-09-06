@@ -27,6 +27,7 @@
 - 🧭 **表内查找**：`Edit → Find…` 或 `Ctrl+F` 打开查找对话框，`F3` 继续查找；按名称/数据/备注匹配（大小写不敏感），命中项自动选中并滚动，循环遍历。
 - 🎛️ **类型强制显示**：右键配置项 → `Type` 可选择 `String / Boolean / Number` 强制显示，或选 `Detect automatically` 恢复自动识别（仅内存，不写盘）。
 - 🗂️ **备份**：`File → Backup Current File...` 把当前文件复制为时间戳副本（`$XDG_DATA_HOME/linux-regedit/backups/`），不改动系统原文件。
+- 💾 **保存（受限写回）**：`File → Save Changes...`（Ctrl+S）支持 KV/INI/systemd/TOML/keyword 与 apt 块内叶子赋值；JSON/XML 及其他不支持的操作保持只读并明确提示。
 - 🔁 **文件对比**：`File → Compare with File...` 选择另一文件后用 `diff -u` 展示逐行差异（等宽、可复制视图）。
 - 🧮 **智能类型识别**：自动区分配置值的类型——
   - `Number`（整数 / 浮点 / 十六进制，类比 `REG_DWORD`）

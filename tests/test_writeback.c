@@ -189,6 +189,23 @@ void test_writeback(void)
         g_free(out);
     }
 
+    /* 7e. Tab 分隔与“空值补写”等畸形但安全的情形 */
+    {
+        gboolean ok = FALSE;
+        gchar *out;
+
+        out = apply_one("Port\t22\n", LR_EDIT_SET_VALUE, 0, "Port",
+                        "8080", &ok);
+        TEST_ASSERT(ok);
+        TEST_ASSERT_STR_EQ(out, "Port\t8080\n");
+        g_free(out);
+
+        out = apply_one("a =\n", LR_EDIT_SET_VALUE, 0, "a", "v", &ok);
+        TEST_ASSERT(ok);
+        TEST_ASSERT_STR_EQ(out, "a =v\n");
+        g_free(out);
+    }
+
     /* 8. 重复键：按行号精确修改，不动其他同名行 */
     {
         const gchar *src = "[s]\na = 1\na = 2\n";

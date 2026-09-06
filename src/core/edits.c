@@ -2,6 +2,7 @@
 #include "core/format.h"
 
 #include <gio/gio.h>
+#include <glib/gi18n.h>
 #include <string.h>
 
 typedef struct
@@ -189,13 +190,13 @@ apply_set_value(LrLine *l, const LrEdit *e, GError **error)
     if (!parse_kv_line(l->text, &ks, &kl, &sep, &vb, &ve, &cs))
     {
         g_set_error_literal(error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT,
-                            "target line is not a key-value line");
+                            _("target line is not a key-value line"));
         return FALSE;
     }
     if (e->key != NULL && !line_has_key(l->text, e->key))
     {
         g_set_error_literal(error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT,
-                            "target line key does not match edit");
+                            _("target line key does not match edit"));
         return FALSE;
     }
 
@@ -236,7 +237,7 @@ apply_enable_disable(LrLine *l, const LrEdit *e, gboolean enable,
     if (e->key != NULL && !line_has_key(l->text, e->key))
     {
         g_set_error_literal(error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT,
-                            "target line key does not match edit");
+                            _("target line key does not match edit"));
         return FALSE;
     }
 
@@ -247,7 +248,7 @@ apply_enable_disable(LrLine *l, const LrEdit *e, gboolean enable,
             !(l->text[start] == '/' && l->text[start + 1] == '/'))
         {
             g_set_error_literal(error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT,
-                                "line is not commented");
+                                _("line is not commented"));
             return FALSE;
         }
         i = start;
@@ -267,7 +268,7 @@ apply_enable_disable(LrLine *l, const LrEdit *e, gboolean enable,
             (l->text[start] == '/' && l->text[start + 1] == '/'))
         {
             g_set_error_literal(error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT,
-                                "line is already commented");
+                                _("line is already commented"));
             return FALSE;
         }
         gchar *head = g_strndup(l->text, start);
@@ -324,7 +325,7 @@ lr_build_edits_from_rows(const char *path, const char *source_content,
     if (!orig->parsed && orig->items->len == 0)
     {
         g_set_error_literal(error, G_IO_ERROR, G_IO_ERROR_FAILED,
-                            "source file could not be parsed for edits");
+                            _("source file could not be parsed for edits"));
         lr_config_file_free(orig);
         return FALSE;
     }
@@ -340,14 +341,14 @@ lr_build_edits_from_rows(const char *path, const char *source_content,
         if (r->line == G_MAXUINT)
         {
             g_set_error_literal(error, G_IO_ERROR, G_IO_ERROR_FAILED,
-                                "new rows cannot be saved yet");
+                                _("new rows cannot be saved yet"));
             goto fail;
         }
         it = item_by_line(orig, r->line);
         if (it == NULL)
         {
             g_set_error(error, G_IO_ERROR, G_IO_ERROR_FAILED,
-                        "source line %u not found", r->line);
+                        _("source line %u not found"), r->line);
             goto fail;
         }
 
@@ -355,7 +356,7 @@ lr_build_edits_from_rows(const char *path, const char *source_content,
         if (!key_ok)
         {
             g_set_error(error, G_IO_ERROR, G_IO_ERROR_FAILED,
-                        "renaming key on line %u is not supported yet",
+                        _("renaming key on line %u is not supported yet"),
                         r->line);
             goto fail;
         }
@@ -364,7 +365,7 @@ lr_build_edits_from_rows(const char *path, const char *source_content,
         if (!type_ok)
         {
             g_set_error(error, G_IO_ERROR, G_IO_ERROR_FAILED,
-                        "type override on line %u is not supported yet",
+                        _("type override on line %u is not supported yet"),
                         r->line);
             goto fail;
         }
@@ -376,7 +377,7 @@ lr_build_edits_from_rows(const char *path, const char *source_content,
         if (!comment_ok)
         {
             g_set_error(error, G_IO_ERROR, G_IO_ERROR_FAILED,
-                        "comment edit on line %u is not supported yet",
+                        _("comment edit on line %u is not supported yet"),
                         r->line);
             goto fail;
         }
@@ -457,7 +458,7 @@ lr_apply_edits(const char *content, const LrEdit *edits,
             break;
         default:
             g_set_error_literal(error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT,
-                                "unknown edit type");
+                                _("unknown edit type"));
             g_ptr_array_unref(lines);
             return FALSE;
         }

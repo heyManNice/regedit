@@ -142,9 +142,15 @@ on_value_dirty_changed(gboolean dirty, gpointer user_data)
         return;
     if (dirty)
     {
+        const gchar *hint = lr_value_pane_can_save(mw->value)
+                                ? _("Edits are not saved until you choose "
+                                    "File → Save Changes.")
+                                : _("This file type is read-only: edits stay "
+                                    "in memory and are lost when you switch "
+                                    "files.");
         gchar *markup = g_markup_printf_escaped(
             "<span foreground=\"#b45309\">⚠ %s</span>",
-            _("Edits are not saved until you choose File → Save Changes."));
+            hint);
         gtk_label_set_markup(GTK_LABEL(mw->dirty_bar), markup);
         g_free(markup);
         gtk_widget_set_visible(mw->dirty_bar, TRUE);

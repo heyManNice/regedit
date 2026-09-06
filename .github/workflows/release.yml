@@ -1,0 +1,44 @@
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            meson ninja-build pkg-config gettext \
+            libgtk-3-dev libglib2.0-dev libjson-glib-dev
+
+      - name: Build and test
+        run: |
+          meson setup build
+          meson compile -C build
+          meson test -C build --print-errorlogs
+
+      - name: Package
+        run: |
+          mkdir -p dist
+          DESTDIR="$PWD/dist/root" meson install -C build
+          cd dist/root
+          tar -cJf ../linux-regedit-${GITHUB_REF_NAME#v}-linux-x86_64.tar.xz .
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            dist/linux-regedit-${GITHUB_REF_NAME#v}-linux-x86_64.tar.xz \
+            --repo "$GITHUB_REPOSITORY" \
+            --generate-notes

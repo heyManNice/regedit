@@ -6,3 +6,5 @@ src/ui/export.c
 src/ui/file_tools.c
 src/ui/favorites.c
 src/ui/dialog_utils.c
+src/core/edits.c
+src/core/write.c
