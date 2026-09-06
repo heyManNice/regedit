@@ -233,6 +233,34 @@ void test_write(void)
         g_clear_error(&err);
     }
 
+    /* 10. 重命名键：builder + 安全管线写回，注释/顺序保留 */
+    {
+        const gchar *src = "[s]\nPort = 22   # note\nKeep = x\n";
+        LrRowState rows[] = {{1, "ListenPort", "22", "true", "note",
+                              "Number"}};
+        LrEdit *edits = NULL;
+        gsize n_edits = 0;
+        GError *err = NULL;
+        gboolean ok;
+
+        g_file_set_contents(path, src, -1, NULL);
+        ok = lr_build_edits_from_rows(path, src, rows, 1,
+                                      &edits, &n_edits, &err);
+        TEST_ASSERT(ok);
+        TEST_ASSERT(n_edits == 1);
+        ok = lr_save_config_file(path, src, edits, n_edits, &err);
+        g_free(edits);
+        TEST_ASSERT(ok);
+        TEST_ASSERT(err == NULL);
+        gchar *now = read_file(path);
+        TEST_ASSERT(strstr(now, "ListenPort = 22   # note") != NULL);
+        TEST_ASSERT(strstr(now, "\nPort = 22") == NULL);
+        TEST_ASSERT(!g_str_has_prefix(now, "Port = 22"));
+        TEST_ASSERT(strstr(now, "Keep = x") != NULL);
+        g_free(now);
+        g_clear_error(&err);
+    }
+
     g_free(path);
     g_free(data_home);
     g_free(base);

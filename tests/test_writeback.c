@@ -219,6 +219,27 @@ void test_writeback(void)
         g_free(out);
     }
 
+    /* 7g. RENAME_KEY：只替换键名，保留空格/注释/注释前缀 */
+    {
+        const gchar *src = "Port = 22   # note\n";
+        LrEdit edit = {LR_EDIT_RENAME_KEY, 0, "Port", "ListenPort"};
+        GError *err = NULL;
+        gchar *out = NULL;
+
+        TEST_ASSERT(lr_apply_edits(src, &edit, 1, &out, &err));
+        TEST_ASSERT(err == NULL);
+        TEST_ASSERT_STR_EQ(out, "ListenPort = 22   # note\n");
+        g_free(out);
+
+        edit.line = 0;
+        edit.key = "Port";
+        edit.value = "Bad Key";
+        err = NULL;
+        out = NULL;
+        TEST_ASSERT(!lr_apply_edits(src, &edit, 1, &out, &err));
+        g_clear_error(&err);
+    }
+
     /* 8. 重复键：按行号精确修改，不动其他同名行 */
     {
         const gchar *src = "[s]\na = 1\na = 2\n";
@@ -353,10 +374,15 @@ void test_writeback(void)
         LrEdit *edits = NULL;
         gsize n = 0;
 
-        LrRowState rename_row[] = {{1, "PortX", "22", "true", "note",
+        LrRowState rename_row[] = {{1, "ListenPort", "22", "true", "note",
                                     "Number"}};
-        TEST_ASSERT(!lr_build_edits_from_rows("t.ini", src, rename_row, 1,
-                                              &edits, &n, &err));
+        TEST_ASSERT(lr_build_edits_from_rows("t.ini", src, rename_row, 1,
+                                             &edits, &n, &err));
+        TEST_ASSERT(n == 1);
+        TEST_ASSERT(edits[0].type == LR_EDIT_RENAME_KEY);
+        TEST_ASSERT_STR_EQ(edits[0].value, "ListenPort");
+        g_free(edits);
+        edits = NULL;
         g_clear_error(&err);
 
         LrRowState type_row[] = {{1, "Port", "22", "true", "note",

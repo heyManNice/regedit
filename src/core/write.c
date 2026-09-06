@@ -90,8 +90,22 @@ semantic_gate(const char *path, const char *source_content,
 
         if (found < 0)
         {
-            if (op == LR_EDIT_DISABLE)
-                continue; /* 注释掉整行：某些格式解析后该项消失，允许 */
+            if (op >= 0)
+            {
+                /* 编辑行可能已改名：尝试按源行号匹配并消费新项 */
+                for (j = 0; j < new_f->items->len; j++)
+                {
+                    LrConfigItem *cand =
+                        g_ptr_array_index(new_f->items, j);
+                    if (!consumed[j] &&
+                        cand->source_line == old_it->source_line)
+                    {
+                        consumed[j] = TRUE;
+                        break;
+                    }
+                }
+                continue;
+            }
             g_set_error(error, G_IO_ERROR, G_IO_ERROR_FAILED,
                         _("round-trip gate: item %s missing after edit"),
                         old_it->key);

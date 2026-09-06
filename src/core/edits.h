@@ -10,6 +10,7 @@ typedef enum
     LR_EDIT_ENABLE,    /* 去掉行首注释标记 */
     LR_EDIT_DISABLE,   /* 在行首加注释标记 */
     LR_EDIT_REMOVE,    /* 物理删除整行（含行尾） */
+    LR_EDIT_RENAME_KEY, /* 只替换 key token（value 为新的键名） */
 } LrEditType;
 
 typedef struct

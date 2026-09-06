@@ -229,6 +229,53 @@ apply_set_value(LrLine *l, const LrEdit *e, GError **error)
 }
 
 static gboolean
+apply_rename_key(LrLine *l, const LrEdit *e, GError **error)
+{
+    gsize ks, kl, sep, vb, ve, cs;
+    GString *out;
+    const char *p;
+
+    if (e->value == NULL || *e->value == '\0')
+    {
+        g_set_error_literal(error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT,
+                            _("new key must not be empty"));
+        return FALSE;
+    }
+    for (p = e->value; *p != '\0'; p++)
+    {
+        if (*p == ' ' || *p == '\t' || *p == '=' || *p == ':' ||
+            *p == '#' || *p == ';')
+        {
+            g_set_error_literal(error, G_IO_ERROR,
+                                G_IO_ERROR_INVALID_ARGUMENT,
+                                _("new key contains invalid characters"));
+            return FALSE;
+        }
+    }
+
+    if (!parse_kv_line(l->text, &ks, &kl, &sep, &vb, &ve, &cs))
+    {
+        g_set_error_literal(error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT,
+                            _("target line is not a key-value line"));
+        return FALSE;
+    }
+    if (e->key != NULL && !line_has_key(l->text, e->key))
+    {
+        g_set_error_literal(error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT,
+                            _("target line key does not match edit"));
+        return FALSE;
+    }
+
+    out = g_string_new(NULL);
+    g_string_append_len(out, l->text, ks);
+    g_string_append(out, e->value);
+    g_string_append(out, l->text + ks + kl);
+    g_free(l->text);
+    l->text = g_string_free(out, FALSE);
+    return TRUE;
+}
+
+static gboolean
 apply_enable_disable(LrLine *l, const LrEdit *e, gboolean enable,
                      GError **error)
 {
@@ -308,17 +355,27 @@ append_edit(LrEdit *edits, gsize *count, gsize cap, LrEditType type,
     (*count)++;
 }
 
-/* 按行号降序执行，先处理高行，低行删除才不会移动后续编辑目标 */
+/* 按行号降序执行；同行保持原顺序（如 rename 先于 set） */
+typedef struct
+{
+    LrEdit e;
+    gsize idx;
+} OrderedEdit;
+
 static gint
 compare_edit_desc(const void *a, const void *b)
 {
-    const LrEdit *ea = a;
-    const LrEdit *eb = b;
+    const OrderedEdit *ea = a;
+    const OrderedEdit *eb = b;
 
-    if (ea->line < eb->line)
+    if (ea->e.line < eb->e.line)
         return 1;
-    if (ea->line > eb->line)
+    if (ea->e.line > eb->e.line)
         return -1;
+    if (ea->idx < eb->idx)
+        return -1;
+    if (ea->idx > eb->idx)
+        return 1;
     return 0;
 }
 
@@ -370,10 +427,8 @@ lr_build_edits_from_rows(const char *path, const char *source_content,
         key_ok = g_strcmp0(it->key, r->key) == 0;
         if (!key_ok)
         {
-            g_set_error(error, G_IO_ERROR, G_IO_ERROR_FAILED,
-                        _("renaming key on line %u is not supported yet"),
-                        r->line);
-            goto fail;
+            append_edit(edits, &count, cap, LR_EDIT_RENAME_KEY, r->line,
+                        NULL, r->key);
         }
         orig_type = lr_value_type_name(it->type);
         type_ok = g_strcmp0(orig_type, r->type) == 0;
@@ -428,18 +483,23 @@ lr_apply_edits(const char *content, const LrEdit *edits,
                gsize n_edits, gchar **out, GError **error)
 {
     GPtrArray *lines;
-    LrEdit *order;
+    OrderedEdit *order;
     gsize k;
 
     if (content == NULL)
         content = "";
     lines = split_lines(content, strlen(content));
-    order = g_memdup2(edits, n_edits * sizeof(LrEdit));
-    qsort(order, n_edits, sizeof(LrEdit), compare_edit_desc);
+    order = g_new0(OrderedEdit, MAX(n_edits, 1));
+    for (k = 0; k < n_edits; k++)
+    {
+        order[k].e = edits[k];
+        order[k].idx = k;
+    }
+    qsort(order, n_edits, sizeof(OrderedEdit), compare_edit_desc);
 
     for (k = 0; k < n_edits; k++)
     {
-        const LrEdit *e = &order[k];
+        const LrEdit *e = &order[k].e;
         LrLine *l;
 
         if (e->line >= lines->len)
@@ -456,6 +516,14 @@ lr_apply_edits(const char *content, const LrEdit *edits,
         {
         case LR_EDIT_SET_VALUE:
             if (!apply_set_value(l, e, error))
+            {
+                g_ptr_array_unref(lines);
+                g_free(order);
+                return FALSE;
+            }
+            break;
+        case LR_EDIT_RENAME_KEY:
+            if (!apply_rename_key(l, e, error))
             {
                 g_ptr_array_unref(lines);
                 g_free(order);

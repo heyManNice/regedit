@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-06 13:13+0000\n"
+"POT-Creation-Date: 2026-09-06 13:19+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -520,86 +520,89 @@ msgstr ""
 msgid "Delete Favorite…"
 msgstr ""
 
-#: src/core/edits.c:193
+#: src/core/edits.c:194 src/core/edits.c:259
 msgid "target line is not a key-value line"
 msgstr ""
 
-#: src/core/edits.c:199 src/core/edits.c:240
+#: src/core/edits.c:200 src/core/edits.c:265 src/core/edits.c:288
 msgid "target line key does not match edit"
 msgstr ""
 
+#: src/core/edits.c:241
+msgid "new key must not be empty"
+msgstr ""
+
 #: src/core/edits.c:251
+msgid "new key contains invalid characters"
+msgstr ""
+
+#: src/core/edits.c:299
 msgid "line is not commented"
 msgstr ""
 
-#: src/core/edits.c:271
+#: src/core/edits.c:319
 msgid "line is already commented"
 msgstr ""
 
-#: src/core/edits.c:343
+#: src/core/edits.c:400
 msgid "source file could not be parsed for edits"
 msgstr ""
 
-#: src/core/edits.c:359
+#: src/core/edits.c:416
 msgid "new rows cannot be saved yet"
 msgstr ""
 
-#: src/core/edits.c:366
+#: src/core/edits.c:423
 #, c-format
 msgid "source line %u not found"
 msgstr ""
 
-#: src/core/edits.c:374
-#, c-format
-msgid "renaming key on line %u is not supported yet"
-msgstr ""
-
-#: src/core/edits.c:383
+#: src/core/edits.c:438
 #, c-format
 msgid "type override on line %u is not supported yet"
 msgstr ""
 
-#: src/core/edits.c:395
+#: src/core/edits.c:450
 #, c-format
 msgid "comment edit on line %u is not supported yet"
 msgstr ""
 
-#: src/core/edits.c:449 src/core/edits.c:486
+#: src/core/edits.c:508 src/core/edits.c:553
 #, c-format
 msgid "line %u out of range"
 msgstr ""
 
-#: src/core/edits.c:495
+#: src/core/edits.c:562
 msgid "unknown edit type"
 msgstr ""
 
-#: src/core/write.c:96
+#: src/core/write.c:110
 #, c-format
 msgid "round-trip gate: item %s missing after edit"
 msgstr ""
 
-#: src/core/write.c:113
+#: src/core/write.c:127
 #, c-format
 msgid "round-trip gate: unintended change on line %u"
 msgstr ""
 
-#: src/core/write.c:129
+#: src/core/write.c:143
 #, c-format
 msgid "round-trip gate: unexpected item %s added"
 msgstr ""
 
-#: src/core/write.c:168
+#: src/core/write.c:182
 msgid "refusing to write through a symbolic link"
 msgstr ""
 
-#: src/core/write.c:177
+#: src/core/write.c:191
 msgid "file changed on disk since it was opened"
 msgstr ""
 
-#: src/core/write.c:199
+#: src/core/write.c:213
 msgid "cannot create backup directory"
 msgstr ""
 
-#: src/core/write.c:240
+#: src/core/write.c:254
 msgid "post-write parse check failed; rolling back"
 msgstr ""

@@ -319,6 +319,33 @@ def test_save_changes_writes_file(regedit, fake_roots, display):
                timeout=6, message="dirty banner did not clear after save")
 
 
+def test_rename_key_saves(regedit, fake_roots, display):
+    """把键名 Port 改为 ListenPort 后 Ctrl+S 应写回文件。"""
+    app = regedit.app
+    path = fake_roots["samples"]["sample.ini"]
+    open_sample(app, fake_roots, "sample.ini")
+
+    cell = wait_node(app, text="Port", role="table cell", timeout=8)
+    double_click(cell)
+    time.sleep(0.4)
+    subprocess.run(["xdotool", "key", "ctrl+a"],
+                   env=dict(os.environ, DISPLAY=display), check=True)
+    subprocess.run(["xdotool", "type", "--delay", "25", "ListenPort"],
+                   env=dict(os.environ, DISPLAY=display), check=True)
+    subprocess.run(["xdotool", "key", "Return"],
+                   env=dict(os.environ, DISPLAY=display), check=True)
+    wait_until(lambda: tree.find(app, name="Edit status",
+                                 showing=True) is not None,
+               timeout=5, message="rename did not mark dirty")
+
+    press("ctrl+s")
+    wait_until(lambda: "ListenPort =" in path.read_text(encoding="utf-8"),
+               timeout=8, message="renamed key was not written back")
+    wait_until(lambda: tree.find(app, name="Edit status",
+                                 showing=True) is None,
+               timeout=6, message="dirty banner did not clear after save")
+
+
 def _first_window_id(display: str):
     out = subprocess.run(["xdotool", "search", "--class", "linux-regedit"],
                          capture_output=True, text=True,
