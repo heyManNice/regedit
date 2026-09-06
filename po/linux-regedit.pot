@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-06 13:19+0000\n"
+"POT-Creation-Date: 2026-09-06 14:30+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,54 +17,77 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/ui/main_window.c:23 src/ui/main_window.c:25 src/ui/main_window.c:1012
+#: src/ui/main_window.c:23 src/ui/main_window.c:25 src/ui/main_window.c:1078
 msgid "Regedit"
 msgstr ""
 
-#: src/ui/main_window.c:36 src/ui/tree_pane.c:76
+#: src/ui/main_window.c:49
+msgid "Save changes before switching to another file?"
+msgstr ""
+
+#: src/ui/main_window.c:50
+msgid ""
+"Unsaved changes will be lost when switching (this file type is read-only)."
+msgstr ""
+
+#: src/ui/main_window.c:59
+msgid "Save & Switch"
+msgstr ""
+
+#: src/ui/main_window.c:60 src/ui/main_window.c:64
+msgid "Discard"
+msgstr ""
+
+#: src/ui/main_window.c:61 src/ui/main_window.c:65 src/ui/main_window.c:681
+#: src/ui/export.c:127 src/ui/export.c:203 src/ui/file_tools.c:191
+#: src/ui/favorites.c:188 src/ui/favorites.c:255
+msgid "Cancel"
+msgstr ""
+
+#: src/ui/main_window.c:79 src/ui/main_window.c:280 src/ui/value_pane.c:712
+#: src/ui/export.c:183 src/ui/file_tools.c:96
+msgid "Unknown Error"
+msgstr ""
+
+#: src/ui/main_window.c:102 src/ui/tree_pane.c:76
 msgid "Computer"
 msgstr ""
 
-#: src/ui/main_window.c:146
+#: src/ui/main_window.c:212
 msgid "Edits are not saved until you choose File → Save Changes."
 msgstr ""
 
-#: src/ui/main_window.c:148
+#: src/ui/main_window.c:214
 msgid ""
 "This file type is read-only: edits stay in memory and are lost when you "
 "switch files."
 msgstr ""
 
-#: src/ui/main_window.c:214 src/ui/value_pane.c:712 src/ui/export.c:183
-#: src/ui/file_tools.c:96
-msgid "Unknown Error"
-msgstr ""
-
-#: src/ui/main_window.c:311 src/ui/main_window.c:809
+#: src/ui/main_window.c:377 src/ui/main_window.c:875
 msgid "About Regedit"
 msgstr ""
 
-#: src/ui/main_window.c:311 src/ui/export.c:204 src/ui/file_tools.c:117
+#: src/ui/main_window.c:377 src/ui/export.c:204 src/ui/file_tools.c:117
 #: src/ui/favorites.c:189 src/ui/favorites.c:256
 msgid "OK"
 msgstr ""
 
-#: src/ui/main_window.c:330 src/ui/main_window.c:331 src/ui/main_window.c:332
-#: src/ui/main_window.c:345 src/core/format.c:366
+#: src/ui/main_window.c:396 src/ui/main_window.c:397 src/ui/main_window.c:398
+#: src/ui/main_window.c:411 src/core/format.c:366
 msgid "Unknown"
 msgstr ""
 
-#: src/ui/main_window.c:402
+#: src/ui/main_window.c:468
 #, c-format
 msgid "Version %s (Linux %s, %s, %s)"
 msgstr ""
 
 #. 行3：版权符号 + 文案
-#: src/ui/main_window.c:408
+#: src/ui/main_window.c:474
 msgid "© heyManNice All rights reversed."
 msgstr ""
 
-#: src/ui/main_window.c:415
+#: src/ui/main_window.c:481
 msgid ""
 "This GNU/Linux operating system and its components are built upon Free and "
 "Open-Source Software (FOSS) and are distributed by their respective "
@@ -75,128 +98,123 @@ msgid ""
 msgstr ""
 
 #. 许可行
-#: src/ui/main_window.c:427
+#: src/ui/main_window.c:493
 msgid ""
 "In accordance with open source licenses, the following users are allowed to "
 "use it"
 msgstr ""
 
-#: src/ui/main_window.c:539
+#: src/ui/main_window.c:605
 msgid "Type a search term."
 msgstr ""
 
-#: src/ui/main_window.c:550 src/ui/main_window.c:560
+#: src/ui/main_window.c:616 src/ui/main_window.c:626
 msgid "No matches found."
 msgstr ""
 
-#: src/ui/main_window.c:564
+#: src/ui/main_window.c:630
 #, c-format
 msgid "Found %u match(es)."
 msgstr ""
 
-#: src/ui/main_window.c:614
+#: src/ui/main_window.c:680
 msgid "Find"
 msgstr ""
 
-#: src/ui/main_window.c:615 src/ui/export.c:127 src/ui/export.c:203
-#: src/ui/file_tools.c:191 src/ui/favorites.c:188 src/ui/favorites.c:255
-msgid "Cancel"
-msgstr ""
-
-#: src/ui/main_window.c:615 src/ui/main_window.c:765
+#: src/ui/main_window.c:681 src/ui/main_window.c:831
 msgid "Find Next"
 msgstr ""
 
-#: src/ui/main_window.c:629
+#: src/ui/main_window.c:695
 msgid "Find what:"
 msgstr ""
 
-#: src/ui/main_window.c:631
+#: src/ui/main_window.c:697
 msgid "Find what"
 msgstr ""
 
-#: src/ui/main_window.c:638
+#: src/ui/main_window.c:704
 msgid "Find status"
 msgstr ""
 
-#: src/ui/main_window.c:640
+#: src/ui/main_window.c:706
 msgid "Searches the currently opened file."
 msgstr ""
 
 #. 文件：导出 / 备份 / 对比 / 退出
-#: src/ui/main_window.c:703
+#: src/ui/main_window.c:769
 msgid "File"
 msgstr ""
 
-#: src/ui/main_window.c:706
+#: src/ui/main_window.c:772
 msgid "Export..."
 msgstr ""
 
-#: src/ui/main_window.c:713
+#: src/ui/main_window.c:779
 msgid "Backup Current File..."
 msgstr ""
 
-#: src/ui/main_window.c:717
+#: src/ui/main_window.c:783
 msgid "Compare with File..."
 msgstr ""
 
-#: src/ui/main_window.c:721
+#: src/ui/main_window.c:787
 msgid "Save Changes..."
 msgstr ""
 
-#: src/ui/main_window.c:735
+#: src/ui/main_window.c:801
 msgid "Quit"
 msgstr ""
 
 #. 编辑：新建（仅内存）/ 复制项名称 / 查找
-#: src/ui/main_window.c:743
+#: src/ui/main_window.c:809
 msgid "Edit"
 msgstr ""
 
-#: src/ui/main_window.c:746 src/ui/value_pane.c:1499
+#: src/ui/main_window.c:812 src/ui/value_pane.c:1505
 msgid "New"
 msgstr ""
 
-#: src/ui/main_window.c:754 src/ui/tree_pane.c:385
+#: src/ui/main_window.c:820 src/ui/tree_pane.c:385
 msgid "Copy Name"
 msgstr ""
 
-#: src/ui/main_window.c:761
+#: src/ui/main_window.c:827
 msgid "Find..."
 msgstr ""
 
 #. 查看：地址栏 / 刷新
-#: src/ui/main_window.c:773
+#: src/ui/main_window.c:839
 msgid "View"
 msgstr ""
 
-#: src/ui/main_window.c:776
+#: src/ui/main_window.c:842
 msgid "Address"
 msgstr ""
 
-#: src/ui/main_window.c:792
+#: src/ui/main_window.c:858
 msgid "Refresh"
 msgstr ""
 
 #. 收藏夹：添加/删除 + 分割线 + 收藏项（菜单显示时动态刷新）
-#: src/ui/main_window.c:800
+#: src/ui/main_window.c:866
 msgid "Favorites"
 msgstr ""
 
 #. 帮助
-#: src/ui/main_window.c:807
+#: src/ui/main_window.c:873
 msgid "Help"
 msgstr ""
 
-#: src/ui/main_window.c:881
+#: src/ui/main_window.c:947
 msgid "Type a Path and Press Enter"
 msgstr ""
 
-#: src/ui/main_window.c:883
+#: src/ui/main_window.c:949
 msgid "Address bar input"
 msgstr ""
 
-#: src/ui/main_window.c:1046
+#: src/ui/main_window.c:1112
 msgid "Edit status"
 msgstr ""
 
@@ -256,43 +274,43 @@ msgstr ""
 msgid "no file loaded to save"
 msgstr ""
 
-#: src/ui/value_pane.c:1253
+#: src/ui/value_pane.c:1259
 msgid "Enable"
 msgstr ""
 
-#: src/ui/value_pane.c:1313 src/ui/value_pane.c:1502 src/ui/value_pane.c:1650
+#: src/ui/value_pane.c:1319 src/ui/value_pane.c:1508 src/ui/value_pane.c:1656
 msgid "Type"
 msgstr ""
 
-#: src/ui/value_pane.c:1336 src/ui/value_pane.c:1651
+#: src/ui/value_pane.c:1342 src/ui/value_pane.c:1657
 msgid "Data"
 msgstr ""
 
-#: src/ui/value_pane.c:1488
+#: src/ui/value_pane.c:1494
 msgid "Detect automatically"
 msgstr ""
 
-#: src/ui/value_pane.c:1520
+#: src/ui/value_pane.c:1526
 msgid "Comment Out (soft delete)"
 msgstr ""
 
-#: src/ui/value_pane.c:1574
+#: src/ui/value_pane.c:1580
 msgid "Value panel"
 msgstr ""
 
-#: src/ui/value_pane.c:1595
+#: src/ui/value_pane.c:1601
 msgid "Value table"
 msgstr ""
 
-#: src/ui/value_pane.c:1604 src/ui/value_pane.c:1649
+#: src/ui/value_pane.c:1610 src/ui/value_pane.c:1655
 msgid "Name"
 msgstr ""
 
-#: src/ui/value_pane.c:1607 src/ui/value_pane.c:1669
+#: src/ui/value_pane.c:1613 src/ui/value_pane.c:1675
 msgid "Note"
 msgstr ""
 
-#: src/ui/value_pane.c:1647
+#: src/ui/value_pane.c:1653
 msgid "JSON tree"
 msgstr ""
 

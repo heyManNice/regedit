@@ -27,9 +27,75 @@ update_window_title(LrMainWindow *mw, const char *path)
     g_free(title);
 }
 
+typedef enum
+{
+    LR_SWITCH_PROCEED,
+    LR_SWITCH_CANCEL,
+} LrSwitchAction;
+
+/* 有未保存修改时，切换前询问：保存并继续 / 丢弃 / 取消 */
+static LrSwitchAction
+confirm_unsaved_switch(LrMainWindow *mw)
+{
+    GtkWidget *dialog;
+    gint response;
+    const gchar *msg;
+    gboolean can_save = lr_value_pane_can_save(mw->value);
+
+    if (!lr_value_pane_is_dirty(mw->value))
+        return LR_SWITCH_PROCEED;
+
+    msg = can_save
+              ? _("Save changes before switching to another file?")
+              : _("Unsaved changes will be lost when switching "
+                  "(this file type is read-only).");
+    dialog = gtk_message_dialog_new(
+        GTK_WINDOW(mw->window), GTK_DIALOG_MODAL |
+            GTK_DIALOG_DESTROY_WITH_PARENT,
+        GTK_MESSAGE_WARNING, GTK_BUTTONS_NONE, "%s", msg);
+
+    if (can_save)
+        gtk_dialog_add_buttons(GTK_DIALOG(dialog),
+                               _("Save & Switch"), 1,
+                               _("Discard"), 2,
+                               _("Cancel"), GTK_RESPONSE_CANCEL, NULL);
+    else
+        gtk_dialog_add_buttons(GTK_DIALOG(dialog),
+                               _("Discard"), 2,
+                               _("Cancel"), GTK_RESPONSE_CANCEL, NULL);
+    gtk_dialog_set_default_response(GTK_DIALOG(dialog), 1);
+
+    response = gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(dialog);
+
+    if (response == 1)
+    {
+        GError *err = NULL;
+        if (!lr_value_pane_save_changes(mw->value, &err))
+        {
+            GtkWidget *e = gtk_message_dialog_new(
+                GTK_WINDOW(mw->window), GTK_DIALOG_DESTROY_WITH_PARENT,
+                GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "%s",
+                err != NULL ? err->message : _("Unknown Error"));
+            g_signal_connect(e, "response",
+                             G_CALLBACK(lr_dialog_destroy_on_response), NULL);
+            lr_dialog_center_on(e, GTK_WINDOW(mw->window));
+            g_clear_error(&err);
+            return LR_SWITCH_CANCEL;
+        }
+        return LR_SWITCH_PROCEED;
+    }
+    if (response == 2)
+        return LR_SWITCH_PROCEED;
+    return LR_SWITCH_CANCEL;
+}
+
 static void
 open_path(LrMainWindow *mw, const char *path, gboolean is_dir)
 {
+    if (confirm_unsaved_switch(mw) == LR_SWITCH_CANCEL)
+        return;
+
     /* 计算机虚拟根（空路径） */
     if (path == NULL || *path == '\0')
     {

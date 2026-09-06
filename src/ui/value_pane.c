@@ -971,6 +971,12 @@ lr_value_pane_can_save(LrValuePane *self)
     return self != NULL && self->saveable;
 }
 
+gboolean
+lr_value_pane_is_dirty(LrValuePane *self)
+{
+    return self != NULL && self->dirty;
+}
+
 void lr_value_pane_clear(LrValuePane *self)
 {
     g_clear_pointer(&self->current_path, g_free);

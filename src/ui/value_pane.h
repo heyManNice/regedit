@@ -20,6 +20,9 @@ gboolean lr_value_pane_save_changes(LrValuePane *self, GError **error);
 /* 当前打开文件的格式是否支持行级写回 */
 gboolean lr_value_pane_can_save(LrValuePane *self);
 
+/* 是否存在尚未保存的内存编辑 */
+gboolean lr_value_pane_is_dirty(LrValuePane *self);
+
 /* 获取面板顶层 widget（GtkStack） */
 GtkWidget *lr_value_pane_get_widget(LrValuePane *self);
 

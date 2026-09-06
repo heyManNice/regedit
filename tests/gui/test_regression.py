@@ -265,7 +265,7 @@ def test_cli_open_file_outside_roots(display, fake_roots, tmp_path):
                    timeout=6, message="outside-root file did not display")
 
 
-def test_unsaved_edit_banner(regedit, fake_roots):
+def test_unsaved_edit_banner(regedit, fake_roots, display):
     """内存编辑出现“未保存”提示，切换文件后提示消失。"""
     app = regedit.app
     open_sample(app, fake_roots, "sample.ini")
@@ -289,6 +289,10 @@ def test_unsaved_edit_banner(regedit, fake_roots):
     assert "not saved" in tree.text_of(bar)
 
     open_sample(app, fake_roots, "sample.json")
+    time.sleep(0.8)
+    press("Right")
+    time.sleep(0.2)
+    press("Return")
     wait_until(lambda: tree.find(app, name="Edit status",
                                  showing=True) is None,
                timeout=6, message="banner did not clear after file switch")
